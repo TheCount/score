@@ -1,25 +1,25 @@
 <?php
 /*
-    Score, a MediaWiki extension for rendering musical scores with LilyPond.
-    Copyright © 2011 Alexander Klauer
+	Score, a MediaWiki extension for rendering musical scores with LilyPond.
+	Copyright © 2011 Alexander Klauer
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-    To contact the author:
-    <Graf.Zahl@gmx.net>
-    http://en.wikisource.org/wiki/User_talk:GrafZahl
-    https://github.com/TheCount/score
+	To contact the author:
+	<Graf.Zahl@gmx.net>
+	http://en.wikisource.org/wiki/User_talk:GrafZahl
+	https://github.com/TheCount/score
 
  */
 
@@ -85,6 +85,7 @@ class Score {
 			. "\traggedbottom = ##t\n"
 			. "\tindent = 0\mm\n"
 			. "}\n"
+			. "\\version \"2.12.3\"\n"
 			. "\\score {\n"
 			. $lilypondCode
 			. "\t\\layout { }\n"
@@ -165,12 +166,7 @@ class Score {
 				if ( !$rc ) {
 					throw new ScoreException( 'score-nofactory' );
 				}
-			} catch (ScoreException $e) {
-				wfProfileOut( __METHOD__ );
-				return wfMsgHtml( $e->getMessage() );
-			}
 
-			try {
 				$rc = file_put_contents( $lilypondFile, $lilypondCode );
 				if ( $rc === false ) {
 					throw new ScoreException( 'score-noinput' );
@@ -245,6 +241,7 @@ class Score {
 				wfProfileOut( __METHOD__ );
 				return wfMsgHtml( $e->getMessage() );
 			}
+			wfProfileOut( __METHOD__ );
 		}
 
 		/* return output link(s) */
@@ -306,8 +303,10 @@ class Score {
 	 * @return true on success, false on error
 	 */
 	private static function eraseFactory( $dir ) {
-		array_map( 'unlink', glob( "$dir/*", GLOB_NOSORT ) );
-		return rmdir( $dir );
+		if( file_exists( $dir ) ) {
+			array_map( 'unlink', glob( "$dir/*", GLOB_NOSORT ) );
+			return rmdir( $dir );
+		}
 	}
 
 	/**
