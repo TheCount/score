@@ -306,6 +306,9 @@ class Score {
 		if( file_exists( $dir ) ) {
 			array_map( 'unlink', glob( "$dir/*", GLOB_NOSORT ) );
 			return rmdir( $dir );
+		} else {
+			/* Nothing to do */
+			return true;
 		}
 	}
 
