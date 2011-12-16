@@ -40,6 +40,8 @@ $messages['en'] = array(
 	'score-compilererr' => 'Unable to compile LilyPond input file:',
 	'score-desc' => 'MediaWiki tag extension for rendering musical scores with LilyPond',
 	'score-getcwderr' => 'Unable to obtain current working directory',
+	'score-nooutput' => 'Failed to create LilyPond image dir',
+	'score-nofactory' => 'Failed to create LilyPond factory dir',
 	'score-noinput' => 'Failed to create LilyPond input file',
 	'score-page' => 'Page',
 	'score-renameerr' => 'Error moving score files to upload directory',
@@ -58,5 +60,3 @@ $messages['qqq'] = array(
 	'score-renameerr' => 'Displayed if moving the resultant files from the working environment to the upload directory fails.',
 	'score-trimerr' => 'Displayed if the extension failed to trim an output image.',
 );
-
-?>

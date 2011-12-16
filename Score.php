@@ -91,5 +91,3 @@ function efScoreExtension( Parser &$parser ) {
 
 	return true;
 }
-
-?>
