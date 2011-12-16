@@ -118,7 +118,7 @@ class Score {
 		$factoryImageTrimmed = $factoryDirectory . "/file-trimmed.png";
 		$factoryMultiFormat = $factoryDirectory . "/file-%d.png"; // for multi-page scores
 		$factoryMultiTrimmedFormat = $factoryDirectory . "/file-%d-trimmed.png";
-		$rel = 'lilypond/' . md5( $lilypondCode ); // FIXME: Too much files in one directory?
+		$rel = 'lilypond/' . md5( $lilypondCode ); // FIXME: Too many files in one directory?
 		$filePrefix = "$wgUploadDirectory/$rel";
 		$pathPrefix = "$wgUploadPath/$rel";
 		$midi = "$filePrefix.midi";
@@ -129,7 +129,7 @@ class Score {
 		$multiPathFormat = "$pathPrefix-%d.png";
 		$multi1 = "$filePrefix-1.png";
 
-		/* Check whether the file is already cached and return link immediately if so */
+		/* Check whether the file is already cached */
 		$cached = true;
 		if ( $renderMidi && !file_exists( $midi ) ) {
 			self::debug( "Cache miss: File $midi does not exist and midi rendering is enabled.\n" );

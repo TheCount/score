@@ -19,7 +19,7 @@ Setup
    subdirectory. Make sure they are readable by your webserver.
 4. Create a subdirectory named "lilypond" in your $wgUploadDirectory (usually
    the directory named "images" in in your MediaWiki directory). Make sure
-   the directory is writable for your webserver.
+   the directory is writable by your webserver.
 5. Add the lines
 
    require_once("$IP/extensions/Score/Score.php");
@@ -27,6 +27,7 @@ Setup
    $wgScoreTrim = true; /* Set to false if you don't want score trimming */
 
    to your LocalSettings.php file.
+
 
 Usage
 =====
