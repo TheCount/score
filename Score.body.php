@@ -119,7 +119,8 @@ class Score {
 		$factoryImageTrimmed = $factoryDirectory . "/file-trimmed.png";
 		$factoryMultiFormat = $factoryDirectory . "/file-%d.png"; // for multi-page scores
 		$factoryMultiTrimmedFormat = $factoryDirectory . "/file-%d-trimmed.png";
-		$rel = 'lilypond/' . md5( $lilypondCode ); // FIXME: Too many files in one directory?
+		$lilypondDir = "lilypond";
+		$rel = $lilypondDir . "/" . md5( $lilypondCode ); // FIXME: Too many files in one directory?
 		$filePrefix = "$wgUploadDirectory/$rel";
 		$pathPrefix = "$wgUploadPath/$rel";
 		$midi = "$filePrefix.midi";
@@ -162,7 +163,15 @@ class Score {
 				}
 
 				/* create working environment */
-				$rc = mkdir( $factoryDirectory, 0700, true );
+				if ( !file_exists( "$wgUploadDirectory/$lilypondDir" ) ) {
+					$rc = wfMkdirParents( "$wgUploadDirectory/$lilypondDir", null, __METHOD__ );
+					if ( !$rc ) {
+						throw new ScoreException( 'score-nooutput' );
+					}
+				}
+
+				/* create working environment */
+				$rc = wfMkdirParents( $factoryDirectory, 0700, __METHOD__ );
 				if ( !$rc ) {
 					throw new ScoreException( 'score-nofactory' );
 				}
@@ -222,7 +231,7 @@ class Score {
 				if ( file_exists( $factoryMidi ) ) {
 					$rc = $rc && rename( $factoryMidi, $midi );
 				}
-				if ( file_exists( $factoryImage ) ) {
+				if ( file_exists( $factoryImageTrimmed ) ) {
 					$rc = $rc && rename( $factoryImageTrimmed, $image );
 				}
 				for ( $i = 1; file_exists( $f = sprintf( $factoryMultiTrimmedFormat, $i ) ); ++$i ) {
@@ -319,5 +328,3 @@ class Score {
 	}
 
 }
-
-?>
