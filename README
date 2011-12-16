@@ -1,0 +1,53 @@
+Score, a MediaWiki extension for rendering musical scores with LilyPond.
+
+Prerequisites
+=============
+
+This extension uses LilyPond to render score images, so you need a working
+LilyPond installation. If you want the extension to trim the score files for
+you, you will also need ImageMagick.
+
+This extension was tested with MediaWiki 1.18.0 and LilyPond 2.12.3.
+
+
+Setup
+=====
+
+1. Change to the "extensions" directory of your MediaWiki installation.
+2. Create a new subdirectory named "Score".
+3. Copy the files Score.php, Score.body.php and Score.i18n.php into the new
+   subdirectory. Make sure they are readable by your webserver.
+4. Create a subdirectory named "lilypond" in your $wgUploadDirectory (usually
+   the directory named "images" in in your MediaWiki directory). Make sure
+   the directory is writable by your webserver.
+5. Add the lines
+
+   require_once("$IP/extensions/Score/Score.php");
+   $wgLilyPond = '/path/to/your/lilypond/executable'; /* required */
+   $wgScoreTrim = true; /* Set to false if you don't want score trimming */
+
+   to your LocalSettings.php file.
+
+
+Usage
+=====
+
+After setup, you can use the <score>…</score> tags in your wiki markup.
+For a simple score, use e.g.
+
+<score>\relative c' { f d f a d f e d cis a cis e a g f e }</score>
+
+This will render the appropriate score as a PNG image. The lilypond software
+is also capable of creating MIDI files. Use
+
+<score midi="1">…</score>
+
+and the rendered image will be embedded into a hyperlink to an appropriate
+MIDI file. For more complex scores, you may supply a complete lilypond file
+with
+
+<score raw="1">…</score>
+
+You may also combine the "raw" and "midi" attributes, but remember that in
+this case, you need to provide the necessary \midi block yourself.
+
