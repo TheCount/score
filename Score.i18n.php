@@ -58,6 +58,3 @@ $messages['qqq'] = array(
 	'score-renameerr' => 'Displayed if moving the resultant files from the working environment to the upload directory fails.',
 	'score-trimerr' => 'Displayed if the extension failed to trim an output image.',
 );
-
-?>
-
