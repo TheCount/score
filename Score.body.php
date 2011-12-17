@@ -271,13 +271,13 @@ class Score {
 			} else {
 				$alt = wfMessage( 'score-page' )->inContentLanguage()->numParams( '1' )->plain();
 			}
-			$link = Html::rawElement('img', array(
+			$link = Html::rawElement( 'img', array(
 				'src' => $imagePath,
 				'alt' => $alt,
-			));
+			) );
 		} elseif ( file_exists( $multi1 ) ) {
 			$link = '';
-			for ($i = 1; file_exists( sprintf( $multiFormat, $i ) ); ++$i ) {
+			for ( $i = 1; file_exists( sprintf( $multiFormat, $i ) ); ++$i ) {
 				if ( $altText ) {
 					$alt = $altText;
 				} else {
@@ -286,7 +286,7 @@ class Score {
 				$link .= Html::rawElement( 'img', array(
 					'src' => sprintf( $multiPathFormat, $i ),
 					'alt' => $alt,
-				));
+				) );
 			}
 		} else {
 			self::debug( "No output images $image or $multi1!\n" );
