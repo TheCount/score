@@ -162,7 +162,7 @@ class Score {
 					throw new ScoreException( 'score-cleanerr' );
 				}
 
-				/* create working environment */
+				/* create output directory if necessary */
 				if ( !file_exists( "$wgUploadDirectory/$lilypondDir" ) ) {
 					$rc = wfMkdirParents( "$wgUploadDirectory/$lilypondDir", null, __METHOD__ );
 					if ( !$rc ) {
