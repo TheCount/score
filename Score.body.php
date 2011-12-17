@@ -163,7 +163,7 @@ class Score {
 					throw new ScoreException( 'score-cleanerr' );
 				}
 
-				/* create working environment */
+				/* create output directory if necessary */
 				if ( !file_exists( "$wgUploadDirectory/$lilypondDir" ) ) {
 					$rc = wfMkdirParents( "$wgUploadDirectory/$lilypondDir", null, __METHOD__ );
 					if ( !$rc ) {
@@ -209,7 +209,7 @@ class Score {
 					$msg = wfMessage( 'score-compilererr' )
 						->inContentLanguage()
 						->rawParams(
-							' <pre>' . strip_tags( $output ) . "\n</pre>\n"
+							' ' . Html::rawElement( 'pre', array(), strip_tags( $output ) ) . "\n"
 						);
 					return $msg;
 				}
@@ -336,6 +336,9 @@ class Score {
 		if( file_exists( $dir ) ) {
 			array_map( 'unlink', glob( "$dir/*", GLOB_NOSORT ) );
 			return rmdir( $dir );
+		} else {
+			/* Nothing to do */
+			return true;
 		}
 	}
 

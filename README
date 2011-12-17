@@ -19,7 +19,9 @@ Setup
    subdirectory. Make sure they are readable by your webserver.
 4. Create a subdirectory named "lilypond" in your $wgUploadDirectory (usually
    the directory named "images" in in your MediaWiki directory). Make sure
-   the directory is writable by your webserver.
+   the directory is writable by your webserver. If you do not create this
+   directory, the Score extension will attempt to create it for you with the
+   rights available to it.
 5. Add the lines
 
    require_once("$IP/extensions/Score/Score.php");
