@@ -42,8 +42,11 @@ if ( !defined( 'MEDIAWIKI' ) ) {
  * Configuration
  */
 
-/* Whether to trim the score images. Requires ImageMagick. Default is yes. */
-$wgScoreTrim = true;
+/* Whether to trim the score images. Requires ImageMagick.
+ *  Default is $wgUseImageMagick and set in efScoreExtension */
+$wgScoreTrim = null;
+/* Path of lilypond executable */
+$wgLilyPond = '/usr/bin/lilypond';
 
 /*
  * Extension credits
@@ -72,19 +75,11 @@ $wgAutoloadClasses['Score'] = dirname( __FILE__ ) . '/Score.body.php';
  * @return true if initialisation was successful, false otherwise.
  */
 function efScoreExtension( Parser &$parser ) {
-	global $wgUseImageMagick, $wgLilyPond, $wgScoreTrim;
+	global $wgUseImageMagick, $wgScoreTrim;
 
-	if ( !is_executable( $wgLilyPond ) ) {
-		wfDebugLog( 'Score', "Set LilyPond file \$wgLilyPond=$wgLilyPond is not executable.\n" );
-		return false;
-	}
-	if ( !isset( $wgScoreTrim ) ) {
-		wfDebugLog( 'Score', "Required global variable \$wgScoreTrim not set.\n" );
-		return false;
-	}
-	if ( $wgScoreTrim && !$wgUseImageMagick ) {
-		wfDebugLog( 'Score', "Score trimming requested, but ImageMagick is unavailable.\n" );
-		return false;
+	if ( $wgScoreTrim === null ) {
+		// Default to if we use Image Magick, since it requires Image Magick.
+		$wgScoreTrim = $wgUseImageMagick;
 	}
 
 	$parser->setHook( 'score', 'Score::render' );
