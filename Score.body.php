@@ -54,6 +54,7 @@ class Score {
 	 * @return Image link HTML, and possibly anchor to MIDI file.
 	 */
 	public static function render( $lilypondCode, array $args, Parser $parser, PPFrame $frame ) {
+
 		if ( array_key_exists( 'midi', $args ) ) {
 			$renderMidi = $args['midi'];
 		} else {
@@ -190,6 +191,9 @@ class Score {
 				if ( !$rc ) {
 					throw new ScoreException( 'score-chdirerr' );
 				}
+				if ( !is_executable( $wgLilyPond ) ) {
+					throw new ScoreException( 'score-notexecutable' );
+				}
 				$cmd = $wgLilyPond
 					. " -dsafe='#t' -dbackend=eps --png --header=texidoc "
 					. wfEscapeShellArg( $lilypondFile )
@@ -202,8 +206,11 @@ class Score {
 				if ( $rc2 != 0 ) {
 					self::eraseFactory( $factoryDirectory );
 					wfProfileOut( __METHOD__ );
-					$msg = wfMsgHtml( 'score-compilererr' )
-						. ' <pre>' . strip_tags( $output ) . "\n</pre>\n";
+					$msg = wfMessage( 'score-compilererr' )
+						->inContentLanguage()
+						->rawParams(
+							' <pre>' . strip_tags( $output ) . "\n</pre>\n"
+						);
 					return $msg;
 				}
 
@@ -248,23 +255,37 @@ class Score {
 			} catch (ScoreException $e) {
 				self::eraseFactory( $factoryDirectory );
 				wfProfileOut( __METHOD__ );
-				return wfMsgHtml( $e->getMessage() );
+				return Html::rawElement(
+					'span',
+					array( 'class' => 'error' ),
+					wfMessage( $e->getMessage() )->inContentLanguage()->parse()
+				);
 			}
 			wfProfileOut( __METHOD__ );
 		}
 
 		/* return output link(s) */
 		if ( file_exists( $image ) ) {
+			if ( $altText ) {
+				$alt = $altText;
+			} else {
+				$alt = wfMessage( 'score-page' )->inContentLanguage()->numParams( '1' )->plain();
+			}
 			$link = Html::rawElement('img', array(
 				'src' => $imagePath,
-				'alt' => ( $altText ? $altText : wfMsg('score-page') . ' 1' )
+				'alt' => $alt,
 			));
 		} elseif ( file_exists( $multi1 ) ) {
 			$link = '';
 			for ($i = 1; file_exists( sprintf( $multiFormat, $i ) ); ++$i ) {
+				if ( $altText ) {
+					$alt = $altText;
+				} else {
+					$alt = wfMessage( 'score-page' )->inContentLanguage()->numParams( $i )->plain();
+				}
 				$link .= Html::rawElement( 'img', array(
 					'src' => sprintf( $multiPathFormat, $i ),
-					'alt' => wfMsg('score-page') . " $i"
+					'alt' => $alt,
 				));
 			}
 		} else {
