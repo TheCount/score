@@ -209,7 +209,7 @@ class Score {
 					$msg = wfMessage( 'score-compilererr' )
 						->inContentLanguage()
 						->rawParams(
-							' <pre>' . strip_tags( $output ) . "\n</pre>\n"
+							' ' . Html::rawElement( 'pre', array(), strip_tags( $output ) ) . "\n"
 						);
 					return $msg;
 				}
