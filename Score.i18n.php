@@ -42,7 +42,7 @@ $1',
 	'score-notexecutable' => 'Could not execute LilyPond. Make sure <code>$wgLilyPond</code> is set correctly.',
 );
 
-/* Descriptish */
+/** Message documentation (Message documentation) */
 $messages['qqq'] = array(
 	'score-chdirerr' => 'Displayed if the extension cannot change its working directory.',
 	'score-cleanerr' => 'Displayed if an old file cleanup operation fails.',
@@ -55,6 +55,6 @@ $messages['qqq'] = array(
 	'score-page' => 'The word "Page" as used in pagination. $1 is the page number',
 	'score-renameerr' => 'Displayed if moving the resultant files from the working environment to the upload directory fails.',
 	'score-trimerr' => 'Displayed if the extension failed to trim an output image.',
-	'score-notexecutable' => 'Displayed if LilyPond binary can\'t be executed.',
+	'score-notexecutable' => "Displayed if LilyPond binary can't be executed.",
 );
 
