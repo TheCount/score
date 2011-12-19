@@ -153,32 +153,49 @@ class Score {
 		}
 
 		try {
+			/* Midi rendering? */
+			if ( array_key_exists( 'midi', $args ) ) {
+				$renderMidi = $args['midi'];
+			} else {
+				$renderMidi = false;
+			}
+
 			/* Score language selection */
 			if ( array_key_exists( 'lang', $args ) ) {
 				$lang = $args['lang'];
 			} else {
 				$lang = 'lilypond';
 			}
+
+			/* Create lilypond input file */
+			$lilypondFile = $factoryDirectory . '/file.ly';
 			switch ( $lang ) {
 			case 'lilypond':
-				$lilypondCode = $code;
+				if ( !array_key_exists( 'raw', $args ) || !$args['raw'] ) {
+					$lilypondCode = self::embedLilypondCode( $code, $renderMidi );
+					$altText = $code;
+				} else {
+					$lilypondCode = $code;
+					$altText = false;
+				}
+				$rc = file_put_contents( $lilypondFile, $lilypondCode );
+				if ( $rc === false ) {
+					throw new ScoreException( 'score-noinput' );
+				}
 				break;
 			case 'ABC':
-			case 'abc':
-				$lilypondCode = $code; // FIXME
+				$altText = false;
+				$lilypondCode = $code; // FIXME: transformation needed
+				$rc = file_put_contents( $lilypondFile, $lilypondCode );
+				if ( $rc === false ) {
+					throw new ScoreException( 'score-noinput' );
+				}
 				break;
-			}
-			if ( array_key_exists( 'midi', $args ) ) {
-				$renderMidi = $args['midi'];
-			} else {
-				$renderMidi = false;
-			}
-			if ( array_key_exists( 'raw', $args ) && $args['raw'] ) {
-				$html = self::runRaw( $lilypondCode, $factoryDirectory, $renderMidi );
-			} else {
-				$html = self::run( $lilypondCode, $factoryDirectory, $renderMidi );
+			default:
+				throw new ScoreException( 'score-invalidlang' ); // FIXME: define message
 			}
 
+			$html = self::runLilypond( $lilypondCode, $factoryDirectory, $renderMidi, $altText );
 		} catch ( ScoreException $e ) {
 			return $e;
 		}
@@ -192,16 +209,16 @@ class Score {
 	}
 
 	/**
-	 * Runs lilypond with the code embedded in a score block.
+	 * Embeds simple LilyPond code in a score block.
 	 *
 	 * @param $lilypondCode
-	 * @param $factoryDirectory
 	 * @param $renderMidi
 	 *
-	 * @return On success, image link HTML, and possibly an anchor to MIDI
-	 * 	file is returned. On error, error message HTML is returned.
+	 * @return Raw lilypond code.
+	 *
+	 * @throws ScoreException if determining the LilyPond version fails.
 	 */
-	private static function run( $lilypondCode, $factoryDirectory, $renderMidi ) {
+	private static function embedLilypondCode( $lilypondCode, $renderMidi ) {
 		/* Get LilyPond version if we don't know it yet */
 		if ( self::$lilypondVersion === null ) {
 			self::getLilypondVersion();
@@ -223,21 +240,23 @@ class Score {
 			. "\t\\layout { }\n"
 			. ( $renderMidi ? "\t\\midi { }\n" : "" )
 			. "}\n";
-		return self::runRaw( $raw, $factoryDirectory, $renderMidi, $lilypondCode );
+		return $raw;
 	}
 
 	/**
 	 * Runs lilypond.
 	 *
 	 * @param $lilypondCode
-	 * @param $factoryDirectory
+	 * @param $factoryDirectory Directory of the working environment.
+	 * 	The LilyPond input file "file.ly" is expected to be in
+	 * 	this directory.
 	 * @param $renderMidi
 	 * @param $altText Alternate text for the score image.
 	 * 	If set to false, the alt text will contain pagination instead.
 	 *
 	 * @return Image link HTML, and possibly anchor to MIDI file.
 	 */
-	private static function runRaw( $lilypondCode, $factoryDirectory, $renderMidi, $altText = false ) {
+	private static function runLilypond( $lilypondCode, $factoryDirectory, $renderMidi, $altText = false ) {
 		global $wgUploadDirectory, $wgUploadPath, $wgLilyPond, $wgScoreTrim;
 
 		wfProfileIn( __METHOD__ );
@@ -298,12 +317,6 @@ class Score {
 					if ( !$rc ) {
 						throw new ScoreException( 'score-nooutput' );
 					}
-				}
-
-				/* put lilypond code into working environment */
-				$rc = file_put_contents( $lilypondFile, $lilypondCode );
-				if ( $rc === false ) {
-					throw new ScoreException( 'score-noinput' );
 				}
 
 				/* generate lilypond output files in working environment */
