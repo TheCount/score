@@ -70,7 +70,7 @@ $wgAutoloadClasses['Score'] = dirname( __FILE__ ) . '/Score.body.php';
 /**
  * Init routine.
  *
- * @param $parser Mediawiki parser
+ * @param $parser Parser Mediawiki parser
  *
  * @return true if initialisation was successful, false otherwise.
  */
