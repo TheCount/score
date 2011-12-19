@@ -253,17 +253,8 @@ class Score {
 	private function runAbc2Ly( $code, $factoryDirectory ) {
 		global $wgAbc2Ly;
 
-		$abcFile = 'file.abc';
-
-		/* Change to work dir */
-		$oldcwd = getcwd();
-		if ( $oldcwd === false ) {
-			throw new ScoreException( 'score-getcwderr' );
-		}
-		$rc = chdir( $factoryDirectory );
-		if ( !$rc ) {
-			throw new ScoreException( 'score-chdirerr' );
-		}
+		$abcFile = $factoryDirectory . '/file.abc';
+		$lyFile = $factoryDirectory . '/file.ly';
 
 		/* Create ABC input file */
 		$rc = file_put_contents( $abcFile, ltrim( $code ) ); // abc2ly is picky about whitespace at the start of the file
@@ -278,6 +269,7 @@ class Score {
 
 		$cmd = wfEscapeShellArg( $wgAbc2Ly )
 			. ' -s'
+			. ' --output=' . wfEscapeShellArg( $lyFile )
 			. ' ' . wfEscapeShellArg( $abcFile )
 			. ' 2>&1'; // FIXME: this last bit is not portable
 		$output = wfShellExec( $cmd, $rc );
@@ -286,12 +278,6 @@ class Score {
 		}
 		self::debug( "abc2ly output: $output\n" );
 		// FIXME: The output file has a tagline which should be removed in a wiki context
-
-		/* Change back to old dir */
-		$rc = chdir( $oldcwd );
-		if ( !$rc ) {
-			throw new ScoreException( 'score-chdirerr' );
-		}
 	}
 
 	/**
