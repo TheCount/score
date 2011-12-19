@@ -23,14 +23,6 @@
 
  */
 
-if ( !defined( 'MEDIAWIKI' ) ) {
-	die( "This file cannot be run standalone.\n" );
-}
-
-/*
- * I18N setup.
- */
-
 $messages = array();
 
 /* English */
@@ -39,10 +31,10 @@ $messages['en'] = array(
 	'score-cleanerr' => 'Unable to clean out old files before re-rendering',
 	'score-compilererr' => 'Unable to compile LilyPond input file:
 $1',
-	'score-desc' => 'MediaWiki tag extension for rendering musical scores with LilyPond',
+	'score-desc' => 'Adds a tag for rendering musical scores with LilyPond',
 	'score-getcwderr' => 'Unable to obtain current working directory',
-	'score-nooutput' => 'Failed to create LilyPond image dir',
-	'score-nofactory' => 'Failed to create LilyPond factory dir',
+	'score-nooutput' => 'Failed to create LilyPond image directory',
+	'score-nofactory' => 'Failed to create LilyPond factory directory',
 	'score-noinput' => 'Failed to create LilyPond input file',
 	'score-notexecutable' => 'Could not execute LilyPond. Make sure <code>$wgLilyPond</code> is set correctly.',
 	'score-page' => 'Page $1',
@@ -51,7 +43,7 @@ $1',
 	'score-versionerr' => 'Unable to obtain LilyPond version.',
 );
 
-/* Descriptish */
+/** Message documentation (Message documentation) */
 $messages['qqq'] = array(
 	'score-chdirerr' => 'Displayed if the extension cannot change its working directory.',
 	'score-cleanerr' => 'Displayed if an old file cleanup operation fails.',
@@ -67,3 +59,4 @@ $messages['qqq'] = array(
 	'score-trimerr' => 'Displayed if the extension failed to trim an output image.',
 	'score-versionerr' => 'Displayed if the extension failed to obtain the version string of LilyPond.',
 );
+
