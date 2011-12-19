@@ -27,7 +27,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	die( "This file cannot be run standalone.\n" );
 }
 
-/*
+/**
  * Score ecxceptions
  */
 class ScoreException extends Exception {
@@ -39,7 +39,7 @@ class ScoreException extends Exception {
 	}
 }
 
-/*
+/**
  * Score class
  */
 class Score {
