@@ -318,15 +318,9 @@ class Score {
 				if ( $wgScoreTrim ) {
 					if ( file_exists( $factoryImage ) ) {
 						$rc = self::trimImage( $factoryImage, $factoryImageTrimmed );
-						if ( !$rc ) {
-							throw new ScoreException( 'score-trimerr' );
-						}
 					}
 					for ( $i = 1; file_exists( $f = sprintf( $factoryMultiFormat, $i ) ); ++$i ) {
 						$rc = self::trimImage( $f, sprintf( $factoryMultiTrimmedFormat, $i ) );
-						if ( !$rc ) {
-							throw new ScoreException( 'score-trimerr' );
-						}
 					}
 				} else {
 					$factoryImageTrimmed = $factoryImage;
@@ -404,7 +398,7 @@ class Score {
 	 * @param $source
 	 * @param $dest
 	 *
-	 * @return true on success, false on error.
+	 * @throws ScoreException on error.
 	 */
 	private static function trimImage( $source, $dest ) {
 		global $wgImageMagickConvertCommand;
@@ -414,11 +408,9 @@ class Score {
 			. wfEscapeShellArg( $source ) . ' '
 			. wfEscapeShellArg( $dest );
 		wfShellExec( $cmd, $rc );
-		if ( $rc == 0 ) {
-			return true;
+		if ( $rc != 0 ) {
+			throw new ScoreException( 'score-trimerr' );
 		}
-
-		return false;
 	}
 
 	/**
