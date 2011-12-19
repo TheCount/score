@@ -44,10 +44,10 @@ $1',
 	'score-nooutput' => 'Failed to create LilyPond image dir',
 	'score-nofactory' => 'Failed to create LilyPond factory dir',
 	'score-noinput' => 'Failed to create LilyPond input file',
+	'score-notexecutable' => 'Could not execute LilyPond. Make sure <code>$wgLilyPond</code> is set correctly.',
 	'score-page' => 'Page $1',
 	'score-renameerr' => 'Error moving score files to upload directory',
 	'score-trimerr' => 'Image could not be trimmed. Set $wgScoreTrim=false if this problem persists.',
-	'score-notexecutable' => 'Could not execute LilyPond. Make sure <code>$wgLilyPond</code> is set correctly.',
 );
 
 /* Descriptish */
@@ -60,8 +60,8 @@ $messages['qqq'] = array(
 	'score-nooutput' => 'Displayed if the LilyPond image/midi dir cannot be created.',
 	'score-nofactory' => 'Displayed if the LilyPond/ImageMagick working directory cannot be created.',
 	'score-noinput' => 'Displayed if the LilyPond input file cannot be created.',
+	'score-notexecutable' => 'Displayed if LilyPond binary can\'t be executed.',
 	'score-page' => 'The word "Page" as used in pagination. $1 is the page number',
 	'score-renameerr' => 'Displayed if moving the resultant files from the working environment to the upload directory fails.',
 	'score-trimerr' => 'Displayed if the extension failed to trim an output image.',
-	'score-notexecutable' => 'Displayed if LilyPond binary can\'t be executed.',
 );
