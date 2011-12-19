@@ -78,24 +78,39 @@ class Score {
 	/**
 	 * Renders the lilypond code in a <score>…</score> tag.
 	 *
-	 * @param $lilypondCode
+	 * @param $code
 	 * @param $args
 	 * @param $parser
 	 * @param $frame
 	 *
 	 * @return Image link HTML, and possibly anchor to MIDI file.
 	 */
-	public static function render( $lilypondCode, array $args, Parser $parser, PPFrame $frame ) {
-
-		if ( array_key_exists( 'midi', $args ) ) {
-			$renderMidi = $args['midi'];
-		} else {
-			$renderMidi = false;
-		}
-		if ( array_key_exists( 'raw', $args ) && $args['raw'] ) {
-			return self::runRaw( $lilypondCode, $renderMidi );
-		} else {
-			return self::run( $lilypondCode, $renderMidi );
+	public static function render( $code, array $args, Parser $parser, PPFrame $frame ) {
+		try {
+			/* Score language selection */
+			if ( array_key_exists( 'lang', $args ) {
+				$lang = $args['lang'];
+			} else {
+				$lang = 'lilypond';
+			}
+			switch ( $lang ) {
+			case 'lilypond':
+				$lilypondCode = $code;
+				break;
+			case 'ABC':
+			case 'abc':
+			}
+			if ( array_key_exists( 'midi', $args ) ) {
+				$renderMidi = $args['midi'];
+			} else {
+				$renderMidi = false;
+			}
+			if ( array_key_exists( 'raw', $args ) && $args['raw'] ) {
+				return self::runRaw( $lilypondCode, $renderMidi );
+			} else {
+				return self::run( $lilypondCode, $renderMidi );
+			}
+		} catch ( ScoreException $e ) {
 		}
 	}
 
