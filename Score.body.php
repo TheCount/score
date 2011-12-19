@@ -37,6 +37,57 @@ class ScoreException extends Exception {
 	public function __construct( $message, $code = 0, Exception $previous = null ) {
 		parent::__construct( $message, $code, $previous );
 	}
+
+	/**
+	 * Auto-renders exception as HTML error message in the wiki's content
+	 * language.
+	 *
+	 * @return error message HTML.
+	 */
+	public function  __toString() {
+		return Html::rawElement(
+			'span',
+			array( 'class' => 'error' ),
+			wfMessage( $this->getMessage() )->inContentLanguage()->parse()
+		);
+	}
+}
+
+/**
+ * Score call exception.
+ * This is a type of exception thrown when a call to some binary used by the
+ * Score extension fails.
+ */
+class ScoreCallException extends Exception {
+	/**
+	 * Error message returned from the call.
+	 */
+	private $callErrMsg;
+
+	/**
+	 * Constructs a new ScoreCallException.
+	 *
+	 * @param $message Message key to be used. It should accept one
+	 * 	parameter, the error message returned from the binary.
+	 * @param $callErrMsg Raw error message returned by the binary.
+	 */
+	public function __construct( $message, $callErrMsg, $code = 0, Exception $previous = null ) {
+		$this->$callErrMsg = $callErrMsg;
+		parent::__construct( $message, $code, $previous );
+	}
+
+	/**
+	 * Auto-renders exception as HTML error message in the wiki's content
+	 * language.
+	 *
+	 * @return error message HTML.
+	 */
+	public function __toString() {
+		return wfMessage( $this->getMessage() )
+			->inContentLanguage()
+			->rawParams( Html::rawElement( 'pre', array(), strip_tags( $this->$callErrMsg ) ) )
+			->parse();
+	}
 }
 
 /**
@@ -88,7 +139,7 @@ class Score {
 	public static function render( $code, array $args, Parser $parser, PPFrame $frame ) {
 		try {
 			/* Score language selection */
-			if ( array_key_exists( 'lang', $args ) {
+			if ( array_key_exists( 'lang', $args ) ) {
 				$lang = $args['lang'];
 			} else {
 				$lang = 'lilypond';
@@ -99,6 +150,8 @@ class Score {
 				break;
 			case 'ABC':
 			case 'abc':
+				$lilypondCode = $code; // FIXME
+				break;
 			}
 			if ( array_key_exists( 'midi', $args ) ) {
 				$renderMidi = $args['midi'];
@@ -111,6 +164,7 @@ class Score {
 				return self::run( $lilypondCode, $renderMidi );
 			}
 		} catch ( ScoreException $e ) {
+			return $e;
 		}
 	}
 
