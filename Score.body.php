@@ -357,7 +357,6 @@ class Score {
 				wfProfileOut( __METHOD__ );
 				throw $e;
 			}
-			wfProfileOut( __METHOD__ );
 		}
 
 		/* return output link(s) */
