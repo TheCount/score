@@ -28,7 +28,12 @@ Setup
    $wgLilyPond = '/path/to/your/lilypond/executable'; /* required */
    $wgScoreTrim = true; /* Set to false if you don't want score trimming */
 
-   to your LocalSettings.php file.
+   to your LocalSettings.php file. If you get unexpected out-of-memory errors,
+   you may also have to increase $wgMaxShellMemory (see
+
+   https://www.mediawiki.org/wiki/Manual:$wgMaxShellMemory
+
+   for more information.
 
 
 Usage
