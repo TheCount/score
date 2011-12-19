@@ -137,7 +137,18 @@ class Score {
 	 * @return Image link HTML, and possibly anchor to MIDI file.
 	 */
 	public static function render( $code, array $args, Parser $parser, PPFrame $frame ) {
+		global $wgTmpDirectory;
+
 		try {
+			/* create working environment */
+			$factoryPrefix = 'MWLP.';
+			$fuzz = md5( mt_rand() );
+			$factoryDirectory = $wgTmpDirectory . "/$factoryPrefix$fuzz";
+			$rc = wfMkdirParents( $factoryDirectory, 0700, __METHOD__ );
+			if ( !$rc ) {
+				throw new ScoreException( 'score-nofactory' );
+			}
+
 			/* Score language selection */
 			if ( array_key_exists( 'lang', $args ) ) {
 				$lang = $args['lang'];
@@ -159,9 +170,14 @@ class Score {
 				$renderMidi = false;
 			}
 			if ( array_key_exists( 'raw', $args ) && $args['raw'] ) {
-				return self::runRaw( $lilypondCode, $renderMidi );
+				return self::runRaw( $lilypondCode, $factoryDirectory, $renderMidi );
 			} else {
-				return self::run( $lilypondCode, $renderMidi );
+				return self::run( $lilypondCode, $factoryDirectory, $renderMidi );
+			}
+
+			/* tear down working environment */
+			if ( !self::eraseFactory( $factoryDirectory ) ) {
+				self::debug( "Unable to delete temporary working directory.\n" );
 			}
 		} catch ( ScoreException $e ) {
 			return $e;
@@ -172,12 +188,13 @@ class Score {
 	 * Runs lilypond with the code embedded in a score block.
 	 *
 	 * @param $lilypondCode
+	 * @param $factoryDirectory
 	 * @param $renderMidi
 	 *
 	 * @return On success, image link HTML, and possibly an anchor to MIDI
 	 * 	file is returned. On error, error message HTML is returned.
 	 */
-	private static function run( $lilypondCode, $renderMidi ) {
+	private static function run( $lilypondCode, $factoryDirectory, $renderMidi ) {
 		/* Get LilyPond version if we don't know it yet */
 		if ( self::$lilypondVersion === null ) {
 			self::getLilypondVersion();
@@ -199,28 +216,26 @@ class Score {
 			. "\t\\layout { }\n"
 			. ( $renderMidi ? "\t\\midi { }\n" : "" )
 			. "}\n";
-		return self::runRaw( $raw, $renderMidi, $lilypondCode );
+		return self::runRaw( $raw, $factoryDirectory, $renderMidi, $lilypondCode );
 	}
 
 	/**
 	 * Runs lilypond.
 	 *
 	 * @param $lilypondCode
+	 * @param $factoryDirectory
 	 * @param $renderMidi
 	 * @param $altText Alternate text for the score image.
 	 * 	If set to false, the alt text will contain pagination instead.
 	 *
 	 * @return Image link HTML, and possibly anchor to MIDI file.
 	 */
-	private static function runRaw( $lilypondCode, $renderMidi, $altText = false ) {
-		global $wgTmpDirectory, $wgUploadDirectory, $wgUploadPath, $wgLilyPond, $wgScoreTrim;
+	private static function runRaw( $lilypondCode, $factoryDirectory, $renderMidi, $altText = false ) {
+		global $wgUploadDirectory, $wgUploadPath, $wgLilyPond, $wgScoreTrim;
 
 		wfProfileIn( __METHOD__ );
 
 		/* Various paths and filenames */
-		$factoryPrefix = 'MWLP.';
-		$fuzz = md5( mt_rand() );
-		$factoryDirectory = $wgTmpDirectory . "/$factoryPrefix$fuzz";
 		$lilypondFile = $factoryDirectory . "/file.ly";
 		$factoryMidi = $factoryDirectory . "/file.midi";
 		$factoryImage = $factoryDirectory . "/file.png";
@@ -278,12 +293,7 @@ class Score {
 					}
 				}
 
-				/* create working environment */
-				$rc = wfMkdirParents( $factoryDirectory, 0700, __METHOD__ );
-				if ( !$rc ) {
-					throw new ScoreException( 'score-nofactory' );
-				}
-
+				/* put lilypond code into working environment */
 				$rc = file_put_contents( $lilypondFile, $lilypondCode );
 				if ( $rc === false ) {
 					throw new ScoreException( 'score-noinput' );
@@ -342,12 +352,7 @@ class Score {
 					throw new ScoreException( 'score-renameerr' );
 				}
 
-				/* tear down working environment */
-				if ( !self::eraseFactory( $factoryDirectory ) ) {
-					self::debug( "Unable to delete temporary working directory.\n" );
-				}
 			} catch ( ScoreException $e ) {
-				self::eraseFactory( $factoryDirectory );
 				wfProfileOut( __METHOD__ );
 				throw $e;
 			}
