@@ -194,10 +194,10 @@ class Score {
 				if ( !is_executable( $wgLilyPond ) ) {
 					throw new ScoreException( 'score-notexecutable' );
 				}
-				$cmd = $wgLilyPond
+				$cmd = wfEscapeShellArg( $wgLilyPond )
 					. " -dsafe='#t' -dbackend=eps --png --header=texidoc "
 					. wfEscapeShellArg( $lilypondFile )
-					. " 2>&1"; // FIXME: This last bit is probably not portable
+					. ' 2>&1'; // FIXME: This last bit is probably not portable
 				$output = wfShellExec( $cmd, $rc2 );
 				$rc = chdir( $oldcwd );
 				if ( !$rc ) {
@@ -314,7 +314,8 @@ class Score {
 	private static function trimImage( $source, $dest ) {
 		global $wgImageMagickConvertCommand;
 
-		$cmd = "$wgImageMagickConvertCommand -trim "
+		$cmd = wfEscapeShellArg( $wgImageMagickConvertCommand )
+			. ' -trim '
 			. wfEscapeShellArg( $source ) . ' '
 			. wfEscapeShellArg( $dest );
 		wfShellExec( $cmd, $rc );
