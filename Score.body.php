@@ -185,11 +185,8 @@ class Score {
 				break;
 			case 'ABC':
 				$altText = false;
-				$lilypondCode = $code; // FIXME: transformation needed
-				$rc = file_put_contents( $lilypondFile, $lilypondCode );
-				if ( $rc === false ) {
-					throw new ScoreException( 'score-noinput' );
-				}
+				$lilypondCode = $code; // FIXME: Don't use ABC code as LilyPond code, use md5_file in Score::runLilypond instead
+				self::runAbc2Ly( $code, $factoryDirectory );
 				break;
 			default:
 				throw new ScoreException( 'score-invalidlang' ); // FIXME: define message
@@ -197,6 +194,7 @@ class Score {
 
 			$html = self::runLilypond( $lilypondCode, $factoryDirectory, $renderMidi, $altText );
 		} catch ( ScoreException $e ) {
+			// FIXME self::eraseFactory( $factoryDirectory );
 			return $e;
 		}
 
@@ -241,6 +239,59 @@ class Score {
 			. ( $renderMidi ? "\t\\midi { }\n" : "" )
 			. "}\n";
 		return $raw;
+	}
+
+	/**
+	 * Runs abc2ly, creating the LilyPond input file.
+	 *
+	 * $code ABC code.
+	 * $factoryDirectory Working environment. The LilyPond input file is
+	 * 	created as "file.ly" in this directory.
+	 *
+	 * @throws ScoreException if the conversion fails.
+	 */
+	private function runAbc2Ly( $code, $factoryDirectory ) {
+		global $wgAbc2Ly;
+
+		$abcFile = 'file.abc';
+
+		/* Change to work dir */
+		$oldcwd = getcwd();
+		if ( $oldcwd === false ) {
+			throw new ScoreException( 'score-getcwderr' );
+		}
+		$rc = chdir( $factoryDirectory );
+		if ( !$rc ) {
+			throw new ScoreException( 'score-chdirerr' );
+		}
+
+		/* Create ABC input file */
+		$rc = file_put_contents( $abcFile, ltrim( $code ) ); // abc2ly is picky about whitespace at the start of the file
+		if ( $rc === false ) {
+			throw new ScoreException( 'score-noabcinput' ); // FIXME: Define message
+		}
+
+		/* Convert to LilyPond file */
+		if ( !is_executable( $wgAbc2Ly ) ) {
+			throw new ScoreException( 'score-abc2lynotexecutable' ); // FIXME: Define message
+		}
+
+		$cmd = wfEscapeShellArg( $wgAbc2Ly )
+			. ' -s'
+			. ' ' . wfEscapeShellArg( $abcFile )
+			. ' 2>&1'; // FIXME: this last bit is not portable
+		$output = wfShellExec( $cmd, $rc );
+		if ( $rc != 0 ) {
+			throw new ScoreCallException( 'score-abcconversionerr', $output ); // FIXME: Define message
+		}
+		self::debug( "abc2ly output: $output\n" );
+		// FIXME: The output file has a tagline which should be removed in a wiki context
+
+		/* Change back to old dir */
+		$rc = chdir( $oldcwd );
+		if ( !$rc ) {
+			throw new ScoreException( 'score-chdirerr' );
+		}
 	}
 
 	/**
