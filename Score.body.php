@@ -58,7 +58,7 @@ class ScoreException extends Exception {
  * This is a type of exception thrown when a call to some binary used by the
  * Score extension fails.
  */
-class ScoreCallException extends Exception {
+class ScoreCallException extends ScoreException {
 	/**
 	 * Error message returned from the call.
 	 */
@@ -72,7 +72,7 @@ class ScoreCallException extends Exception {
 	 * @param $callErrMsg Raw error message returned by the binary.
 	 */
 	public function __construct( $message, $callErrMsg, $code = 0, Exception $previous = null ) {
-		$this->$callErrMsg = $callErrMsg;
+		$this->callErrMsg = $callErrMsg;
 		parent::__construct( $message, $code, $previous );
 	}
 
@@ -85,7 +85,7 @@ class ScoreCallException extends Exception {
 	public function __toString() {
 		return wfMessage( $this->getMessage() )
 			->inContentLanguage()
-			->rawParams( Html::rawElement( 'pre', array(), strip_tags( $this->$callErrMsg ) ) )
+			->rawParams( Html::rawElement( 'pre', array(), strip_tags( $this->callErrMsg ) ) )
 			->parse();
 	}
 }
@@ -184,11 +184,7 @@ class Score {
 				self::getLilypondVersion();
 			}
 		} catch ( ScoreException $e ) {
-			return Html::rawElement(
-				'span',
-				array( 'class' => 'error' ),
-				wfMessage( $e->getMessage() )->inContentLanguage()->parse()
-			);
+			return $e;
 		}
 
 		/* Raw code. Note: the "strange" ##f, ##t, etc., are actually part of the lilypond code!
@@ -319,14 +315,7 @@ class Score {
 					throw new ScoreException( 'score-chdir' );
 				}
 				if ( $rc2 != 0 ) {
-					self::eraseFactory( $factoryDirectory );
-					wfProfileOut( __METHOD__ );
-					$msg = wfMessage( 'score-compilererr' )
-						->inContentLanguage()
-						->rawParams(
-							' ' . Html::rawElement( 'pre', array(), strip_tags( $output ) ) . "\n"
-						);
-					return $msg;
+					throw new ScoreCallException( 'score-compilererr', $output );
 				}
 
 				/* trim output images if wanted */
@@ -370,11 +359,7 @@ class Score {
 			} catch ( ScoreException $e ) {
 				self::eraseFactory( $factoryDirectory );
 				wfProfileOut( __METHOD__ );
-				return Html::rawElement(
-					'span',
-					array( 'class' => 'error' ),
-					wfMessage( $e->getMessage() )->inContentLanguage()->parse()
-				);
+				return $e;
 			}
 			wfProfileOut( __METHOD__ );
 		}
