@@ -179,12 +179,8 @@ class Score {
 	 */
 	private static function run( $lilypondCode, $renderMidi ) {
 		/* Get LilyPond version if we don't know it yet */
-		try {
-			if ( self::$lilypondVersion === null ) {
-				self::getLilypondVersion();
-			}
-		} catch ( ScoreException $e ) {
-			return $e;
+		if ( self::$lilypondVersion === null ) {
+			self::getLilypondVersion();
 		}
 
 		/* Raw code. Note: the "strange" ##f, ##t, etc., are actually part of the lilypond code!
@@ -359,7 +355,7 @@ class Score {
 			} catch ( ScoreException $e ) {
 				self::eraseFactory( $factoryDirectory );
 				wfProfileOut( __METHOD__ );
-				return $e;
+				throw $e;
 			}
 			wfProfileOut( __METHOD__ );
 		}
