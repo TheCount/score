@@ -148,7 +148,11 @@ class Score {
 			if ( !$rc ) {
 				throw new ScoreException( 'score-nofactory' );
 			}
+		} catch ( ScoreException $e ) {
+			return $e;
+		}
 
+		try {
 			/* Score language selection */
 			if ( array_key_exists( 'lang', $args ) ) {
 				$lang = $args['lang'];
@@ -170,18 +174,21 @@ class Score {
 				$renderMidi = false;
 			}
 			if ( array_key_exists( 'raw', $args ) && $args['raw'] ) {
-				return self::runRaw( $lilypondCode, $factoryDirectory, $renderMidi );
+				$html = self::runRaw( $lilypondCode, $factoryDirectory, $renderMidi );
 			} else {
-				return self::run( $lilypondCode, $factoryDirectory, $renderMidi );
+				$html = self::run( $lilypondCode, $factoryDirectory, $renderMidi );
 			}
 
-			/* tear down working environment */
-			if ( !self::eraseFactory( $factoryDirectory ) ) {
-				self::debug( "Unable to delete temporary working directory.\n" );
-			}
 		} catch ( ScoreException $e ) {
 			return $e;
 		}
+
+		/* tear down working environment */
+		if ( !self::eraseFactory( $factoryDirectory ) ) {
+			self::debug( "Unable to delete temporary working directory.\n" );
+		}
+
+		return $html;
 	}
 
 	/**
