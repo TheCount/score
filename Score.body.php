@@ -44,6 +44,38 @@ class ScoreException extends Exception {
  */
 class Score {
 	/**
+	 * LilyPond version string.
+	 * It defaults to null and is set the first time it is required.
+	 */
+	private static $lilypondVersion = null;
+
+	/**
+	 * Determines the version of LilyPond in use and writes the version
+	 * string to self::$lilypondVersion.
+	 *
+	 * @throws ScoreException if LilyPond could not be executed properly.
+	 */
+	private static function getLilypondVersion() {
+		global $wgLilyPond;
+
+		if ( !is_executable( $wgLilyPond ) ) {
+			throw new ScoreException( 'score-notexecutable' );
+		}
+
+		$cmd = wfEscapeShellArg( $wgLilyPond ) . ' --version';
+		$stdout = wfShellExec( $cmd, $rc );
+		if ( $rc != 0 ) {
+			throw new ScoreException( 'score-versionerr' );
+		}
+
+		$n = sscanf( $stdout, 'GNU LilyPond %s', self::$lilypondVersion );
+		if ( $n != 1 ) {
+			self::$lilypondVersion = null;
+			throw new ScoreException( 'score-versionerr' );
+		}
+	}
+
+	/**
 	 * Renders the lilypond code in a <score>…</score> tag.
 	 *
 	 * @param $lilypondCode
@@ -73,11 +105,25 @@ class Score {
 	 * @param $lilypondCode
 	 * @param $renderMidi
 	 *
-	 * @return Image link HTML, and possibly anchor to MIDI file.
+	 * @return On success, image link HTML, and possibly an anchor to MIDI
+	 * 	file is returned. On error, error message HTML is returned.
 	 */
 	private static function run( $lilypondCode, $renderMidi ) {
+		/* Get LilyPond version if we don't know it yet */
+		try {
+			if ( self::$lilypondVersion === null ) {
+				self::getLilypondVersion();
+			}
+		} catch ( ScoreException $e ) {
+			return Html::rawElement(
+				'span',
+				array( 'class' => 'error' ),
+				wfMessage( $e->getMessage() )->inContentLanguage()->parse()
+			);
+		}
+
 		/* Raw code. Note: the "strange" ##f, ##t, etc., are actually part of the lilypond code!
-		 * The raw code was taken directly from the original LilyPond extension */
+		 * The raw code is based on the raw code from the original LilyPond extension */
 		$raw = "\\header {\n"
 			. "\ttagline = ##f\n"
 			. "}\n"
@@ -86,7 +132,7 @@ class Score {
 			. "\traggedbottom = ##t\n"
 			. "\tindent = 0\mm\n"
 			. "}\n"
-			. "\\version \"2.12.3\"\n"
+			. '\version "' . self::$lilypondVersion . "\"\n"
 			. "\\score {\n"
 			. $lilypondCode
 			. "\t\\layout { }\n"

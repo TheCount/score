@@ -48,6 +48,7 @@ $1',
 	'score-page' => 'Page $1',
 	'score-renameerr' => 'Error moving score files to upload directory',
 	'score-trimerr' => 'Image could not be trimmed. Set $wgScoreTrim=false if this problem persists.',
+	'score-versionerr' => 'Unable to obtain LilyPond version.',
 );
 
 /* Descriptish */
@@ -64,4 +65,5 @@ $messages['qqq'] = array(
 	'score-page' => 'The word "Page" as used in pagination. $1 is the page number',
 	'score-renameerr' => 'Displayed if moving the resultant files from the working environment to the upload directory fails.',
 	'score-trimerr' => 'Displayed if the extension failed to trim an output image.',
+	'score-versionerr' => 'Displayed if the extension failed to obtain the version string of LilyPond.',
 );
