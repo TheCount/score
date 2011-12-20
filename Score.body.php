@@ -193,7 +193,7 @@ class Score {
 
 			$html = self::runLilypond( $factoryDirectory, $renderMidi, $altText );
 		} catch ( ScoreException $e ) {
-			// FIXME self::eraseFactory( $factoryDirectory );
+			self::eraseFactory( $factoryDirectory );
 			return $e;
 		}
 
