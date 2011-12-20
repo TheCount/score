@@ -47,6 +47,8 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 $wgScoreTrim = null;
 /* Path of lilypond executable */
 $wgLilyPond = '/usr/bin/lilypond';
+/* Path to converter from ABC */
+$wgAbc2Ly = '/usr/bin/abc2ly';
 
 /*
  * Extension credits
