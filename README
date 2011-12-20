@@ -26,6 +26,8 @@ Setup
 
    require_once("$IP/extensions/Score/Score.php");
    $wgLilyPond = '/path/to/your/lilypond/executable'; /* required */
+   $wgAbc2Ly = '/path/to/your/abc2ly/executable'; /* if you want ABC to 
+                                                     LilyPond conversion */
    $wgScoreTrim = true; /* Set to false if you don't want score trimming */
 
    to your LocalSettings.php file. If you get unexpected out-of-memory errors,
@@ -57,4 +59,23 @@ with
 
 You may also combine the "raw" and "midi" attributes, but remember that in
 this case, you need to provide the necessary \midi block yourself.
+
+The extension also supports the ABC music notation through LilyPond's abc2ly
+converter (see the documentation for $wgAbc2Ly above). Use
+
+<score lang="ABC">…</score>
+
+to write music in ABC, for example
+
+<score lang="ABC" midi="1">
+X:1
+M:C
+L:1/4
+K:C
+C, D, E, F,|G, A, B, C|D E F G|A B c d|e f g a|b c' d' e'|f' g' a' b'|]
+</score>
+
+As you can see, you may combine the lang attribute with the midi attribute.
+The raw attribute will be ignored if lang is specified to be anything else than
+"lilypond".
 
