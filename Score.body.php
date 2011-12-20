@@ -188,7 +188,7 @@ class Score {
 				self::runAbc2Ly( $code, $factoryDirectory );
 				break;
 			default:
-				throw new ScoreException( 'score-invalidlang' ); // FIXME: define message
+				throw new ScoreException( 'score-invalidlang' );
 			}
 
 			$html = self::runLilypond( $factoryDirectory, $renderMidi, $altText );
@@ -258,12 +258,12 @@ class Score {
 		/* Create ABC input file */
 		$rc = file_put_contents( $abcFile, ltrim( $code ) ); // abc2ly is picky about whitespace at the start of the file
 		if ( $rc === false ) {
-			throw new ScoreException( 'score-noabcinput' ); // FIXME: Define message
+			throw new ScoreException( 'score-noabcinput' );
 		}
 
 		/* Convert to LilyPond file */
 		if ( !is_executable( $wgAbc2Ly ) ) {
-			throw new ScoreException( 'score-abc2lynotexecutable' ); // FIXME: Define message
+			throw new ScoreException( 'score-abc2lynotexecutable' );
 		}
 
 		$cmd = wfEscapeShellArg( $wgAbc2Ly )
@@ -273,7 +273,7 @@ class Score {
 			. ' 2>&1'; // FIXME: this last bit is not portable
 		$output = wfShellExec( $cmd, $rc );
 		if ( $rc != 0 ) {
-			throw new ScoreCallException( 'score-abcconversionerr', $output ); // FIXME: Define message
+			throw new ScoreCallException( 'score-abcconversionerr', $output );
 		}
 		if ( !file_exists( $lyFile ) ) {
 			/* Occasionally, abc2ly will return exit code 0 but not create an output file */
@@ -283,11 +283,11 @@ class Score {
 		/* The output file has a tagline which should be removed in a wiki context */
 		$lyData = file_get_contents( $lyFile );
 		if ( $lyData === false ) {
-			throw new ScoreException( 'score-readerr' ); // FIXME: Define message
+			throw new ScoreException( 'score-readerr' );
 		}
 		$lyData = preg_replace( '/^(\s*tagline\s*=).*/m', '$1 ##f', $lyData );
 		if ( $lyData === null ) {
-			throw new ScoreException( 'score-replaceerr' ); // FIXME: Define message
+			throw new ScoreException( 'score-pregreplaceerr' );
 		}
 		$rc = file_put_contents( $lyFile, $lyData );
 		if ( $rc === false ) {
