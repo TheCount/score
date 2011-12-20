@@ -276,7 +276,10 @@ class Score {
 		if ( $rc != 0 ) {
 			throw new ScoreCallException( 'score-abcconversionerr', $output ); // FIXME: Define message
 		}
-		self::debug( "abc2ly output: $output\n" );
+		if ( !file_exists( $lyFile ) ) {
+			/* Occasionally, abc2ly will return exit code 0 but not create an output file */
+			throw new ScoreCallException( 'score-abcconversionerr', $output );
+		}
 		// FIXME: The output file has a tagline which should be removed in a wiki context
 	}
 
