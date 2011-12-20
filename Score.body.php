@@ -185,14 +185,13 @@ class Score {
 				break;
 			case 'ABC':
 				$altText = false;
-				$lilypondCode = $code; // FIXME: Don't use ABC code as LilyPond code, use md5_file in Score::runLilypond instead
 				self::runAbc2Ly( $code, $factoryDirectory );
 				break;
 			default:
 				throw new ScoreException( 'score-invalidlang' ); // FIXME: define message
 			}
 
-			$html = self::runLilypond( $lilypondCode, $factoryDirectory, $renderMidi, $altText );
+			$html = self::runLilypond( $factoryDirectory, $renderMidi, $altText );
 		} catch ( ScoreException $e ) {
 			// FIXME self::eraseFactory( $factoryDirectory );
 			return $e;
@@ -299,7 +298,6 @@ class Score {
 	/**
 	 * Runs lilypond.
 	 *
-	 * @param $lilypondCode
 	 * @param $factoryDirectory Directory of the working environment.
 	 * 	The LilyPond input file "file.ly" is expected to be in
 	 * 	this directory.
@@ -309,7 +307,7 @@ class Score {
 	 *
 	 * @return Image link HTML, and possibly anchor to MIDI file.
 	 */
-	private static function runLilypond( $lilypondCode, $factoryDirectory, $renderMidi, $altText = false ) {
+	private static function runLilypond( $factoryDirectory, $renderMidi, $altText = false ) {
 		global $wgUploadDirectory, $wgUploadPath, $wgLilyPond, $wgScoreTrim;
 
 		wfProfileIn( __METHOD__ );
@@ -322,7 +320,11 @@ class Score {
 		$factoryMultiFormat = $factoryDirectory . '/file-%d.png'; // for multi-page scores
 		$factoryMultiTrimmedFormat = $factoryDirectory . '/file-%d-trimmed.png';
 		$lilypondDir = 'lilypond';
-		$rel = $lilypondDir . '/' . md5( $lilypondCode ); // FIXME: Too many files in one directory?
+		$md5 = md5_file( $lilypondFile );
+		if ( $md5 === false ) {
+			throw new ScoreException( 'score-noinput' );
+		}
+		$rel = $lilypondDir . '/' . $md5; // FIXME: Too many files in one directory?
 		$filePrefix = "$wgUploadDirectory/$rel";
 		$pathPrefix = "$wgUploadPath/$rel";
 		$midi = "$filePrefix.midi";
