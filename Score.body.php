@@ -315,14 +315,14 @@ class Score {
 		wfProfileIn( __METHOD__ );
 
 		/* Various paths and filenames */
-		$lilypondFile = $factoryDirectory . "/file.ly";
-		$factoryMidi = $factoryDirectory . "/file.midi";
-		$factoryImage = $factoryDirectory . "/file.png";
-		$factoryImageTrimmed = $factoryDirectory . "/file-trimmed.png";
-		$factoryMultiFormat = $factoryDirectory . "/file-%d.png"; // for multi-page scores
-		$factoryMultiTrimmedFormat = $factoryDirectory . "/file-%d-trimmed.png";
-		$lilypondDir = "lilypond";
-		$rel = $lilypondDir . "/" . md5( $lilypondCode ); // FIXME: Too many files in one directory?
+		$lilypondFile = $factoryDirectory . '/file.ly';
+		$factoryMidi = $factoryDirectory . '/file.midi';
+		$factoryImage = $factoryDirectory . '/file.png';
+		$factoryImageTrimmed = $factoryDirectory . '/file-trimmed.png';
+		$factoryMultiFormat = $factoryDirectory . '/file-%d.png'; // for multi-page scores
+		$factoryMultiTrimmedFormat = $factoryDirectory . '/file-%d-trimmed.png';
+		$lilypondDir = 'lilypond';
+		$rel = $lilypondDir . '/' . md5( $lilypondCode ); // FIXME: Too many files in one directory?
 		$filePrefix = "$wgUploadDirectory/$rel";
 		$pathPrefix = "$wgUploadPath/$rel";
 		$midi = "$filePrefix.midi";
