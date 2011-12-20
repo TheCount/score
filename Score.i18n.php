@@ -64,7 +64,7 @@ $messages['qqq'] = array(
 	'score-nooutput' => 'Displayed if the LilyPond image/midi dir cannot be created.',
 	'score-nofactory' => 'Displayed if the LilyPond/ImageMagick working directory cannot be created.',
 	'score-noinput' => 'Displayed if the LilyPond input file cannot be created.',
-	'score-notexecutable' => 'Displayed if LilyPond binary can\'t be executed.',
+	'score-notexecutable' => "Displayed if LilyPond binary can't be executed.",
 	'score-page' => 'The word "Page" as used in pagination. $1 is the page number',
 	'score-pregreplaceerr' => 'Displayed if a PCRE regular expression replacement failed.',
 	'score-readerr' => 'Displayed if the extension could not read a file',
@@ -73,23 +73,44 @@ $messages['qqq'] = array(
 	'score-versionerr' => 'Displayed if the extension failed to obtain the version string of LilyPond.',
 );
 
+/** Danish (Dansk)
+ * @author Peter Alberti
+ */
+$messages['da'] = array(
+	'score-chdirerr' => 'Kunne ikke skifte folder',
+	'score-noinput' => 'Kunne ikke oprette inddatafil til LilyPond',
+	'score-notexecutable' => 'Kunne ikke køre LilyPond. Kontroller at <code>$wgLilyPond</code> er sat korrekt.',
+	'score-page' => 'Side $1',
+	'score-readerr' => 'Kunne ikke læse fil',
+	'score-trimerr' => 'Billedet kunne ikke beskæres. Sæt $wgScoreTrim=false, hvis dette problem fortsætter.',
+	'score-versionerr' => 'Kunne ikke bestemme LilyPonds version.',
+);
+
 /** German (Deutsch)
  * @author Kghbln
  */
 $messages['de'] = array(
+	'score-abc2lynotexecutable' => 'Der Konverter von ABC nach LilyPond konnte nicht ausgeführt werden.',
+	'score-abcconversionerr' => 'Die ABC-Datei konnte nicht in das LilyPond-Format konvertiert werden:
+$1',
+	'score-noabcinput' => 'Die ABC-Quelldatei konnte nicht erstellt werden',
 	'score-chdirerr' => 'Das Verzeichnis konnte nicht geändert werden',
 	'score-cleanerr' => 'Die alten Dateien konnten vor dem erneuten Rendern nicht bereinigt werden',
 	'score-compilererr' => 'Die Eingabedatei von LilyPond konnte nicht kompiliert werden:
 $1',
 	'score-desc' => 'Ergänzt das Tag <code><score></code>, welches das Rendern und Einbetten von Partituren mit LilyPond ermöglicht',
 	'score-getcwderr' => 'Das aktuelle Arbeitsverzeichnis konnte nicht aufgerufen werden',
+	'score-invalidlang' => 'Für die Partitur wurde eine ungültige Sprache angegeben. Die derzeit verwendbaren Sprache sind <code>lang="lilypond"</code> (Standardeinstellung) und <code>lang="ABC"</code>.',
 	'score-nooutput' => 'Das Bildverzeichnis für LilyPond konnte nicht erstellt werden',
 	'score-nofactory' => 'Das Arbeitsverzeichnis für LilyPond konnte nicht erstellt werden',
 	'score-noinput' => 'Die Eingabedatei für LilyPond konnte nicht erstellt werden',
+	'score-notexecutable' => 'LilyPond konnte nicht ausgeführt werden. Es muss sichergestellt sein, dass <code>$wgLilyPond</code> in der Konfigurationsdatei richtig eingestellt wurde.',
 	'score-page' => 'Seite $1',
+	'score-pregreplaceerr' => 'Die PCRE-Musterersetzung ist gescheitert.',
+	'score-readerr' => 'Die Datei kann nicht gelesen werden.',
 	'score-renameerr' => 'Beim Verschieben der Partiturdateien in das Verzeichnis zum Hochladen ist ein Fehler aufgetreten',
 	'score-trimerr' => 'Das Bild konnte nicht zugeschnitten werden. In der Konfigurationsdatei muss <code>$wgScoreTrim = false;</code> festgelegt werden, sofern das Problem bestehen bleibt.',
-	'score-notexecutable' => 'LilyPond konnte nicht ausgeführt werden. Es muss sichergestellt sein, dass <code>$wgLilyPond</code> in der Konfigurationsdatei richtig eingestellt wurde.',
+	'score-versionerr' => 'Die Version von LilyPond konnte nicht ermittelt werden.',
 );
 
 /** French (Français)
@@ -109,6 +130,13 @@ $1',
 	'score-renameerr' => 'Erreur lors du déplacement des fichiers de musique vers le répertoire de téléversement',
 	'score-trimerr' => 'L’image ne peut pas être redimensionnée. Configurez $wgScoreTrim=false si le problème persiste.',
 	'score-notexecutable' => 'Impossible d’exécuter LilyPond. Vérifiez que <code>$wgLilyPond</code> est correctement configuré.',
+);
+
+/** Luxembourgish (Lëtzebuergesch)
+ * @author Robby
+ */
+$messages['lb'] = array(
+	'score-page' => 'Säit $1',
 );
 
 /** Macedonian (Македонски)
@@ -135,18 +163,26 @@ $1',
  * @author Siebrand
  */
 $messages['nl'] = array(
+	'score-abc2lynotexecutable' => 'Het omzetten van ABC naar LilyPond was niet mogelijk.',
+	'score-abcconversionerr' => 'Het was niet mogelijk het ABC-bestand om te zetten naar LilyPond:
+$1',
+	'score-noabcinput' => 'Het ABC-bronbestand kon niet aangemaakt worden',
 	'score-chdirerr' => 'Van map wisselen is niet mogelijk',
 	'score-cleanerr' => 'Het was niet mogelijk de oude bestanden op te ruimen voor het opnieuw aanmaken van de afbeeldingen',
 	'score-compilererr' => 'Het was niet mogelijk de LilyPondinvoer te compileren:
 $1',
 	'score-desc' => 'Voegt een label toe voor het weergeven van bladmuziek met LilyPond',
 	'score-getcwderr' => 'Het was niet mogelijk de ingestelde werkmap te gebruiken',
+	'score-invalidlang' => 'Er is een onjuiste taal voor bladmuziek aangegeven. Op dit moment worden lang="lilypond" (standaard) en lang="ABC" ondersteund.',
 	'score-nooutput' => 'Het was niet mogelijk de afbeeldingenmap voor LilyPond aan te maken',
 	'score-nofactory' => 'Het was niet mogelijk de factorymap voor LilyPond aan te maken',
 	'score-noinput' => 'Het was niet mogelijk het invoerbestand voor LilyPond aan te maken',
+	'score-notexecutable' => 'Het was niet mogelijk om LilyPond uit te voeren. Zorg dat <code>$wgLilyPond</code> correct is ingesteld.',
 	'score-page' => 'Pagina $1',
+	'score-pregreplaceerr' => 'Vervangen met behulp van een PCRE reguliere expressie is mislukt',
+	'score-readerr' => 'Het bestand kan niet gelezen worden',
 	'score-renameerr' => 'Er is een fout opgetreden tijdens het verplaatsen van de bladmuziekbestanden naar de uploadmap',
 	'score-trimerr' => 'De afbeelding kon niet bijgesneden worden. Stel de volgende waarde in als dit probleem blijft bestaan: <code>$wgScoreTrim=false</code>.',
-	'score-notexecutable' => 'Het was niet mogelijk om LilyPond uit te voeren. Zorg dat <code>$wgLilyPond</code> correct is ingesteld.',
+	'score-versionerr' => 'Het was niet mogelijk de LiliPond-versie te achterhalen.',
 );
 
