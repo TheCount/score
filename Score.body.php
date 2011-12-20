@@ -280,7 +280,20 @@ class Score {
 			/* Occasionally, abc2ly will return exit code 0 but not create an output file */
 			throw new ScoreCallException( 'score-abcconversionerr', $output );
 		}
-		// FIXME: The output file has a tagline which should be removed in a wiki context
+
+		/* The output file has a tagline which should be removed in a wiki context */
+		$lyData = file_get_contents( $lyFile );
+		if ( $lyData === false ) {
+			throw new ScoreException( 'score-readerr' ); // FIXME: Define message
+		}
+		$lyData = preg_replace( '/^(\s*tagline\s*=).*/m', '$1 ##f', $lyData );
+		if ( $lyData === null ) {
+			throw new ScoreException( 'score-replaceerr' ); // FIXME: Define message
+		}
+		$rc = file_put_contents( $lyFile, $lyData );
+		if ( $rc === false ) {
+			throw new ScoreException( 'score-noinput' );
+		}
 	}
 
 	/**
