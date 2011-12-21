@@ -77,11 +77,25 @@ $messages['qqq'] = array(
  * @author Peter Alberti
  */
 $messages['da'] = array(
+	'score-abc2lynotexecutable' => 'Kunne ikke køre programmet til at konvertere fra ABC til LilyPond.',
+	'score-abcconversionerr' => 'Kunne ikke konvertere ABC-fil til LilyPond-format:
+$1',
+	'score-noabcinput' => 'Kunne ikke oprette ABC-kildefilen',
 	'score-chdirerr' => 'Kunne ikke skifte folder',
+	'score-cleanerr' => 'Kunne ikke rense ud i gamle filer før genrendering',
+	'score-compilererr' => 'Kunne ikke kompilere inddatafil til LilyPond:
+$1',
+	'score-desc' => 'Tilføjer et tag til at gengive partiturer ved hjælp af LilyPond',
+	'score-getcwderr' => 'Kunne ikke bestemme navnet på den gældende arbejdsfolder',
+	'score-invalidlang' => 'Ugyldigt partitursprog angivet. De sprog, der kan genkendes i øjeblikket, er lang="lilypond" (standardværdien) og lang="ABC".',
+	'score-nooutput' => 'Kunne ikke oprette folder til LilyPond-billeder',
+	'score-nofactory' => 'Kunne ikke oprette arbejdsfolder til LilyPond',
 	'score-noinput' => 'Kunne ikke oprette inddatafil til LilyPond',
 	'score-notexecutable' => 'Kunne ikke køre LilyPond. Kontroller at <code>$wgLilyPond</code> er sat korrekt.',
 	'score-page' => 'Side $1',
+	'score-pregreplaceerr' => 'Erstatning med PCRE regulært udtryk lykkedes ikke',
 	'score-readerr' => 'Kunne ikke læse fil',
+	'score-renameerr' => 'Der opstod en fejl under flytningen af partiturfiler til folderen for oplægning',
 	'score-trimerr' => 'Billedet kunne ikke beskæres. Sæt $wgScoreTrim=false, hvis dette problem fortsætter.',
 	'score-versionerr' => 'Kunne ikke bestemme LilyPonds version.',
 );
@@ -143,19 +157,27 @@ $messages['lb'] = array(
  * @author Bjankuloski06
  */
 $messages['mk'] = array(
+	'score-abc2lynotexecutable' => 'Не можев да го извршам претворањето од ABC во LilyPond.',
+	'score-abcconversionerr' => 'Не можам да ја претворам ABC податотеката во формат LilyPond:
+$1',
+	'score-noabcinput' => 'Не можев да ја создадам изворната ABC податотека',
 	'score-chdirerr' => 'Не можам да го сменам директориумот',
 	'score-cleanerr' => 'Не можам да ги исчистам старите податотеки пред да извршам повторен испис',
 	'score-compilererr' => 'Не можам да составам влезна податотека за LilyPond:
 $1',
 	'score-desc' => 'Додава ознака за испис на музички партитури со LilyPond',
 	'score-getcwderr' => 'Не можам да го добијам тековниот работен директориум',
+	'score-invalidlang' => 'Наведен е неважечки јазик за партитурата. Моментално се признаваат јазиците lang="lilypond" (основниот) и lang="ABC".',
 	'score-nooutput' => 'Не можев да создадам директориум за сликите на LilyPond',
 	'score-nofactory' => 'Не можев да создадам фабрички директориум за LilyPond',
 	'score-noinput' => 'Не можев да создадам влезна податотека за LilyPond',
+	'score-notexecutable' => 'Не можев да го пуштам LilyPond. Проверете дали <code>$wgLilyPond</code> е исправно наместено.',
 	'score-page' => 'Страница $1',
+	'score-pregreplaceerr' => 'Не успеа замената на регуларниот израз PCRE',
+	'score-readerr' => 'Не можам да ја прочитам податотеката',
 	'score-renameerr' => 'Грешка при преместувањето на партитурните податотеки во директориумот за подигања',
 	'score-trimerr' => 'Не можев да ја скастрам сликата. Ако проблемот продолжи да се јавува, поставете $wgScoreTrim=false.',
-	'score-notexecutable' => 'Не можев да го пуштам LilyPond. Проверете дали <code>$wgLilyPond</code> е исправно наместено.',
+	'score-versionerr' => 'Не можам да ја добијам верзијата на LilyPond.',
 );
 
 /** Dutch (Nederlands)
