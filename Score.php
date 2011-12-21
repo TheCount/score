@@ -35,7 +35,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
  *
  * @author Alexander Klauer <Graf.Zahl@gmx.net>
  * @license GPL v3 or later
- * @version 0.1
+ * @version 0.2
  */
 
 /*
@@ -56,7 +56,7 @@ $wgAbc2Ly = '/usr/bin/abc2ly';
 $wgExtensionCredits['parserhooks'][] = array(
 	'name' => 'Score',
 	'path' => __FILE__,
-	'version' => '0.1',
+	'version' => '0.2',
 	'author' => 'Alexander Klauer',
 	'url' => 'https://www.mediawiki.org/wiki/Extension:Score',
 	'descriptionmsg' => 'score-desc'
