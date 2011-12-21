@@ -28,7 +28,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 }
 
 /**
- * Score ecxceptions
+ * Score exception
  */
 class ScoreException extends Exception {
 	/**
