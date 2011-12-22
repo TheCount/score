@@ -113,6 +113,23 @@ class Score {
 	}
 
 	/**
+	 * Creates the specified directory if it does not exist yet.
+	 * Otherwise does nothing.
+	 *
+	 * @param $path path to directory to be created.
+	 *
+	 * @throws ScoreException if the directory does not exist and could not be created.
+	 */
+	private static function createFactory( $path ) {
+		if ( !is_dir( $path ) ) {
+			$rc = wfMkdirParents( $path, 0700, __METHOD__ );
+			if ( !$rc ) {
+				throw new ScoreException( wfMessage( 'score-nofactory' ) );
+			}
+		}
+	}
+
+	/**
 	 * Renders the lilypond code in a <score>…</score> tag.
 	 *
 	 * @param $code
@@ -126,19 +143,11 @@ class Score {
 		global $wgTmpDirectory;
 
 		try {
-			/* create working environment */
+			/* generate name for working environment */
 			$factoryPrefix = 'MWLP.';
 			$fuzz = md5( mt_rand() );
 			$factoryDirectory = $wgTmpDirectory . "/$factoryPrefix$fuzz";
-			$rc = wfMkdirParents( $factoryDirectory, 0700, __METHOD__ );
-			if ( !$rc ) {
-				throw new ScoreException( wfMessage( 'score-nofactory' ) );
-			}
-		} catch ( ScoreException $e ) {
-			return $e;
-		}
 
-		try {
 			/* Midi rendering? */
 			if ( array_key_exists( 'midi', $args ) ) {
 				$renderMidi = $args['midi'];
@@ -164,6 +173,7 @@ class Score {
 					$lilypondCode = $code;
 					$altText = false;
 				}
+				self::createFactory( $factoryDirectory );
 				$rc = file_put_contents( $lilypondFile, $lilypondCode );
 				if ( $rc === false ) {
 					throw new ScoreException( wfMessage( 'score-noinput', $lilypondFile ) );
@@ -177,6 +187,7 @@ class Score {
 				throw new ScoreException( wfMessage( 'score-invalidlang', $lang ) );
 			}
 
+			/* Run LilyPond */
 			$html = self::runLilypond( $factoryDirectory, $renderMidi, $altText );
 		} catch ( ScoreException $e ) {
 			self::eraseFactory( $factoryDirectory );
@@ -242,6 +253,7 @@ class Score {
 		$lyFile = $factoryDirectory . '/file.ly';
 
 		/* Create ABC input file */
+		self::createFactory( $factoryDirectory );
 		$rc = file_put_contents( $abcFile, ltrim( $code ) ); // abc2ly is picky about whitespace at the start of the file
 		if ( $rc === false ) {
 			throw new ScoreException( wfMessage( 'score-noabcinput', $abcFile ) );
