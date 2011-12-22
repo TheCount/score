@@ -27,50 +27,53 @@ $messages = array();
 
 /* English */
 $messages['en'] = array(
-	'score-abc2lynotexecutable' => 'ABC to LilyPond converter could not be executed.',
+	'score-abc2lynotexecutable' => 'ABC to LilyPond converter could not be executed: $1 is not an executable file. Make sure <code>$wgAbc2Ly</code> is set correctly.',
 	'score-abcconversionerr' => 'Unable to convert ABC file to LilyPond format:
 $1',
-	'score-noabcinput' => 'ABC source file could not be created',
-	'score-chdirerr' => 'Unable to change directory',
+	'score-chdirerr' => 'Unable to change to directory $1',
 	'score-cleanerr' => 'Unable to clean out old files before re-rendering',
 	'score-compilererr' => 'Unable to compile LilyPond input file:
 $1',
 	'score-desc' => 'Adds a tag for rendering musical scores with LilyPond',
 	'score-getcwderr' => 'Unable to obtain current working directory',
-	'score-invalidlang' => 'Invalid score language specified. Currently recognised languages are lang="lilypond" (the default) and lang="ABC".',
-	'score-nooutput' => 'Failed to create LilyPond image directory',
+	'score-invalidlang' => 'Invalid score language lang="$1". Currently recognised languages are lang="lilypond" (the default) and lang="ABC".',
+	'score-noabcinput' => 'ABC source file $1 could not be created.',
+	'score-nooutput' => 'Failed to create LilyPond image directory $1',
 	'score-nofactory' => 'Failed to create LilyPond factory directory',
-	'score-noinput' => 'Failed to create LilyPond input file',
-	'score-notexecutable' => 'Could not execute LilyPond. Make sure <code>$wgLilyPond</code> is set correctly.',
+	'score-noinput' => 'Failed to create LilyPond input file $1.',
+	'score-notexecutable' => 'Could not execute LilyPond: $1 is not an executable file. Make sure <code>$wgLilyPond</code> is set correctly.',
 	'score-page' => 'Page $1',
 	'score-pregreplaceerr' => 'PCRE regular expression replacement failed',
-	'score-readerr' => 'Unable to read file',
+	'score-readerr' => 'Unable to read file $1',
 	'score-renameerr' => 'Error moving score files to upload directory',
-	'score-trimerr' => 'Image could not be trimmed. Set $wgScoreTrim=false if this problem persists.',
-	'score-versionerr' => 'Unable to obtain LilyPond version.',
+	'score-trimerr' => 'Image could not be trimmed:
+$1
+Set <code>$wgScoreTrim=false</code> if this problem persists.',
+	'score-versionerr' => 'Unable to obtain LilyPond version:
+$1',
 );
 
 /** Message documentation (Message documentation) */
 $messages['qqq'] = array(
-	'score-abc2lynotexecutable' => 'Displayed if the ABC to LilyPond converter could not be executed.',
+	'score-abc2lynotexecutable' => 'Displayed if the ABC to LilyPond converter could not be executed. $1 is the path to the abc2ly binary.',
 	'score-abcconversionerr' => 'Displayed if the ABC to LilyPond conversion failed. $1 is the error (generally big block of text in a pre tag)',
-	'score-noabcinput' => 'Displayed if an ABC source file could not be created for lang="ABC".',
-	'score-chdirerr' => 'Displayed if the extension cannot change its working directory.',
+	'score-chdirerr' => 'Displayed if the extension cannot change its working directory. $1 is the path to the target directory.',
 	'score-cleanerr' => 'Displayed if an old file cleanup operation fails.',
 	'score-compilererr' => 'Displayed if the LilyPond code could not be compiled. $1 is the error (generally big block of text in a pre tag)',
 	'score-desc' => '{{desc}}',
-	'score-getcwderr' => 'Displayed if the extension cannot obtain the CWD.',
-	'score-invalidlang' => 'Displayed if the lang="…" attribute contains an unrecognised score language.',
-	'score-nooutput' => 'Displayed if the LilyPond image/midi dir cannot be created.',
+	'score-getcwderr' => 'Displayed if the extension cannot obtain the current working directory.',
+	'score-invalidlang' => 'Displayed if the lang="…" attribute contains an unrecognised score language. $1 is the unrecognised language.',
+	'score-noabcinput' => 'Displayed if an ABC source file could not be created for lang="ABC". $1 is the path to the file that could not be created.',
+	'score-nooutput' => 'Displayed if the LilyPond image/midi dir cannot be created. $1 is the name of the directory.',
 	'score-nofactory' => 'Displayed if the LilyPond/ImageMagick working directory cannot be created.',
-	'score-noinput' => 'Displayed if the LilyPond input file cannot be created.',
-	'score-notexecutable' => "Displayed if LilyPond binary can't be executed.",
+	'score-noinput' => 'Displayed if the LilyPond input file cannot be created. $1 is the path to the input file.',
+	'score-notexecutable' => 'Displayed if LilyPond binary cannot be executed. $1 is the path to the LilyPond binary.',
 	'score-page' => 'The word "Page" as used in pagination. $1 is the page number',
 	'score-pregreplaceerr' => 'Displayed if a PCRE regular expression replacement failed.',
-	'score-readerr' => 'Displayed if the extension could not read a file',
+	'score-readerr' => 'Displayed if the extension could not read a file. $1 is the path to the file that could not be read.',
 	'score-renameerr' => 'Displayed if moving the resultant files from the working environment to the upload directory fails.',
-	'score-trimerr' => 'Displayed if the extension failed to trim an output image.',
-	'score-versionerr' => 'Displayed if the extension failed to obtain the version string of LilyPond.',
+	'score-trimerr' => 'Displayed if the extension failed to trim an output image. $1 is the error (generally big block of text in a pre tag)',
+	'score-versionerr' => 'Displayed if the extension failed to obtain the version string of LilyPond. $1 is the LilyPond stdout output generated by the attempt.',
 );
 
 /** Danish (Dansk)
