@@ -54,12 +54,9 @@ class ScoreException extends Exception {
 		return Html::rawElement(
 			'span',
 			array( 'class' => 'error' ),
-			call_user_func_array( array(
-					wfMessage( $this->getMessage() )
-						->inContentLanguage(),
-					'params'
-				),
-				$this->parameters )
+			wfMessage( $this->getMessage() )
+				->inContentLanguage()
+				->params( $this->parameters )
 				->parse()
 		);
 	}
