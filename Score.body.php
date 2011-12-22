@@ -75,7 +75,7 @@ class Score {
 	 *
 	 * @throws ScoreException always.
 	 */
-	private function throwCallException( $message, $output ) {
+	private static function throwCallException( $message, $output ) {
 		throw new ScoreException(
 			$message->rawParams(
 				Html::rawElement( 'pre',
