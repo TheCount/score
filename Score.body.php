@@ -32,10 +32,16 @@ if ( !defined( 'MEDIAWIKI' ) ) {
  */
 class ScoreException extends Exception {
 	/**
+	 * Error message parameters
+	 */
+	private $parameters;
+
+	/**
 	 * Empty constructor.
 	 */
-	public function __construct( $message, $code = 0, Exception $previous = null ) {
-		parent::__construct( $message, $code, $previous );
+	public function __construct( $message ) {
+		$this->parameters = array_slice( func_get_args(), 1 );
+		parent::__construct( $message );
 	}
 
 	/**
@@ -48,7 +54,13 @@ class ScoreException extends Exception {
 		return Html::rawElement(
 			'span',
 			array( 'class' => 'error' ),
-			wfMessage( $this->getMessage() )->inContentLanguage()->parse()
+			call_user_func_array( array(
+					wfMessage( $this->getMessage() )
+						->inContentLanguage(),
+					'params'
+				),
+				$this->parameters )
+				->parse()
 		);
 	}
 }
@@ -71,9 +83,9 @@ class ScoreCallException extends ScoreException {
 	 * 	parameter, the error message returned from the binary.
 	 * @param $callErrMsg Raw error message returned by the binary.
 	 */
-	public function __construct( $message, $callErrMsg, $code = 0, Exception $previous = null ) {
+	public function __construct( $message, $callErrMsg ) {
 		$this->callErrMsg = $callErrMsg;
-		parent::__construct( $message, $code, $previous );
+		parent::__construct( $message );
 	}
 
 	/**
@@ -83,10 +95,14 @@ class ScoreCallException extends ScoreException {
 	 * @return error message HTML.
 	 */
 	public function __toString() {
-		return wfMessage( $this->getMessage() )
-			->inContentLanguage()
-			->rawParams( Html::rawElement( 'pre', array(), strip_tags( $this->callErrMsg ) ) )
-			->parse();
+		return Html::rawElement(
+			'span',
+			array( 'class' => 'error' ),
+			wfMessage( $this->getMessage() )
+				->inContentLanguage()
+				->rawParams( Html::rawElement( 'pre', array(), strip_tags( $this->callErrMsg ) ) )
+				->parse()
+		);
 	}
 }
 
@@ -110,19 +126,19 @@ class Score {
 		global $wgLilyPond;
 
 		if ( !is_executable( $wgLilyPond ) ) {
-			throw new ScoreException( 'score-notexecutable' );
+			throw new ScoreException( 'score-notexecutable', $wgLilyPond );
 		}
 
-		$cmd = wfEscapeShellArg( $wgLilyPond ) . ' --version';
+		$cmd = wfEscapeShellArg( $wgLilyPond ) . ' --version 2>&1'; // FIXME: 2>&1 is not portable
 		$stdout = wfShellExec( $cmd, $rc );
 		if ( $rc != 0 ) {
-			throw new ScoreException( 'score-versionerr' );
+			throw new ScoreCallException( 'score-versionerr', $stdout );
 		}
 
 		$n = sscanf( $stdout, 'GNU LilyPond %s', self::$lilypondVersion );
 		if ( $n != 1 ) {
 			self::$lilypondVersion = null;
-			throw new ScoreException( 'score-versionerr' );
+			throw new ScoreCallException( 'score-versionerr', $stdout );
 		}
 	}
 
@@ -180,7 +196,7 @@ class Score {
 				}
 				$rc = file_put_contents( $lilypondFile, $lilypondCode );
 				if ( $rc === false ) {
-					throw new ScoreException( 'score-noinput' );
+					throw new ScoreException( 'score-noinput', $lilypondFile );
 				}
 				break;
 			case 'ABC':
@@ -188,7 +204,7 @@ class Score {
 				self::runAbc2Ly( $code, $factoryDirectory );
 				break;
 			default:
-				throw new ScoreException( 'score-invalidlang' );
+				throw new ScoreException( 'score-invalidlang', $lang );
 			}
 
 			$html = self::runLilypond( $factoryDirectory, $renderMidi, $altText );
@@ -258,12 +274,12 @@ class Score {
 		/* Create ABC input file */
 		$rc = file_put_contents( $abcFile, ltrim( $code ) ); // abc2ly is picky about whitespace at the start of the file
 		if ( $rc === false ) {
-			throw new ScoreException( 'score-noabcinput' );
+			throw new ScoreException( 'score-noabcinput', $abcFile );
 		}
 
 		/* Convert to LilyPond file */
 		if ( !is_executable( $wgAbc2Ly ) ) {
-			throw new ScoreException( 'score-abc2lynotexecutable' );
+			throw new ScoreException( 'score-abc2lynotexecutable', $wgAbc2Ly );
 		}
 
 		$cmd = wfEscapeShellArg( $wgAbc2Ly )
@@ -283,7 +299,7 @@ class Score {
 		/* The output file has a tagline which should be removed in a wiki context */
 		$lyData = file_get_contents( $lyFile );
 		if ( $lyData === false ) {
-			throw new ScoreException( 'score-readerr' );
+			throw new ScoreException( 'score-readerr', $lyFile );
 		}
 		$lyData = preg_replace( '/^(\s*tagline\s*=).*/m', '$1 ##f', $lyData );
 		if ( $lyData === null ) {
@@ -291,7 +307,7 @@ class Score {
 		}
 		$rc = file_put_contents( $lyFile, $lyData );
 		if ( $rc === false ) {
-			throw new ScoreException( 'score-noinput' );
+			throw new ScoreException( 'score-noinput', $lyFile );
 		}
 	}
 
@@ -322,7 +338,7 @@ class Score {
 		$lilypondDir = 'lilypond';
 		$md5 = md5_file( $lilypondFile );
 		if ( $md5 === false ) {
-			throw new ScoreException( 'score-noinput' );
+			throw new ScoreException( 'score-noinput', $lilypondFile );
 		}
 		$rel = $lilypondDir . '/' . $md5; // FIXME: Too many files in one directory?
 		$filePrefix = "$wgUploadDirectory/$rel";
@@ -370,7 +386,7 @@ class Score {
 				if ( !file_exists( "$wgUploadDirectory/$lilypondDir" ) ) {
 					$rc = wfMkdirParents( "$wgUploadDirectory/$lilypondDir", null, __METHOD__ );
 					if ( !$rc ) {
-						throw new ScoreException( 'score-nooutput' );
+						throw new ScoreException( 'score-nooutput', $lilypondDir );
 					}
 				}
 
@@ -381,10 +397,10 @@ class Score {
 				}
 				$rc = chdir( $factoryDirectory );
 				if ( !$rc ) {
-					throw new ScoreException( 'score-chdirerr' );
+					throw new ScoreException( 'score-chdirerr', $factoryDirectory );
 				}
 				if ( !is_executable( $wgLilyPond ) ) {
-					throw new ScoreException( 'score-notexecutable' );
+					throw new ScoreException( 'score-notexecutable', $wgLilyPond );
 				}
 				$cmd = wfEscapeShellArg( $wgLilyPond )
 					. " -dsafe='#t' -dbackend=eps --png --header=texidoc "
@@ -393,7 +409,7 @@ class Score {
 				$output = wfShellExec( $cmd, $rc2 );
 				$rc = chdir( $oldcwd );
 				if ( !$rc ) {
-					throw new ScoreException( 'score-chdir' );
+					throw new ScoreException( 'score-chdirerr', $oldcwd );
 				}
 				if ( $rc2 != 0 ) {
 					throw new ScoreCallException( 'score-compilererr', $output );
@@ -486,10 +502,11 @@ class Score {
 		$cmd = wfEscapeShellArg( $wgImageMagickConvertCommand )
 			. ' -trim '
 			. wfEscapeShellArg( $source ) . ' '
-			. wfEscapeShellArg( $dest );
-		wfShellExec( $cmd, $rc );
+			. wfEscapeShellArg( $dest )
+			. ' 2>&1'; // FIXME: not portable
+		$output = wfShellExec( $cmd, $rc );
 		if ( $rc != 0 ) {
-			throw new ScoreException( 'score-trimerr' );
+			throw new ScoreCallException( 'score-trimerr', $output );
 		}
 	}
 
