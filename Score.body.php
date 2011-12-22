@@ -168,10 +168,8 @@ class Score {
 			case 'lilypond':
 				if ( !array_key_exists( 'raw', $args ) || !$args['raw'] ) {
 					$lilypondCode = self::embedLilypondCode( $code, $renderMidi );
-					$altText = $code;
 				} else {
 					$lilypondCode = $code;
-					$altText = false;
 				}
 				self::createFactory( $factoryDirectory );
 				$rc = file_put_contents( $lilypondFile, $lilypondCode );
@@ -180,7 +178,6 @@ class Score {
 				}
 				break;
 			case 'ABC':
-				$altText = false;
 				self::runAbc2Ly( $code, $factoryDirectory );
 				break;
 			default:
@@ -188,7 +185,7 @@ class Score {
 			}
 
 			/* Run LilyPond */
-			$html = self::runLilypond( $factoryDirectory, $renderMidi, $altText );
+			$html = self::runLilypond( $factoryDirectory, $renderMidi, $code );
 		} catch ( ScoreException $e ) {
 			self::eraseFactory( $factoryDirectory );
 			return $e;
