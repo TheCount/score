@@ -99,7 +99,7 @@ class Score {
 			throw new ScoreException( wfMessage( 'score-notexecutable', $wgLilyPond ) );
 		}
 
-		$cmd = wfEscapeShellArg( $wgLilyPond ) . ' --version 2>&1'; // FIXME: 2>&1 is not portable
+		$cmd = wfEscapeShellArg( $wgLilyPond ) . ' --version 2>&1';
 		$output = wfShellExec( $cmd, $rc );
 		if ( $rc != 0 ) {
 			self::throwCallException( wfMessage( 'score-versionerr' ), $output );
@@ -265,7 +265,7 @@ class Score {
 			. ' -s'
 			. ' --output=' . wfEscapeShellArg( $lyFile )
 			. ' ' . wfEscapeShellArg( $abcFile )
-			. ' 2>&1'; // FIXME: this last bit is not portable
+			. ' 2>&1';
 		$output = wfShellExec( $cmd, $rc );
 		if ( $rc != 0 ) {
 			self::throwCallException( wfMessage( 'score-abcconversionerr' ), $output );
@@ -382,9 +382,11 @@ class Score {
 					throw new ScoreException( wfMessage( 'score-notexecutable', $wgLilyPond ) );
 				}
 				$cmd = wfEscapeShellArg( $wgLilyPond )
-					. " -dsafe='#t' -dbackend=eps --png --header=texidoc "
+					. ' -dsafe='
+					. wfEscapeShellArg( '#t' )
+					. ' -dbackend=eps --png --header=texidoc '
 					. wfEscapeShellArg( $lilypondFile )
-					. ' 2>&1'; // FIXME: This last bit is probably not portable
+					. ' 2>&1';
 				$output = wfShellExec( $cmd, $rc2 );
 				$rc = chdir( $oldcwd );
 				if ( !$rc ) {
@@ -482,7 +484,7 @@ class Score {
 			. ' -trim '
 			. wfEscapeShellArg( $source ) . ' '
 			. wfEscapeShellArg( $dest )
-			. ' 2>&1'; // FIXME: not portable
+			. ' 2>&1';
 		$output = wfShellExec( $cmd, $rc );
 		if ( $rc != 0 ) {
 			self::throwCallException( wfMessage( 'score-trimerr' ), $output );
