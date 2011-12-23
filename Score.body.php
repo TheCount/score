@@ -151,31 +151,33 @@ class Score {
 	 */
 	public static function render( $code, array $args, Parser $parser, PPFrame $frame ) {
 		try {
+			$options = array();
+
 			/* Score language selection */
 			if ( array_key_exists( 'lang', $args ) ) {
-				$lang = $args['lang'];
+				$options['lang'] = $args['lang'];
 			} else {
-				$lang = 'lilypond';
+				$options['lang'] = 'lilypond';
 			}
-			if ( !in_array( $lang, self::$supportedLangs ) ) {
-				throw new ScoreException( wfMessage( 'score-invalidlang', $lang ) );
+			if ( !in_array( $options['lang'], self::$supportedLangs ) ) {
+				throw new ScoreException( wfMessage( 'score-invalidlang', $options['lang'] ) );
 			}
 
 			/* Midi rendering? */
 			if ( array_key_exists( 'midi', $args ) ) {
-				$linkMidi = $args['midi'];
+				$options['midi'] = $args['midi'];
 			} else {
-				$linkMidi = false;
+				$options['midi'] = false;
 			}
 
 			/* Raw rendering? */
 			if ( array_key_exists( 'raw', $args ) ) {
-				$rawLilypond = $args['raw'];
+				$options['raw'] = $args['raw'];
 			} else {
-				$rawLilypond = false;
+				$options['raw'] = false;
 			}
 
-			$html = self::generateHTML( $code, $lang, $linkMidi, $rawLilypond );
+			$html = self::generateHTML( $code, $options );
 		} catch ( ScoreException $e ) {
 			$html = "$e";
 		}
@@ -187,15 +189,16 @@ class Score {
 	 * Generates the HTML code for a score tag.
 	 *
 	 * @param $code score code.
-	 * @param $lang score language the code is in.
-	 * @param $linkMidi whether to generate a link to a MIDI file.
-	 * @param $rawLilypond whether to assume raw LilyPond code (ignored if $lang is not 'lilypond').
+	 * @param $options array of music rendering options. Available options keys are:
+	 * 	* lang: score language,
+	 * 	* midi: whether to link to a MIDI file,
+	 * 	* raw: whether to assume raw LilyPond code.
 	 *
 	 * @return HTML.
 	 *
 	 * @throws ScoreException if an error occurs.
 	 */
-	private static function generateHTML( $code, $lang, $linkMidi, $rawLilypond ) {
+	private static function generateHTML( $code, $options ) {
 		global $wgUploadDirectory, $wgUploadPath;
 
 		/* Various paths and file names */
@@ -221,8 +224,8 @@ class Score {
 		}
 
 		/* Generate PNG and MIDI files if necessary */
-		if ( ( !file_exists( $image ) && !file_exists( $multi1 ) ) || ( $linkMidi && !file_exists( $midi ) ) ) {
-			self::generatePngAndMidi( $code, $lang, $linkMidi, $rawLilypond, $filePrefix );
+		if ( ( !file_exists( $image ) && !file_exists( $multi1 ) ) || ( $options['midi'] && !file_exists( $midi ) ) ) {
+			self::generatePngAndMidi( $code, $options, $filePrefix );
 		}
 
 		/* return output link(s) */
@@ -244,7 +247,7 @@ class Score {
 			self::debug( "No output images $image or $multi1!\n" );
 			$link = 'No image';
 		}
-		if ( $linkMidi ) {
+		if ( $options['midi'] ) {
 			$link = Html::rawElement( 'a', array( 'href' => $midiPath ), $link );
 		}
 
@@ -255,14 +258,12 @@ class Score {
 	 * Generates score PNG file(s) and possibly a MIDI file.
 	 *
 	 * @param $code score code.
-	 * @param $lang language the score code is in.
-	 * @param $generateMidi whether to generate a MIDI file.
-	 * @param $rawLilypond whether to assume raw LilyPond code (ignored if $lang is not 'lilypond').
+	 * @param $options rendering options, see Score::generateHTML() for explanation.
 	 * @param $filePrefix prefix for the generated files.
 	 *
 	 * @throws ScoreException on error.
 	 */
-	private static function generatePngAndMidi( $code, $lang, $generateMidi, $rawLilypond, $filePrefix ) {
+	private static function generatePngAndMidi( $code, $options, $filePrefix ) {
 		global $wgTmpDirectory, $wgLilyPond, $wgScoreTrim;
 
 		wfProfileIn( __METHOD__ );
@@ -301,11 +302,11 @@ class Score {
 			$factoryMultiTrimmedFormat = "$factoryDirectory/file-%d-trimmed.png";
 
 			/* Determine which LilyPond code to use */
-			if ( $lang == 'lilypond' ) {
-				if ( $rawLilypond ) {
+			if ( $options['lang'] == 'lilypond' ) {
+				if ( $options['raw'] ) {
 					$lilypondCode = $code;
 				} else {
-					$lilypondCode = self::embedLilypondCode( $code, $generateMidi );
+					$lilypondCode = self::embedLilypondCode( $code, $options );
 				}
 			} else {
 				wfSuppressWarnings();
@@ -313,7 +314,7 @@ class Score {
 				wfRestoreWarnings();
 				if ( $lilypondCode === false ) {
 					/* (re-)generate .ly file */
-					$lilypondCode = self::generateLilypond( $code, $lang, $filePrefix, $factoryDirectory );
+					$lilypondCode = self::generateLilypond( $code, $options, $filePrefix, $factoryDirectory );
 				}
 			}
 
@@ -392,13 +393,13 @@ class Score {
 	 * Embeds simple LilyPond code in a score block.
 	 *
 	 * @param $lilypondCode
-	 * @param $renderMidi
+	 * @param $options
 	 *
 	 * @return Raw lilypond code.
 	 *
 	 * @throws ScoreException if determining the LilyPond version fails.
 	 */
-	private static function embedLilypondCode( $lilypondCode, $renderMidi ) {
+	private static function embedLilypondCode( $lilypondCode, $options ) {
 		/* Get LilyPond version if we don't know it yet */
 		if ( self::$lilypondVersion === null ) {
 			self::getLilypondVersion();
@@ -418,7 +419,7 @@ class Score {
 			. "\\score {\n"
 			. $lilypondCode
 			. "\t\\layout { }\n"
-			. ( $renderMidi ? "\t\\midi { }\n" : "" )
+			. ( $options['midi'] ? "\t\\midi { }\n" : "" )
 			. "}\n";
 		return $raw;
 	}
@@ -427,7 +428,7 @@ class Score {
 	 * Generates LilyPond code.
 	 *
 	 * @param $code score code.
-	 * @param $lang language the score code is in (a supported language other than 'lilypond').
+	 * @param $options rendering options, see Score::generateHTML() for explanation.
 	 * @param $filePrefix prefix for the generated file.
 	 * @param $factoryDirectory directory of the working environment.
 	 *
@@ -435,10 +436,10 @@ class Score {
 	 *
 	 * @throws ScoreException if an error occurs.
 	 */
-	private static function generateLilypond( $code, $lang, $filePrefix, $factoryDirectory ) {
+	private static function generateLilypond( $code, $options, $filePrefix, $factoryDirectory ) {
 		$ly = "$filePrefix.ly";
 
-		switch ( $lang ) {
+		switch ( $options['lang'] ) {
 		case 'ABC':
 			$lilypondCode = self::generateLilypondFromAbc( $code, $factoryDirectory );
 			break;
