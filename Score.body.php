@@ -475,7 +475,6 @@ class Score {
 
 		/* Create ABC input file */
 		$rc = file_put_contents( $factoryAbc, $code );
-			// FIXME: ltrim( $code ) ); // abc2ly is picky about whitespace at the start of the file
 		if ( $rc === false ) {
 			throw new ScoreException( wfMessage( 'score-noabcinput', $factoryAbc ) );
 		}
