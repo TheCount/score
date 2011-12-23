@@ -46,9 +46,13 @@ if ( !defined( 'MEDIAWIKI' ) ) {
  *  Default is $wgUseImageMagick and set in efScoreExtension */
 $wgScoreTrim = null;
 /* Path of lilypond executable */
-$wgLilyPond = '/usr/bin/lilypond';
+if ( !isset( $wgLilyPond ) ) {
+	$wgLilyPond = '/usr/bin/lilypond';
+}
 /* Path to converter from ABC */
-$wgAbc2Ly = '/usr/bin/abc2ly';
+if ( !isset( $wgAbc2Ly ) ) {
+	$wgAbc2Ly = '/usr/bin/abc2ly';
+}
 
 /*
  * Extension credits
