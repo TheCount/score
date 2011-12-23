@@ -118,9 +118,9 @@ $1',
 	'score-getcwderr' => 'Das aktuelle Arbeitsverzeichnis konnte nicht aufgerufen werden',
 	'score-invalidlang' => 'Die für die Partitur verwendete Sprache <code>lang="$1"</code> ist ungültig. Die derzeit verwendbaren Sprache sind <code>lang="lilypond"</code> (Standardeinstellung) und <code>lang="ABC"</code>.',
 	'score-noabcinput' => 'Die ABC-Quelldatei $1 konnte nicht erstellt werden.',
-	'score-nooutput' => 'Das Bildverzeichnis $1 für LilyPond konnte nicht erstellt werden.',
 	'score-nofactory' => 'Das Arbeitsverzeichnis für LilyPond konnte nicht erstellt werden',
 	'score-noinput' => 'Die Eingabedatei $1 für LilyPond konnte nicht erstellt werden.',
+	'score-nooutput' => 'Das Bildverzeichnis $1 für LilyPond konnte nicht erstellt werden.',
 	'score-notexecutable' => 'LilyPond konnte nicht ausgeführt werden: $1 ist eine nicht ausführbare Datei. Es muss sichergestellt sein, dass <code>$wgLilyPond</code> in der Konfigurationsdatei richtig eingestellt wurde.',
 	'score-page' => 'Seite $1',
 	'score-pregreplaceerr' => 'Die PCRE-Musterersetzung ist gescheitert.',
@@ -134,22 +134,34 @@ $1',
 );
 
 /** French (Français)
+ * @author Gomoko
  * @author Seb35
  */
 $messages['fr'] = array(
-	'score-chdirerr' => 'Impossible de changer de répertoire',
+	'score-abc2lynotexecutable' => 'Le convertisseur ABC vers LilyPond n\'a pas pu être exécuté: $1 n\'est pas un fichier exécutable. Assurez-vous que <code>$wgAbc2Ly</code> est défini correctement.',
+	'score-abcconversionerr' => 'Impossible de convertir le fichier ABC au format LilyPond:
+$1',
+	'score-chdirerr' => 'Impossible de changer de répertoire vers $1',
 	'score-cleanerr' => 'Impossible d’effacer les anciens fichiers avant de regénérer',
 	'score-compilererr' => 'Impossible de compiler le fichier d’entrée LilyPond :
 $1',
 	'score-desc' => 'Ajoute une balise pour le rendu d’extraits musicaux avec LilyPond',
 	'score-getcwderr' => 'Impossible d’obtenir le répertoire de travail actuel',
-	'score-nooutput' => 'Erreur lors de la création du répertoire image de LilyPond',
+	'score-invalidlang' => 'Langage de partition invalide lang="$1". Les langages actuellement reconnues sont lang="lilypond" (par défaut) et lang="ABC".',
+	'score-noabcinput' => "Le fichier source ABC $1 n'a pas pu être créé.",
 	'score-nofactory' => 'Erreur lors de la création du répertoire de la fabrique LilyPond',
-	'score-noinput' => 'Erreur lors de la création du fichier d’entrée LilyPond',
-	'score-notexecutable' => 'Impossible d’exécuter LilyPond. Vérifiez que <code>$wgLilyPond</code> est correctement configuré.',
+	'score-noinput' => 'Erreur lors de la création du fichier d’entrée $1 LilyPond',
+	'score-nooutput' => 'Erreur lors de la création du répertoire image $1 de LilyPond',
+	'score-notexecutable' => 'Impossible d’exécuter LilyPond: $1 n\'est pas un fichier exécutable. Vérifiez que <code>$wgLilyPond</code> est correctement configuré.',
 	'score-page' => 'Page $1',
+	'score-pregreplaceerr' => "Le remplacement de l'expression régulière PCRE a échoué",
+	'score-readerr' => 'Impossible de lire le fichier $1',
 	'score-renameerr' => 'Erreur lors du déplacement des fichiers de musique vers le répertoire de téléversement',
-	'score-trimerr' => 'L’image ne peut pas être redimensionnée. Configurez $wgScoreTrim=false si le problème persiste.',
+	'score-trimerr' => 'L\'image n\'a pas pu être retaillée:
+$1
+Paramétrez <code>$wgScoreTrim=false</code> si ce problème persiste.',
+	'score-versionerr' => "Impossible d'obtenir la version de LilyPond:
+$1",
 );
 
 /** Luxembourgish (Lëtzebuergesch)
@@ -194,26 +206,29 @@ $1',
  * @author Siebrand
  */
 $messages['nl'] = array(
-	'score-abc2lynotexecutable' => 'Het omzetten van ABC naar LilyPond was niet mogelijk.',
+	'score-abc2lynotexecutable' => 'Het conversie programma voor ABC naar LilyPond kon niet uitgevoerd worden: $1 is geen uitvoerbaar bestand. Zorg dat de instelling <code>$wgAbc2Ly</code> correct is.',
 	'score-abcconversionerr' => 'Het was niet mogelijk het ABC-bestand om te zetten naar LilyPond:
 $1',
-	'score-chdirerr' => 'Van map wisselen is niet mogelijk',
+	'score-chdirerr' => 'Het was niet mogelijk naar de map $1 te gaan.',
 	'score-cleanerr' => 'Het was niet mogelijk de oude bestanden op te ruimen voor het opnieuw aanmaken van de afbeeldingen',
 	'score-compilererr' => 'Het was niet mogelijk de LilyPondinvoer te compileren:
 $1',
 	'score-desc' => 'Voegt een label toe voor het weergeven van bladmuziek met LilyPond',
 	'score-getcwderr' => 'Het was niet mogelijk de ingestelde werkmap te gebruiken',
-	'score-invalidlang' => 'Er is een onjuiste taal voor bladmuziek aangegeven. Op dit moment worden lang="lilypond" (standaard) en lang="ABC" ondersteund.',
-	'score-noabcinput' => 'Het ABC-bronbestand kon niet aangemaakt worden',
-	'score-nooutput' => 'Het was niet mogelijk de afbeeldingenmap voor LilyPond aan te maken',
+	'score-invalidlang' => 'Er is een onjuiste taal voor bladmuziek aangegeven (lang="$1"). Op dit moment worden lang="lilypond" (standaard) en lang="ABC" ondersteund.',
+	'score-noabcinput' => 'Het ABC-bronbestand $1 kon niet aangemaakt worden',
 	'score-nofactory' => 'Het was niet mogelijk de factorymap voor LilyPond aan te maken',
-	'score-noinput' => 'Het was niet mogelijk het invoerbestand voor LilyPond aan te maken',
-	'score-notexecutable' => 'Het was niet mogelijk om LilyPond uit te voeren. Zorg dat <code>$wgLilyPond</code> correct is ingesteld.',
+	'score-noinput' => 'Het was niet mogelijk het invoerbestand $1 voor LilyPond aan te maken',
+	'score-nooutput' => 'Het was niet mogelijk de afbeeldingenmap $1 voor LilyPond aan te maken',
+	'score-notexecutable' => 'Het was niet mogelijk om LilyPond uit te voeren: $1 is geen uitvoerbaar bestand. Zorg dat de instelling <code>$wgLilyPond</code> correct is.',
 	'score-page' => 'Pagina $1',
 	'score-pregreplaceerr' => 'Vervangen met behulp van een PCRE reguliere expressie is mislukt',
-	'score-readerr' => 'Het bestand kan niet gelezen worden',
+	'score-readerr' => 'Het bestand $1 kan niet gelezen worden.',
 	'score-renameerr' => 'Er is een fout opgetreden tijdens het verplaatsen van de bladmuziekbestanden naar de uploadmap',
-	'score-trimerr' => 'De afbeelding kon niet bijgesneden worden. Stel de volgende waarde in als dit probleem blijft bestaan: <code>$wgScoreTrim=false</code>.',
-	'score-versionerr' => 'Het was niet mogelijk de LiliPond-versie te achterhalen.',
+	'score-trimerr' => 'De afbeelding kon niet bijgesneden worden:
+$1
+Stel de volgende waarde in als dit probleem blijft bestaan: <code>$wgScoreTrim=false</code>.',
+	'score-versionerr' => 'Het was niet mogelijk de LiliPond-versie te achterhalen:
+$1',
 );
 
