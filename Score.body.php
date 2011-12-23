@@ -67,7 +67,7 @@ class Score {
 	const LILYPOND_DIR_NAME = 'lilypond';
 
 	/**
-	 * Supported score languages
+	 * Supported score languages.
 	 */
 	private static $supportedLangs = array( 'lilypond', 'ABC' );
 
@@ -142,10 +142,10 @@ class Score {
 	/**
 	 * Renders the score code (LilyPond, ABC, etc.) in a <score>…</score> tag.
 	 *
-	 * @param $code
-	 * @param $args
-	 * @param $parser
-	 * @param $frame
+	 * @param $code score code.
+	 * @param $args array of score tag attributes.
+	 * @param $parser Parser of Mediawiki.
+	 * @param $frame PPFrame expansion frame, not used by this extension.
 	 *
 	 * @return Image link HTML, and possibly anchor to MIDI file.
 	 */
@@ -392,8 +392,8 @@ class Score {
 	/**
 	 * Embeds simple LilyPond code in a score block.
 	 *
-	 * @param $lilypondCode
-	 * @param $options
+	 * @param $lilypondCode simple LilyPond code.
+	 * @param $options rendering options, see Score::generateHTML() for explanation.
 	 *
 	 * @return Raw lilypond code.
 	 *
@@ -519,8 +519,8 @@ class Score {
 	/**
 	 * Trims an image with ImageMagick.
 	 *
-	 * @param $source
-	 * @param $dest
+	 * @param $source path to the source image.
+	 * @param $dest path to the target (trimmed) image.
 	 *
 	 * @throws ScoreException on error.
 	 */
@@ -541,7 +541,7 @@ class Score {
 	/**
 	 * Deletes a directory with no subdirectories with all files in it.
 	 *
-	 * @param $dir
+	 * @param $dir path to the directory that is to be deleted.
 	 *
 	 * @return true on success, false on error
 	 */
@@ -563,7 +563,7 @@ class Score {
 	/**
 	 * Writes the specified message to the Score debug log.
 	 *
-	 * @param $msg
+	 * @param $msg message to log.
 	 */
 	private static function debug( $msg ) {
 		wfDebugLog( 'Score', $msg );
