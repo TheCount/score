@@ -202,9 +202,10 @@ class Score {
 		global $wgUploadDirectory, $wgUploadPath;
 
 		/* Various paths and file names */
-		$lilypondDir = $wgUploadDirectory . '/' . self::LILYPOND_DIR_NAME;
-		$lilypondPath = $wgUploadPath . '/' . self::LILYPOND_DIR_NAME;
 		$cacheName = md5( $code ); /* always use MD5 of $code, regardless of language */
+		$cacheSubdir = "{$cacheName[0]}/{$cacheName[0]}{$cacheName[1]}";
+		$lilypondDir = $wgUploadDirectory . '/' . self::LILYPOND_DIR_NAME . '/' . $cacheSubdir;
+		$lilypondPath = $wgUploadPath . '/' . self::LILYPOND_DIR_NAME . '/' . $cacheSubdir;
 		$filePrefix = "$lilypondDir/$cacheName";
 		$pathPrefix = "$lilypondPath/$cacheName";
 		$midi = "$filePrefix.midi";
