@@ -351,6 +351,9 @@ class Score {
 			if ( $rc2 != 0 ) {
 				self::throwCallException( wfMessage( 'score-compilererr' ), $output );
 			}
+			if ( $options['midi'] && !file_exists( $factoryMidi ) ) {
+				throw new ScoreException( wfMessage( 'score-nomidi' ) );
+			}
 
 			/* trim output images if wanted */
 			if ( $wgScoreTrim ) {
