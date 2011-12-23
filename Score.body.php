@@ -62,6 +62,16 @@ class ScoreException extends Exception {
  */
 class Score {
 	/**
+	 * Cache directory name.
+	 */
+	const LILYPOND_DIR_NAME = 'lilypond';
+
+	/**
+	 * Supported score languages
+	 */
+	private static $supportedLangs = array( 'lilypond', 'ABC' );
+
+	/**
 	 * LilyPond version string.
 	 * It defaults to null and is set the first time it is required.
 	 */
@@ -130,7 +140,7 @@ class Score {
 	}
 
 	/**
-	 * Renders the lilypond code in a <score>…</score> tag.
+	 * Renders the score code (LilyPond, ABC, etc.) in a <score>…</score> tag.
 	 *
 	 * @param $code
 	 * @param $args
@@ -140,63 +150,242 @@ class Score {
 	 * @return Image link HTML, and possibly anchor to MIDI file.
 	 */
 	public static function render( $code, array $args, Parser $parser, PPFrame $frame ) {
-		global $wgTmpDirectory;
-
 		try {
-			/* generate name for working environment */
-			$factoryPrefix = 'MWLP.';
-			$fuzz = md5( mt_rand() );
-			$factoryDirectory = $wgTmpDirectory . "/$factoryPrefix$fuzz";
-
-			/* Midi rendering? */
-			if ( array_key_exists( 'midi', $args ) ) {
-				$renderMidi = $args['midi'];
-			} else {
-				$renderMidi = false;
-			}
-
 			/* Score language selection */
 			if ( array_key_exists( 'lang', $args ) ) {
 				$lang = $args['lang'];
 			} else {
 				$lang = 'lilypond';
 			}
-
-			/* Create lilypond input file */
-			$lilypondFile = $factoryDirectory . '/file.ly';
-			switch ( $lang ) {
-			case 'lilypond':
-				if ( !array_key_exists( 'raw', $args ) || !$args['raw'] ) {
-					$lilypondCode = self::embedLilypondCode( $code, $renderMidi );
-				} else {
-					$lilypondCode = $code;
-				}
-				self::createFactory( $factoryDirectory );
-				$rc = file_put_contents( $lilypondFile, $lilypondCode );
-				if ( $rc === false ) {
-					throw new ScoreException( wfMessage( 'score-noinput', $lilypondFile ) );
-				}
-				break;
-			case 'ABC':
-				self::runAbc2Ly( $code, $factoryDirectory );
-				break;
-			default:
+			if ( !in_array( $lang, self::$supportedLangs ) ) {
 				throw new ScoreException( wfMessage( 'score-invalidlang', $lang ) );
 			}
 
-			/* Run LilyPond */
-			$html = self::runLilypond( $factoryDirectory, $renderMidi, $code );
-		} catch ( ScoreException $e ) {
-			self::eraseFactory( $factoryDirectory );
-			return $e;
-		}
+			/* Midi rendering? */
+			if ( array_key_exists( 'midi', $args ) ) {
+				$linkMidi = $args['midi'];
+			} else {
+				$linkMidi = false;
+			}
 
-		/* tear down working environment */
-		if ( !self::eraseFactory( $factoryDirectory ) ) {
-			self::debug( "Unable to delete temporary working directory.\n" );
+			/* Raw rendering? */
+			if ( array_key_exists( 'raw', $args ) ) {
+				$rawLilypond = $args['raw'];
+			} else {
+				$rawLilypond = false;
+			}
+
+			$html = self::generateHTML( $code, $lang, $linkMidi, $rawLilypond );
+		} catch ( ScoreException $e ) {
+			$html = "$e";
 		}
 
 		return $html;
+	}
+
+	/**
+	 * Generates the HTML code for a score tag.
+	 *
+	 * @param $code score code.
+	 * @param $lang score language the code is in.
+	 * @param $linkMidi whether to generate a link to a MIDI file.
+	 * @param $rawLilypond whether to assume raw LilyPond code (ignored if $lang is not 'lilypond').
+	 *
+	 * @return HTML.
+	 *
+	 * @throws ScoreException if an error occurs.
+	 */
+	private static function generateHTML( $code, $lang, $linkMidi, $rawLilypond ) {
+		global $wgUploadDirectory, $wgUploadPath;
+
+		/* Various paths and file names */
+		$lilypondDir = $wgUploadDirectory . '/' . self::LILYPOND_DIR_NAME;
+		$lilypondPath = $wgUploadPath . '/' . self::LILYPOND_DIR_NAME;
+		$cacheName = md5( $code ); /* always use MD5 of $code, regardless of language */
+		$filePrefix = "$lilypondDir/$cacheName";
+		$pathPrefix = "$lilypondPath/$cacheName";
+		$midi = "$filePrefix.midi";
+		$midiPath = "$pathPrefix.midi";
+		$image = "$filePrefix.png";
+		$imagePath = "$pathPrefix.png";
+		$multiFormat = "$filePrefix-%d.png"; // for multi-page scores
+		$multiPathFormat = "$pathPrefix-%d.png";
+		$multi1 = "$filePrefix-1.png";
+
+		/* Make sure $lilypondDir exists */
+		if ( !file_exists( $lilypondDir ) ) {
+			$rc = wfMkdirParents( $lilypondDir, null, __METHOD__ );
+			if ( !$rc ) {
+				throw new ScoreException( wfMessage( 'score-nooutput', self::LILYPOND_DIR_NAME ) );
+			}
+		}
+
+		/* Generate PNG and MIDI files if necessary */
+		if ( ( !file_exists( $image ) && !file_exists( $multi1 ) ) || ( $linkMidi && !file_exists( $midi ) ) ) {
+			self::generatePngAndMidi( $code, $lang, $linkMidi, $rawLilypond, $filePrefix );
+		}
+
+		/* return output link(s) */
+		if ( file_exists( $image ) ) {
+			$link = Html::rawElement( 'img', array(
+				'src' => $imagePath,
+				'alt' => $code,
+			) );
+		} elseif ( file_exists( $multi1 ) ) {
+			$link = '';
+			for ( $i = 1; file_exists( sprintf( $multiFormat, $i ) ); ++$i ) {
+				$link .= Html::rawElement( 'img', array(
+					'src' => sprintf( $multiPathFormat, $i ),
+					'alt' => wfMessage( 'score-page' )->inContentLanguage()->numParams( $i )->plain()
+				) );
+			}
+		} else {
+			/* No images; this may actually happen in raw lilypond mode */
+			self::debug( "No output images $image or $multi1!\n" );
+			$link = 'No image';
+		}
+		if ( $linkMidi ) {
+			$link = Html::rawElement( 'a', array( 'href' => $midiPath ), $link );
+		}
+
+		return $link;
+	}
+
+	/**
+	 * Generates score PNG file(s) and possibly a MIDI file.
+	 *
+	 * @param $code score code.
+	 * @param $lang language the score code is in.
+	 * @param $generateMidi whether to generate a MIDI file.
+	 * @param $rawLilypond whether to assume raw LilyPond code (ignored if $lang is not 'lilypond').
+	 * @param $filePrefix prefix for the generated files.
+	 *
+	 * @throws ScoreException on error.
+	 */
+	private static function generatePngAndMidi( $code, $lang, $generateMidi, $rawLilypond, $filePrefix ) {
+		global $wgTmpDirectory, $wgLilyPond, $wgScoreTrim;
+
+		wfProfileIn( __METHOD__ );
+
+		try {
+			/* Various filenames */
+			$ly = "$filePrefix.ly";
+			$midi = "$filePrefix.midi";
+			$image = "$filePrefix.png";
+			$multiFormat = "$filePrefix-%d.png";
+
+			/* delete old files if necessary */
+			$rc = true;
+			if ( file_exists( $midi ) ) {
+				$rc = $rc && unlink( $midi );
+			}
+			if ( file_exists( $image ) ) {
+				$rc = $rc && unlink( $image );
+			}
+			for ( $i = 1; file_exists( $f = sprintf( $multiFormat, $i ) ); ++$i ) {
+				$rc = $rc && unlink( $f );
+			}
+			if ( !$rc ) {
+				throw new ScoreException( wfMessage( 'score-cleanerr' ) );
+			}
+
+			/* Create a working environment */
+			$fuzz = md5( mt_rand() );
+			$factoryDirectory = $wgTmpDirectory . "/MWLP.$fuzz";
+			self::createFactory( $factoryDirectory );
+			$factoryLy = "$factoryDirectory/file.ly";
+			$factoryMidi = "$factoryDirectory/file.midi";
+			$factoryImage = "$factoryDirectory/file.png";
+			$factoryImageTrimmed = "$factoryDirectory/file-trimmed.png";
+			$factoryMultiFormat = "$factoryDirectory/file-%d.png";
+			$factoryMultiTrimmedFormat = "$factoryDirectory/file-%d-trimmed.png";
+
+			/* Determine which LilyPond code to use */
+			if ( $lang == 'lilypond' ) {
+				if ( $rawLilypond ) {
+					$lilypondCode = $code;
+				} else {
+					$lilypondCode = self::embedLilypondCode( $code, $generateMidi );
+				}
+			} else {
+				wfSuppressWarnings();
+				$lilypondCode = file_get_contents( $ly ); // may legitimately fail
+				wfRestoreWarnings();
+				if ( $lilypondCode === false ) {
+					/* (re-)generate .ly file */
+					$lilypondCode = self::generateLilypond( $code, $lang, $filePrefix, $factoryDirectory );
+				}
+			}
+
+			/* generate lilypond output files in working environment */
+			if ( !file_exists( $factoryLy ) ) {
+				$rc = file_put_contents( $factoryLy, $lilypondCode );
+				if ( $rc === false ) {
+					throw new ScoreException( wfMessage( 'score-noinput', $factoryLy ) );
+				}
+			}
+			$oldcwd = getcwd();
+			if ( $oldcwd === false ) {
+				throw new ScoreException( wfMessage( 'score-getcwderr' ) );
+			}
+			$rc = chdir( $factoryDirectory );
+			if ( !$rc ) {
+				throw new ScoreException( wfMessage( 'score-chdirerr', $factoryDirectory ) );
+			}
+			if ( !is_executable( $wgLilyPond ) ) {
+				throw new ScoreException( wfMessage( 'score-notexecutable', $wgLilyPond ) );
+			}
+			$cmd = wfEscapeShellArg( $wgLilyPond )
+				. ' -dsafe='
+				. wfEscapeShellArg( '#t' )
+				. ' -dbackend=eps --png --header=texidoc '
+				. wfEscapeShellArg( $factoryLy )
+				. ' 2>&1';
+			$output = wfShellExec( $cmd, $rc2 );
+			$rc = chdir( $oldcwd );
+			if ( !$rc ) {
+				throw new ScoreException( wfMessage( 'score-chdirerr', $oldcwd ) );
+			}
+			if ( $rc2 != 0 ) {
+				self::throwCallException( wfMessage( 'score-compilererr' ), $output );
+			}
+
+			/* trim output images if wanted */
+			if ( $wgScoreTrim ) {
+				if ( file_exists( $factoryImage ) ) {
+					$rc = self::trimImage( $factoryImage, $factoryImageTrimmed );
+				}
+				for ( $i = 1; file_exists( $f = sprintf( $factoryMultiFormat, $i ) ); ++$i ) {
+					$rc = self::trimImage( $f, sprintf( $factoryMultiTrimmedFormat, $i ) );
+				}
+			} else {
+				$factoryImageTrimmed = $factoryImage;
+				$factoryMultiTrimmedFormat = $factoryMultiFormat;
+			}
+
+			/* move files to proper places */
+			$rc = true;
+			if ( file_exists( $factoryMidi ) ) {
+				$rc = $rc && rename( $factoryMidi, $midi );
+			}
+			if ( file_exists( $factoryImageTrimmed ) ) {
+				$rc = $rc && rename( $factoryImageTrimmed, $image );
+			}
+			for ( $i = 1; file_exists( $f = sprintf( $factoryMultiTrimmedFormat, $i ) ); ++$i ) {
+				$rc = $rc && rename( $f, sprintf( $multiFormat, $i ) );
+			}
+			if ( !$rc ) {
+				throw new ScoreException( wfMessage( 'score-renameerr' ) );
+			}
+		} catch ( Exception $e ) {
+			self::eraseFactory( $factoryDirectory );
+			wfProfileOut( __METHOD__ );
+			throw $e;
+		}
+
+		/* tear down working environment */
+		self::eraseFactory( $factoryDirectory );
+		wfProfileOut( __METHOD__ );
 	}
 
 	/**
@@ -235,25 +424,60 @@ class Score {
 	}
 
 	/**
+	 * Generates LilyPond code.
+	 *
+	 * @param $code score code.
+	 * @param $lang language the score code is in (a supported language other than 'lilypond').
+	 * @param $filePrefix prefix for the generated file.
+	 * @param $factoryDirectory directory of the working environment.
+	 *
+	 * @return the generated LilyPond code.
+	 *
+	 * @throws ScoreException if an error occurs.
+	 */
+	private static function generateLilypond( $code, $lang, $filePrefix, $factoryDirectory ) {
+		$ly = "$filePrefix.ly";
+
+		switch ( $lang ) {
+		case 'ABC':
+			$lilypondCode = self::generateLilypondFromAbc( $code, $factoryDirectory );
+			break;
+		case 'lilypond':
+			throw new MWException( 'lang="lilypond" in ' . __METHOD__ . ". This should not happen.\n" );
+		default:
+			throw new MWException( 'Unknown score language in ' . __METHOD__ . ". This should not happen.\n" );
+		}
+
+		$rc = file_put_contents( $ly, $lilypondCode );
+		if ( $rc === false ) {
+			self::debug( "Unable to copy $factoryLy to $ly.\n" );
+		}
+
+		return $lilypondCode;
+	}
+
+	/**
 	 * Runs abc2ly, creating the LilyPond input file.
 	 *
 	 * $code ABC code.
-	 * $factoryDirectory Working environment. The LilyPond input file is
-	 * 	created as "file.ly" in this directory.
+	 * $factoryDirectory Working environment. As a side-effect, the
+	 * 	LilyPond input file is created as "file.ly" in this directory.
+	 *
+	 * @return the generated LilyPond code.
 	 *
 	 * @throws ScoreException if the conversion fails.
 	 */
-	private function runAbc2Ly( $code, $factoryDirectory ) {
+	private function generateLilypondFromAbc( $code, $factoryDirectory ) {
 		global $wgAbc2Ly;
 
-		$abcFile = $factoryDirectory . '/file.abc';
-		$lyFile = $factoryDirectory . '/file.ly';
+		$factoryAbc = "$factoryDirectory/file.abc";
+		$factoryLy = "$factoryDirectory/file.ly";
 
 		/* Create ABC input file */
-		self::createFactory( $factoryDirectory );
-		$rc = file_put_contents( $abcFile, ltrim( $code ) ); // abc2ly is picky about whitespace at the start of the file
+		$rc = file_put_contents( $factoryAbc, $code );
+			// FIXME: ltrim( $code ) ); // abc2ly is picky about whitespace at the start of the file
 		if ( $rc === false ) {
-			throw new ScoreException( wfMessage( 'score-noabcinput', $abcFile ) );
+			throw new ScoreException( wfMessage( 'score-noabcinput', $factoryAbc ) );
 		}
 
 		/* Convert to LilyPond file */
@@ -263,210 +487,33 @@ class Score {
 
 		$cmd = wfEscapeShellArg( $wgAbc2Ly )
 			. ' -s'
-			. ' --output=' . wfEscapeShellArg( $lyFile )
-			. ' ' . wfEscapeShellArg( $abcFile )
+			. ' --output=' . wfEscapeShellArg( $factoryLy )
+			. ' ' . wfEscapeShellArg( $factoryAbc )
 			. ' 2>&1';
 		$output = wfShellExec( $cmd, $rc );
 		if ( $rc != 0 ) {
 			self::throwCallException( wfMessage( 'score-abcconversionerr' ), $output );
 		}
-		if ( !file_exists( $lyFile ) ) {
+		if ( !file_exists( $factoryLy ) ) {
 			/* Occasionally, abc2ly will return exit code 0 but not create an output file */
 			self::throwCallException( wfMessage( 'score-abcconversionerr' ), $output );
 		}
 
 		/* The output file has a tagline which should be removed in a wiki context */
-		$lyData = file_get_contents( $lyFile );
+		$lyData = file_get_contents( $factoryLy );
 		if ( $lyData === false ) {
-			throw new ScoreException( wfMessage( 'score-readerr', $lyFile ) );
+			throw new ScoreException( wfMessage( 'score-readerr', $factoryLy ) );
 		}
 		$lyData = preg_replace( '/^(\s*tagline\s*=).*/m', '$1 ##f', $lyData );
 		if ( $lyData === null ) {
 			throw new ScoreException( wfMessage( 'score-pregreplaceerr' ) );
 		}
-		$rc = file_put_contents( $lyFile, $lyData );
+		$rc = file_put_contents( $factoryLy, $lyData );
 		if ( $rc === false ) {
-			throw new ScoreException( wfMessage( 'score-noinput', $lyFile ) );
-		}
-	}
-
-	/**
-	 * Runs lilypond.
-	 *
-	 * @param $factoryDirectory Directory of the working environment.
-	 * 	The LilyPond input file "file.ly" is expected to be in
-	 * 	this directory.
-	 * @param $renderMidi
-	 * @param $altText Alternate text for the score image.
-	 * 	If set to false, the alt text will contain pagination instead.
-	 *
-	 * @return Image link HTML, and possibly anchor to MIDI file.
-	 */
-	private static function runLilypond( $factoryDirectory, $renderMidi, $altText = false ) {
-		global $wgUploadDirectory, $wgUploadPath, $wgLilyPond, $wgScoreTrim;
-
-		wfProfileIn( __METHOD__ );
-
-		/* Various paths and filenames */
-		$lilypondFile = $factoryDirectory . '/file.ly';
-		$factoryMidi = $factoryDirectory . '/file.midi';
-		$factoryImage = $factoryDirectory . '/file.png';
-		$factoryImageTrimmed = $factoryDirectory . '/file-trimmed.png';
-		$factoryMultiFormat = $factoryDirectory . '/file-%d.png'; // for multi-page scores
-		$factoryMultiTrimmedFormat = $factoryDirectory . '/file-%d-trimmed.png';
-		$lilypondDir = 'lilypond';
-		$md5 = md5_file( $lilypondFile );
-		if ( $md5 === false ) {
-			throw new ScoreException( wfMessage( 'score-noinput', $lilypondFile ) );
-		}
-		$rel = $lilypondDir . '/' . $md5; // FIXME: Too many files in one directory?
-		$filePrefix = "$wgUploadDirectory/$rel";
-		$pathPrefix = "$wgUploadPath/$rel";
-		$midi = "$filePrefix.midi";
-		$midiPath = "$pathPrefix.midi";
-		$image = "$filePrefix.png";
-		$imagePath = "$pathPrefix.png";
-		$multiFormat = "$filePrefix-%d.png";
-		$multiPathFormat = "$pathPrefix-%d.png";
-		$multi1 = "$filePrefix-1.png";
-
-		/* Check whether the file is already cached */
-		$cached = true;
-		if ( $renderMidi && !file_exists( $midi ) ) {
-			self::debug( "Cache miss: File $midi does not exist and midi rendering is enabled.\n" );
-			$cached = false;
-		}
-		if ( !file_exists( $image ) && !file_exists( $multi1 ) ) {
-			self::debug( "Cache miss: Neither $image nor $multi1 exists.\n" );
-			$cached = false;
+			throw new ScoreException( wfMessage( 'score-noinput', $factoryLy ) );
 		}
 
-		/* If not cached, create the files */
-		if ( !$cached ) {
-			self::debug( "Regenerating files due to cache miss.\n" );
-
-			try {
-				/* delete old files if necessary */
-				$rc = true;
-				if ( file_exists( $midi ) ) {
-					$rc = $rc && unlink( $midi );
-				}
-				if ( file_exists( $image ) ) {
-					$rc = $rc && unlink( $image );
-				}
-				for ( $i = 1; file_exists( $f = sprintf( $multiFormat, $i ) ); ++$i ) {
-					$rc = $rc && unlink( $f );
-				}
-				if ( !$rc ) {
-					throw new ScoreException( wfMessage( 'score-cleanerr' ) );
-				}
-
-				/* create output directory if necessary */
-				if ( !file_exists( "$wgUploadDirectory/$lilypondDir" ) ) {
-					$rc = wfMkdirParents( "$wgUploadDirectory/$lilypondDir", null, __METHOD__ );
-					if ( !$rc ) {
-						throw new ScoreException( wfMessage( 'score-nooutput', $lilypondDir ) );
-					}
-				}
-
-				/* generate lilypond output files in working environment */
-				$oldcwd = getcwd();
-				if ( $oldcwd === false ) {
-					throw new ScoreException( wfMessage( 'score-getcwderr' ) );
-				}
-				$rc = chdir( $factoryDirectory );
-				if ( !$rc ) {
-					throw new ScoreException( wfMessage( 'score-chdirerr', $factoryDirectory ) );
-				}
-				if ( !is_executable( $wgLilyPond ) ) {
-					throw new ScoreException( wfMessage( 'score-notexecutable', $wgLilyPond ) );
-				}
-				$cmd = wfEscapeShellArg( $wgLilyPond )
-					. ' -dsafe='
-					. wfEscapeShellArg( '#t' )
-					. ' -dbackend=eps --png --header=texidoc '
-					. wfEscapeShellArg( $lilypondFile )
-					. ' 2>&1';
-				$output = wfShellExec( $cmd, $rc2 );
-				$rc = chdir( $oldcwd );
-				if ( !$rc ) {
-					throw new ScoreException( wfMessage( 'score-chdirerr', $oldcwd ) );
-				}
-				if ( $rc2 != 0 ) {
-					self::throwCallException( wfMessage( 'score-compilererr' ), $output );
-				}
-
-				/* trim output images if wanted */
-				if ( $wgScoreTrim ) {
-					if ( file_exists( $factoryImage ) ) {
-						$rc = self::trimImage( $factoryImage, $factoryImageTrimmed );
-					}
-					for ( $i = 1; file_exists( $f = sprintf( $factoryMultiFormat, $i ) ); ++$i ) {
-						$rc = self::trimImage( $f, sprintf( $factoryMultiTrimmedFormat, $i ) );
-					}
-				} else {
-					$factoryImageTrimmed = $factoryImage;
-					$factoryMultiTrimmedFormat = $factoryMultiFormat;
-				}
-
-				/* move files to proper places */
-				$rc = true;
-				if ( file_exists( $factoryMidi ) ) {
-					$rc = $rc && rename( $factoryMidi, $midi );
-				}
-				if ( file_exists( $factoryImageTrimmed ) ) {
-					$rc = $rc && rename( $factoryImageTrimmed, $image );
-				}
-				for ( $i = 1; file_exists( $f = sprintf( $factoryMultiTrimmedFormat, $i ) ); ++$i ) {
-					$rc = $rc && rename( $f, sprintf( $multiFormat, $i ) );
-				}
-				if ( !$rc ) {
-					throw new ScoreException( wfMessage( 'score-renameerr' ) );
-				}
-
-			} catch ( ScoreException $e ) {
-				wfProfileOut( __METHOD__ );
-				throw $e;
-			}
-		}
-
-		/* return output link(s) */
-		if ( file_exists( $image ) ) {
-			if ( $altText ) {
-				$alt = $altText;
-			} else {
-				$alt = wfMessage( 'score-page' )->inContentLanguage()->numParams( '1' )->plain();
-			}
-			$link = Html::rawElement( 'img', array(
-				'src' => $imagePath,
-				'alt' => $alt,
-			) );
-		} elseif ( file_exists( $multi1 ) ) {
-			$link = '';
-			for ( $i = 1; file_exists( sprintf( $multiFormat, $i ) ); ++$i ) {
-				if ( $altText ) {
-					$alt = $altText;
-				} else {
-					$alt = wfMessage( 'score-page' )->inContentLanguage()->numParams( $i )->plain();
-				}
-				$link .= Html::rawElement( 'img', array(
-					'src' => sprintf( $multiPathFormat, $i ),
-					'alt' => $alt,
-				) );
-			}
-		} else {
-			self::debug( "No output images $image or $multi1!\n" );
-			$link = 'No image';
-		}
-		if ( $renderMidi ) {
-			if ( !file_exists( $midi ) ) {
-				self::debug( "Midi file $midi should exist but does not!\n" );
-			} else {
-				$link = Html::rawElement( 'a', array( 'href' => $midiPath ), $link );
-			}
-		}
-		wfProfileOut( __METHOD__ );
-		return $link;
+		return $lyData;
 	}
 
 	/**
@@ -501,7 +548,12 @@ class Score {
 	private static function eraseFactory( $dir ) {
 		if( file_exists( $dir ) ) {
 			array_map( 'unlink', glob( "$dir/*", GLOB_NOSORT ) );
-			return rmdir( $dir );
+			$rc = rmdir( $dir );
+			if ( !$rc ) {
+				self::debug( "Unable to remove directory $dir\n." );
+			}
+			return $rc;
+
 		} else {
 			/* Nothing to do */
 			return true;
