@@ -46,20 +46,14 @@ if ( !defined( 'MEDIAWIKI' ) ) {
  *  Default is $wgUseImageMagick and set in efScoreExtension */
 $wgScoreTrim = null;
 
-/* Path of lilypond executable */
-if ( !isset( $wgLilyPond ) ) {
-	$wgLilyPond = '/usr/bin/lilypond';
-}
+/* Path to LilyPond executable */
+$wgScoreLilyPond = '/usr/bin/lilypond';
 
 /* Path to converter from ABC */
-if ( !isset( $wgAbc2Ly ) ) {
-	$wgAbc2Ly = '/usr/bin/abc2ly';
-}
+$wgScoreAbc2Ly = '/usr/bin/abc2ly';
 
 /* Path to TiMidity++ */
-if ( !isset( $wgTimidity ) ) {
-	$wgTimidity = '/usr/bin/timidity';
-}
+$wgScoreTimidity = '/usr/bin/timidity';
 
 /*
  * Extension credits

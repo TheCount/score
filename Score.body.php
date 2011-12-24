@@ -108,13 +108,13 @@ class Score {
 	 * @throws ScoreException if LilyPond could not be executed properly.
 	 */
 	private static function getLilypondVersion() {
-		global $wgLilyPond;
+		global $wgScoreLilyPond;
 
-		if ( !is_executable( $wgLilyPond ) ) {
-			throw new ScoreException( wfMessage( 'score-notexecutable', $wgLilyPond ) );
+		if ( !is_executable( $wgScoreLilyPond ) ) {
+			throw new ScoreException( wfMessage( 'score-notexecutable', $wgScoreLilyPond ) );
 		}
 
-		$cmd = wfEscapeShellArg( $wgLilyPond ) . ' --version 2>&1';
+		$cmd = wfEscapeShellArg( $wgScoreLilyPond ) . ' --version 2>&1';
 		$output = wfShellExec( $cmd, $rc );
 		if ( $rc != 0 ) {
 			self::throwCallException( wfMessage( 'score-versionerr' ), $output );
@@ -310,7 +310,7 @@ class Score {
 	 * @throws ScoreException on error.
 	 */
 	private static function generatePngAndMidi( $code, $options, $filePrefix, $factoryDirectory ) {
-		global $wgLilyPond, $wgScoreTrim;
+		global $wgScoreLilyPond, $wgScoreTrim;
 
 		wfProfileIn( __METHOD__ );
 
@@ -377,10 +377,10 @@ class Score {
 			if ( !$rc ) {
 				throw new ScoreException( wfMessage( 'score-chdirerr', $factoryDirectory ) );
 			}
-			if ( !is_executable( $wgLilyPond ) ) {
-				throw new ScoreException( wfMessage( 'score-notexecutable', $wgLilyPond ) );
+			if ( !is_executable( $wgScoreLilyPond ) ) {
+				throw new ScoreException( wfMessage( 'score-notexecutable', $wgScoreLilyPond ) );
 			}
-			$cmd = wfEscapeShellArg( $wgLilyPond )
+			$cmd = wfEscapeShellArg( $wgScoreLilyPond )
 				. ' -dsafe='
 				. wfEscapeShellArg( '#t' )
 				. ' -dbackend=eps --png --header=texidoc '
@@ -478,7 +478,7 @@ class Score {
 	 * @throws ScoreException if an error occurs.
 	 */
 	private static function generateOgg( $options, $filePrefix, $factoryDirectory ) {
-		global $wgTimidity;
+		global $wgScoreTimidity;
 
 		wfProfileIn( __METHOD__ );
 
@@ -490,10 +490,10 @@ class Score {
 			$ogg = "$filePrefix.ogg";
 
 			/* Run timidity */
-			if ( !is_executable( $wgTimidity ) ) {
-				throw new ScoreException( wfMessage( 'score-timiditynotexecutable', $wgTimidity ) );
+			if ( !is_executable( $wgScoreTimidity ) ) {
+				throw new ScoreException( wfMessage( 'score-timiditynotexecutable', $wgScoreTimidity ) );
 			}
-			$cmd = wfEscapeShellArg( $wgTimidity )
+			$cmd = wfEscapeShellArg( $wgScoreTimidity )
 				. ' -Ov' // Vorbis output
 				. ' --output-file=' . wfEscapeShellArg( $factoryOgg )
 				. ' ' . wfEscapeShellArg( $midi )
@@ -563,7 +563,7 @@ class Score {
 	 * @throws ScoreException if the conversion fails.
 	 */
 	private function generateLilypondFromAbc( $code, $factoryDirectory ) {
-		global $wgAbc2Ly;
+		global $wgScoreAbc2Ly;
 
 		$factoryAbc = "$factoryDirectory/file.abc";
 		$factoryLy = "$factoryDirectory/file.ly";
@@ -575,11 +575,11 @@ class Score {
 		}
 
 		/* Convert to LilyPond file */
-		if ( !is_executable( $wgAbc2Ly ) ) {
-			throw new ScoreException( wfMessage( 'score-abc2lynotexecutable', $wgAbc2Ly ) );
+		if ( !is_executable( $wgScoreAbc2Ly ) ) {
+			throw new ScoreException( wfMessage( 'score-abc2lynotexecutable', $wgScoreAbc2Ly ) );
 		}
 
-		$cmd = wfEscapeShellArg( $wgAbc2Ly )
+		$cmd = wfEscapeShellArg( $wgScoreAbc2Ly )
 			. ' -s'
 			. ' --output=' . wfEscapeShellArg( $factoryLy )
 			. ' ' . wfEscapeShellArg( $factoryAbc )
