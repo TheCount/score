@@ -543,7 +543,7 @@ class Score {
 
 		$rc = file_put_contents( $ly, $lilypondCode );
 		if ( $rc === false ) {
-			self::debug( "Unable to copy $factoryLy to $ly.\n" );
+			self::debug( "Unable to write LilyPond code to $ly.\n" );
 		}
 
 		return $lilypondCode;
