@@ -33,11 +33,11 @@ Setup
 5. Add the lines
 
    require_once("$IP/extensions/Score/Score.php");
-   $wgLilyPond = '/path/to/your/lilypond/executable'; /* required */
-   $wgAbc2Ly = '/path/to/your/abc2ly/executable'; /* if you want ABC to 
-                                                     LilyPond conversion */
-   $wgTimidty = '/path/to/your/timidty/executable'; /* if you want MIDI to
-                                                       Vorbis conversion */
+   $wgScoreLilyPond = '/path/to/your/lilypond/executable'; /* required */
+   $wgScoreAbc2Ly = '/path/to/your/abc2ly/executable'; /* if you want ABC to 
+                                                          LilyPond conversion */
+   $wgScoreTimidty = '/path/to/your/timidty/executable'; /* if you want MIDI to
+                                                            Vorbis conversion */
    $wgScoreTrim = true; /* Set to false if you don't want score trimming */
 
    to your LocalSettings.php file. If you get unexpected out-of-memory errors,
@@ -80,7 +80,7 @@ You may also combine the "raw" and "midi"/"vorbis" attributes, but remember
 that in this case, you need to provide the necessary \midi block yourself.
 
 The extension also supports the ABC music notation through LilyPond's abc2ly
-converter (see the documentation for $wgAbc2Ly above). Use
+converter (see the documentation for $wgScoreAbc2Ly above). Use
 
 <score lang="ABC">…</score>
 
