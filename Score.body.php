@@ -131,7 +131,7 @@ class Score {
 	 * Creates the specified directory if it does not exist yet.
 	 * Otherwise does nothing.
 	 *
-	 * @param $path path to directory to be created.
+	 * @param $path string path to directory to be created.
 	 *
 	 * @throws ScoreException if the directory does not exist and could not be created.
 	 */
@@ -212,7 +212,7 @@ class Score {
 	 * 	* midi: whether to link to a MIDI file,
 	 * 	* raw: whether to assume raw LilyPond code.
 	 *
-	 * @return HTML.
+	 * @return string HTML.
 	 *
 	 * @throws ScoreException if an error occurs.
 	 */
@@ -302,10 +302,10 @@ class Score {
 	/**
 	 * Generates score PNG file(s) and possibly a MIDI file.
 	 *
-	 * @param $code score code.
-	 * @param $options rendering options, see Score::generateHTML() for explanation.
-	 * @param $filePrefix prefix for the generated files.
-	 * @param $factoryDirectory directory of the working environment.
+	 * @param $code string score code.
+	 * @param $options array rendering options, see Score::generateHTML() for explanation.
+	 * @param $filePrefix string prefix for the generated files.
+	 * @param $factoryDirectory string directory of the working environment.
 	 *
 	 * @throws ScoreException on error.
 	 */
@@ -401,10 +401,10 @@ class Score {
 			/* trim output images if wanted */
 			if ( $wgScoreTrim ) {
 				if ( file_exists( $factoryImage ) ) {
-					$rc = self::trimImage( $factoryImage, $factoryImageTrimmed );
+					self::trimImage( $factoryImage, $factoryImageTrimmed );
 				}
 				for ( $i = 1; file_exists( $f = sprintf( $factoryMultiFormat, $i ) ); ++$i ) {
-					$rc = self::trimImage( $f, sprintf( $factoryMultiTrimmedFormat, $i ) );
+					self::trimImage( $f, sprintf( $factoryMultiTrimmedFormat, $i ) );
 				}
 			} else {
 				$factoryImageTrimmed = $factoryImage;
@@ -436,10 +436,10 @@ class Score {
 	/**
 	 * Embeds simple LilyPond code in a score block.
 	 *
-	 * @param $lilypondCode simple LilyPond code.
-	 * @param $options rendering options, see Score::generateHTML() for explanation.
+	 * @param $lilypondCode string simple LilyPond code.
+	 * @param $options array rendering options, see Score::generateHTML() for explanation.
 	 *
-	 * @return Raw lilypond code.
+	 * @return string Raw lilypond code.
 	 *
 	 * @throws ScoreException if determining the LilyPond version fails.
 	 */
@@ -471,9 +471,9 @@ class Score {
 	/**
 	 * Generates an Ogg/Vorbis file from a MIDI file using timidity.
 	 *
-	 * @param $options rendering options, see Score::generateHTML() for explanation.
-	 * @param $filePrefix prefix for the generated Ogg file.
-	 * @param $factoryDirectory directory of the working environment.
+	 * @param $options array rendering options, see Score::generateHTML() for explanation.
+	 * @param $filePrefix string prefix for the generated Ogg file.
+	 * @param $factoryDirectory string directory of the working environment.
 	 *
 	 * @throws ScoreException if an error occurs.
 	 */
@@ -519,10 +519,10 @@ class Score {
 	/**
 	 * Generates LilyPond code.
 	 *
-	 * @param $code score code.
-	 * @param $options rendering options, see Score::generateHTML() for explanation.
-	 * @param $filePrefix prefix for the generated file.
-	 * @param $factoryDirectory directory of the working environment.
+	 * @param $code string score code.
+	 * @param $options array rendering options, see Score::generateHTML() for explanation.
+	 * @param $filePrefix string prefix for the generated file.
+	 * @param $factoryDirectory string directory of the working environment.
 	 *
 	 * @return the generated LilyPond code.
 	 *
@@ -554,9 +554,11 @@ class Score {
 	 *
 	 * $code ABC code.
 	 * $factoryDirectory Working environment. As a side-effect, the
-	 * 	LilyPond input file is created as "file.ly" in this directory.
+	 *	 LilyPond input file is created as "file.ly" in this directory.
 	 *
-	 * @return the generated LilyPond code.
+	 * @param $code string
+	 * @param $factoryDirectory string
+	 * @return string the generated LilyPond code.
 	 *
 	 * @throws ScoreException if the conversion fails.
 	 */
@@ -611,8 +613,8 @@ class Score {
 	/**
 	 * Trims an image with ImageMagick.
 	 *
-	 * @param $source path to the source image.
-	 * @param $dest path to the target (trimmed) image.
+	 * @param $source string path to the source image.
+	 * @param $dest string path to the target (trimmed) image.
 	 *
 	 * @throws ScoreException on error.
 	 */
@@ -633,7 +635,7 @@ class Score {
 	/**
 	 * Deletes a directory with no subdirectories with all files in it.
 	 *
-	 * @param $dir path to the directory that is to be deleted.
+	 * @param $dir string path to the directory that is to be deleted.
 	 *
 	 * @return true on success, false on error
 	 */
@@ -655,7 +657,7 @@ class Score {
 	/**
 	 * Writes the specified message to the Score debug log.
 	 *
-	 * @param $msg message to log.
+	 * @param $msg string message to log.
 	 */
 	private static function debug( $msg ) {
 		wfDebugLog( 'Score', $msg );
