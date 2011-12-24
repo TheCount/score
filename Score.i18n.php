@@ -27,7 +27,7 @@ $messages = array();
 
 /* English */
 $messages['en'] = array(
-	'score-abc2lynotexecutable' => 'ABC to LilyPond converter could not be executed: $1 is not an executable file. Make sure <code>$wgAbc2Ly</code> is set correctly.',
+	'score-abc2lynotexecutable' => 'ABC to LilyPond converter could not be executed: $1 is not an executable file. Make sure <code>$wgScoreAbc2Ly</code> is set correctly.',
 	'score-abcconversionerr' => 'Unable to convert ABC file to LilyPond format:
 $1',
 	'score-chdirerr' => 'Unable to change to directory $1',
@@ -43,14 +43,14 @@ $1',
 	'score-noogghandler' => 'Ogg/Vorbis conversion requires an installed and configured OggHandler extension, see [//www.mediawiki.org/wiki/Extension:OggHandler Extension:OggHandler].',
 	'score-nomidi' => 'No MIDI file generated despite being requested. If you are working in raw LilyPond mode, make sure to provide a proper \midi block.',
 	'score-nooutput' => 'Failed to create LilyPond image directory $1.',
-	'score-notexecutable' => 'Could not execute LilyPond: $1 is not an executable file. Make sure <code>$wgLilyPond</code> is set correctly.',
+	'score-notexecutable' => 'Could not execute LilyPond: $1 is not an executable file. Make sure <code>$wgScoreLilyPond</code> is set correctly.',
 	'score-novorbislink' => 'Unable to generate Ogg/Vorbis link: $1',
 	'score-oggconversionerr' => 'Unable to convert MIDI to Ogg/Vorbis:
 $1',
 	'score-page' => 'Page $1',
 	'score-pregreplaceerr' => 'PCRE regular expression replacement failed',
 	'score-readerr' => 'Unable to read file $1.',
-	'score-timiditynotexecutable' => 'TiMidity++ could not be executed: $1 is not an executable file. Make sure <code>$wgTimidity</code> is set correctly.',
+	'score-timiditynotexecutable' => 'TiMidity++ could not be executed: $1 is not an executable file. Make sure <code>$wgScoreTimidity</code> is set correctly.',
 	'score-renameerr' => 'Error moving score files to upload directory.',
 	'score-trimerr' => 'Image could not be trimmed:
 $1
