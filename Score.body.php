@@ -357,7 +357,8 @@ class Score {
 		$midi = "$filePrefix.midi";
 		$image = "$filePrefix.png";
 		$multiFormat = "$filePrefix-%d.png";
-			/* delete old files if necessary */
+
+		/* delete old files if necessary */
 		$rc = true;
 		if ( file_exists( $midi ) ) {
 			$rc = $rc && unlink( $midi );
