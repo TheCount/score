@@ -74,6 +74,7 @@ $wgHooks['ParserFirstCallInit'][] = 'efScoreExtension';
 $wgExtensionMessagesFiles['Score'] = dirname( __FILE__ ) . '/Score.i18n.php';
 $wgAutoloadClasses['Score'] = dirname( __FILE__ ) . '/Score.body.php';
 $wgAutoloadClasses['ScoreException'] = dirname( __FILE__ ) . '/Score.body.php';
+$wgAutoloadClasses['ScopedProfiling'] = dirname( __FILE__ ) . '/Score.body.php';
 
 /**
  * Init routine.
