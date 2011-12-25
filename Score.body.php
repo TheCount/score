@@ -28,6 +28,38 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 }
 
 /**
+ * Helper class for mixing profiling with code that throws exceptions.
+ * It produces matching wfProfileIn/Out calls for scopes.
+ * This class would be superfluous if PHP had a try-finally construct.
+ */
+class ScopedProfiling {
+	/**
+	 * Profiling ID such as a method name.
+	 */
+	private $id;
+
+	/**
+	 * Creates new scoped profiling.
+	 * The new scoped profiling will profile out as soon as its destructor
+	 * is called (normally when the variable holding the created object
+	 * goes out of scope).
+	 *
+	 * @param $id string profiling ID, most commonly a method name.
+	 */
+	public function __construct( $id ) {
+		$this->id = $id;
+		wfProfileIn( $id );
+	}
+
+	/**
+	 * Out-profiles on end of scope.
+	 */
+	public function __destruct() {
+		wfProfileOut( $this->id );
+	}
+}
+
+/**
  * Score exception
  */
 class ScoreException extends Exception {
@@ -110,6 +142,8 @@ class Score {
 	private static function getLilypondVersion() {
 		global $wgScoreLilyPond;
 
+		$prof = new ScopedProfiling( __METHOD__ );
+
 		if ( !is_executable( $wgScoreLilyPond ) ) {
 			throw new ScoreException( wfMessage( 'score-notexecutable', $wgScoreLilyPond ) );
 		}
@@ -155,6 +189,8 @@ class Score {
 	 * @return Image link HTML, and possibly anchor to MIDI file.
 	 */
 	public static function render( $code, array $args, Parser $parser, PPFrame $frame ) {
+		$prof = new ScopedProfiling( __METHOD__ );
+
 		try {
 			$options = array();
 
@@ -218,6 +254,8 @@ class Score {
 	 */
 	private static function generateHTML( $code, $options ) {
 		global $wgUploadDirectory, $wgUploadPath, $wgTmpDirectory, $wgOut;
+
+		$prof = new ScopedProfiling( __METHOD__ );
 
 		/* Various paths and file names */
 		$cacheName = md5( $code ); /* always use MD5 of $code, regardless of language */
@@ -312,125 +350,117 @@ class Score {
 	private static function generatePngAndMidi( $code, $options, $filePrefix, $factoryDirectory ) {
 		global $wgScoreLilyPond, $wgScoreTrim;
 
-		wfProfileIn( __METHOD__ );
+		$prof = new ScopedProfiling( __METHOD__ );
 
-		try {
-			/* Various filenames */
-			$ly = "$filePrefix.ly";
-			$midi = "$filePrefix.midi";
-			$image = "$filePrefix.png";
-			$multiFormat = "$filePrefix-%d.png";
-
+		/* Various filenames */
+		$ly = "$filePrefix.ly";
+		$midi = "$filePrefix.midi";
+		$image = "$filePrefix.png";
+		$multiFormat = "$filePrefix-%d.png";
 			/* delete old files if necessary */
-			$rc = true;
-			if ( file_exists( $midi ) ) {
-				$rc = $rc && unlink( $midi );
-			}
-			if ( file_exists( $image ) ) {
-				$rc = $rc && unlink( $image );
-			}
-			for ( $i = 1; file_exists( $f = sprintf( $multiFormat, $i ) ); ++$i ) {
-				$rc = $rc && unlink( $f );
-			}
-			if ( !$rc ) {
-				throw new ScoreException( wfMessage( 'score-cleanerr' ) );
-			}
-
-			/* Create the working environment */
-			self::createFactory( $factoryDirectory );
-			$factoryLy = "$factoryDirectory/file.ly";
-			$factoryMidi = "$factoryDirectory/file.midi";
-			$factoryImage = "$factoryDirectory/file.png";
-			$factoryImageTrimmed = "$factoryDirectory/file-trimmed.png";
-			$factoryMultiFormat = "$factoryDirectory/file-%d.png";
-			$factoryMultiTrimmedFormat = "$factoryDirectory/file-%d-trimmed.png";
-
-			/* Determine which LilyPond code to use */
-			if ( $options['lang'] == 'lilypond' ) {
-				if ( $options['raw'] ) {
-					$lilypondCode = $code;
-				} else {
-					$lilypondCode = self::embedLilypondCode( $code, $options );
-				}
-			} else {
-				wfSuppressWarnings();
-				$lilypondCode = file_get_contents( $ly ); // may legitimately fail
-				wfRestoreWarnings();
-				if ( $lilypondCode === false ) {
-					/* (re-)generate .ly file */
-					$lilypondCode = self::generateLilypond( $code, $options, $filePrefix, $factoryDirectory );
-				}
-			}
-
-			/* generate lilypond output files in working environment */
-			if ( !file_exists( $factoryLy ) ) {
-				$rc = file_put_contents( $factoryLy, $lilypondCode );
-				if ( $rc === false ) {
-					throw new ScoreException( wfMessage( 'score-noinput', $factoryLy ) );
-				}
-			}
-			$oldcwd = getcwd();
-			if ( $oldcwd === false ) {
-				throw new ScoreException( wfMessage( 'score-getcwderr' ) );
-			}
-			$rc = chdir( $factoryDirectory );
-			if ( !$rc ) {
-				throw new ScoreException( wfMessage( 'score-chdirerr', $factoryDirectory ) );
-			}
-			if ( !is_executable( $wgScoreLilyPond ) ) {
-				throw new ScoreException( wfMessage( 'score-notexecutable', $wgScoreLilyPond ) );
-			}
-			$cmd = wfEscapeShellArg( $wgScoreLilyPond )
-				. ' -dsafe='
-				. wfEscapeShellArg( '#t' )
-				. ' -dbackend=eps --png --header=texidoc '
-				. wfEscapeShellArg( $factoryLy )
-				. ' 2>&1';
-			$output = wfShellExec( $cmd, $rc2 );
-			$rc = chdir( $oldcwd );
-			if ( !$rc ) {
-				throw new ScoreException( wfMessage( 'score-chdirerr', $oldcwd ) );
-			}
-			if ( $rc2 != 0 ) {
-				self::throwCallException( wfMessage( 'score-compilererr' ), $output );
-			}
-			if ( $options['midi'] && !file_exists( $factoryMidi ) ) {
-				throw new ScoreException( wfMessage( 'score-nomidi' ) );
-			}
-
-			/* trim output images if wanted */
-			if ( $wgScoreTrim ) {
-				if ( file_exists( $factoryImage ) ) {
-					self::trimImage( $factoryImage, $factoryImageTrimmed );
-				}
-				for ( $i = 1; file_exists( $f = sprintf( $factoryMultiFormat, $i ) ); ++$i ) {
-					self::trimImage( $f, sprintf( $factoryMultiTrimmedFormat, $i ) );
-				}
-			} else {
-				$factoryImageTrimmed = $factoryImage;
-				$factoryMultiTrimmedFormat = $factoryMultiFormat;
-			}
-
-			/* move files to proper places */
-			$rc = true;
-			if ( file_exists( $factoryMidi ) ) {
-				$rc = $rc && rename( $factoryMidi, $midi );
-			}
-			if ( file_exists( $factoryImageTrimmed ) ) {
-				$rc = $rc && rename( $factoryImageTrimmed, $image );
-			}
-			for ( $i = 1; file_exists( $f = sprintf( $factoryMultiTrimmedFormat, $i ) ); ++$i ) {
-				$rc = $rc && rename( $f, sprintf( $multiFormat, $i ) );
-			}
-			if ( !$rc ) {
-				throw new ScoreException( wfMessage( 'score-renameerr' ) );
-			}
-		} catch ( Exception $e ) {
-			wfProfileOut( __METHOD__ );
-			throw $e;
+		$rc = true;
+		if ( file_exists( $midi ) ) {
+			$rc = $rc && unlink( $midi );
+		}
+		if ( file_exists( $image ) ) {
+			$rc = $rc && unlink( $image );
+		}
+		for ( $i = 1; file_exists( $f = sprintf( $multiFormat, $i ) ); ++$i ) {
+			$rc = $rc && unlink( $f );
+		}
+		if ( !$rc ) {
+			throw new ScoreException( wfMessage( 'score-cleanerr' ) );
 		}
 
-		wfProfileOut( __METHOD__ );
+		/* Create the working environment */
+		self::createFactory( $factoryDirectory );
+		$factoryLy = "$factoryDirectory/file.ly";
+		$factoryMidi = "$factoryDirectory/file.midi";
+		$factoryImage = "$factoryDirectory/file.png";
+		$factoryImageTrimmed = "$factoryDirectory/file-trimmed.png";
+		$factoryMultiFormat = "$factoryDirectory/file-%d.png";
+		$factoryMultiTrimmedFormat = "$factoryDirectory/file-%d-trimmed.png";
+
+		/* Determine which LilyPond code to use */
+		if ( $options['lang'] == 'lilypond' ) {
+			if ( $options['raw'] ) {
+				$lilypondCode = $code;
+			} else {
+				$lilypondCode = self::embedLilypondCode( $code, $options );
+			}
+		} else {
+			wfSuppressWarnings();
+			$lilypondCode = file_get_contents( $ly ); // may legitimately fail
+			wfRestoreWarnings();
+			if ( $lilypondCode === false ) {
+				/* (re-)generate .ly file */
+				$lilypondCode = self::generateLilypond( $code, $options, $filePrefix, $factoryDirectory );
+			}
+		}
+
+		/* generate lilypond output files in working environment */
+		if ( !file_exists( $factoryLy ) ) {
+			$rc = file_put_contents( $factoryLy, $lilypondCode );
+			if ( $rc === false ) {
+				throw new ScoreException( wfMessage( 'score-noinput', $factoryLy ) );
+			}
+		}
+		$oldcwd = getcwd();
+		if ( $oldcwd === false ) {
+			throw new ScoreException( wfMessage( 'score-getcwderr' ) );
+		}
+		$rc = chdir( $factoryDirectory );
+		if ( !$rc ) {
+			throw new ScoreException( wfMessage( 'score-chdirerr', $factoryDirectory ) );
+		}
+		if ( !is_executable( $wgScoreLilyPond ) ) {
+			throw new ScoreException( wfMessage( 'score-notexecutable', $wgScoreLilyPond ) );
+		}
+		$cmd = wfEscapeShellArg( $wgScoreLilyPond )
+			. ' -dsafe='
+			. wfEscapeShellArg( '#t' )
+			. ' -dbackend=eps --png --header=texidoc '
+			. wfEscapeShellArg( $factoryLy )
+			. ' 2>&1';
+		$output = wfShellExec( $cmd, $rc2 );
+		$rc = chdir( $oldcwd );
+		if ( !$rc ) {
+			throw new ScoreException( wfMessage( 'score-chdirerr', $oldcwd ) );
+		}
+		if ( $rc2 != 0 ) {
+			self::throwCallException( wfMessage( 'score-compilererr' ), $output );
+		}
+		if ( $options['midi'] && !file_exists( $factoryMidi ) ) {
+			throw new ScoreException( wfMessage( 'score-nomidi' ) );
+		}
+
+		/* trim output images if wanted */
+		if ( $wgScoreTrim ) {
+			if ( file_exists( $factoryImage ) ) {
+				self::trimImage( $factoryImage, $factoryImageTrimmed );
+			}
+			for ( $i = 1; file_exists( $f = sprintf( $factoryMultiFormat, $i ) ); ++$i ) {
+				self::trimImage( $f, sprintf( $factoryMultiTrimmedFormat, $i ) );
+			}
+		} else {
+			$factoryImageTrimmed = $factoryImage;
+			$factoryMultiTrimmedFormat = $factoryMultiFormat;
+		}
+
+		/* move files to proper places */
+		$rc = true;
+		if ( file_exists( $factoryMidi ) ) {
+			$rc = $rc && rename( $factoryMidi, $midi );
+		}
+		if ( file_exists( $factoryImageTrimmed ) ) {
+			$rc = $rc && rename( $factoryImageTrimmed, $image );
+		}
+		for ( $i = 1; file_exists( $f = sprintf( $factoryMultiTrimmedFormat, $i ) ); ++$i ) {
+			$rc = $rc && rename( $f, sprintf( $multiFormat, $i ) );
+		}
+		if ( !$rc ) {
+			throw new ScoreException( wfMessage( 'score-renameerr' ) );
+		}
 	}
 
 	/**
@@ -480,40 +510,33 @@ class Score {
 	private static function generateOgg( $options, $filePrefix, $factoryDirectory ) {
 		global $wgScoreTimidity;
 
-		wfProfileIn( __METHOD__ );
+		$prof = new ScopedProfiling(  __METHOD__ );
 
-		try {
-			/* Working environment */
-			self::createFactory( $factoryDirectory );
-			$factoryOgg = "$factoryDirectory/file.ogg";
-			$midi = "$filePrefix.midi";
-			$ogg = "$filePrefix.ogg";
+		/* Working environment */
+		self::createFactory( $factoryDirectory );
+		$factoryOgg = "$factoryDirectory/file.ogg";
+		$midi = "$filePrefix.midi";
+		$ogg = "$filePrefix.ogg";
 
-			/* Run timidity */
-			if ( !is_executable( $wgScoreTimidity ) ) {
-				throw new ScoreException( wfMessage( 'score-timiditynotexecutable', $wgScoreTimidity ) );
-			}
-			$cmd = wfEscapeShellArg( $wgScoreTimidity )
-				. ' -Ov' // Vorbis output
-				. ' --output-file=' . wfEscapeShellArg( $factoryOgg )
-				. ' ' . wfEscapeShellArg( $midi )
-				. ' 2>&1';
-			$output = wfShellExec( $cmd, $rc );
-			if ( ( $rc != 0 ) || !file_exists( $factoryOgg ) ) {
-				self::throwCallException( wfMessage( 'score-oggconversionerr' ), $output );
-			}
-
-			/* Move resultant file to proper place */
-			$rc = rename( $factoryOgg, $ogg );
-			if ( !$rc ) {
-				throw new ScoreException( wfMessage( 'score-renameerr' ) );
-			}
-		} catch ( Exception $e ) {
-			wfProfileOut( __METHOD__ );
-			throw $e;
+		/* Run timidity */
+		if ( !is_executable( $wgScoreTimidity ) ) {
+			throw new ScoreException( wfMessage( 'score-timiditynotexecutable', $wgScoreTimidity ) );
+		}
+		$cmd = wfEscapeShellArg( $wgScoreTimidity )
+			. ' -Ov' // Vorbis output
+			. ' --output-file=' . wfEscapeShellArg( $factoryOgg )
+			. ' ' . wfEscapeShellArg( $midi )
+			. ' 2>&1';
+		$output = wfShellExec( $cmd, $rc );
+		if ( ( $rc != 0 ) || !file_exists( $factoryOgg ) ) {
+			self::throwCallException( wfMessage( 'score-oggconversionerr' ), $output );
 		}
 
-		wfProfileOut( __METHOD__ );
+		/* Move resultant file to proper place */
+		$rc = rename( $factoryOgg, $ogg );
+		if ( !$rc ) {
+			throw new ScoreException( wfMessage( 'score-renameerr' ) );
+		}
 	}
 
 	/**
@@ -529,6 +552,8 @@ class Score {
 	 * @throws ScoreException if an error occurs.
 	 */
 	private static function generateLilypond( $code, $options, $filePrefix, $factoryDirectory ) {
+		$prof = new ScopedProfiling( __METHOD__ );
+
 		$ly = "$filePrefix.ly";
 
 		switch ( $options['lang'] ) {
@@ -564,6 +589,8 @@ class Score {
 	 */
 	private function generateLilypondFromAbc( $code, $factoryDirectory ) {
 		global $wgScoreAbc2Ly;
+
+		$prof = new ScopedProfiling( __METHOD__ );
 
 		$factoryAbc = "$factoryDirectory/file.abc";
 		$factoryLy = "$factoryDirectory/file.ly";
@@ -620,6 +647,8 @@ class Score {
 	 */
 	private static function trimImage( $source, $dest ) {
 		global $wgImageMagickConvertCommand;
+
+		$prof = new ScopedProfiling( __METHOD__ );
 
 		$cmd = wfEscapeShellArg( $wgImageMagickConvertCommand )
 			. ' -trim '
