@@ -178,11 +178,17 @@ $1',
 	'score-noabcinput' => "Le fichier source ABC $1 n'a pas pu être créé.",
 	'score-nofactory' => 'Erreur lors de la création du répertoire de la fabrique LilyPond',
 	'score-noinput' => 'Erreur lors de la création du fichier d’entrée $1 LilyPond',
+	'score-noogghandler' => 'La conversion Ogg/Vorbis nécessite une extension OggHandler installée et configurée, voir [//www.mediawiki.org/wiki/Extension:OggHandler Extension:OggHandler].',
+	'score-nomidi' => 'Pas de fichier MIDI généré malgré la demande. Si vous travaillez en mode brut de LilyPond, assurez-vous de fournir un bloc \\midi correct.',
 	'score-nooutput' => 'Erreur lors de la création du répertoire image $1 de LilyPond',
 	'score-notexecutable' => 'Impossible d’exécuter LilyPond: $1 n\'est pas un fichier exécutable. Vérifiez que <code>$wgScoreLilyPond</code> est correctement configuré.',
+	'score-novorbislink' => 'Impossible de générer un lien Ogg/Vorbis: $1',
+	'score-oggconversionerr' => 'Impossible de convertir de MIDI en Ogg/Vorbis:
+$1',
 	'score-page' => 'Page $1',
 	'score-pregreplaceerr' => "Le remplacement de l'expression régulière PCRE a échoué",
 	'score-readerr' => 'Impossible de lire le fichier $1',
+	'score-timiditynotexecutable' => "TiMidity++ n'a pas pu s'exécuter: \$1 n'est pas un fichier exécutable. Assurez-vous que <code>\$wgScoreTimidity</code> est défini correctement.",
 	'score-renameerr' => 'Erreur lors du déplacement des fichiers de musique vers le répertoire de téléversement',
 	'score-trimerr' => 'L\'image n\'a pas pu être retaillée:
 $1
