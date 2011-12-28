@@ -282,7 +282,7 @@ $1',
  * @author Siebrand
  */
 $messages['nl'] = array(
-	'score-abc2lynotexecutable' => 'Het conversie programma voor ABC naar LilyPond kon niet uitgevoerd worden: $1 is geen uitvoerbaar bestand. Zorg dat de instelling <code>$wgScoreAbc2Ly</code> correct is.',
+	'score-abc2lynotexecutable' => 'Het conversieprogramma voor ABC naar LilyPond kon niet uitgevoerd worden: $1 is geen uitvoerbaar bestand. Zorg dat de instelling <code>$wgScoreAbc2Ly</code> correct is.',
 	'score-abcconversionerr' => 'Het was niet mogelijk het ABC-bestand om te zetten naar LilyPond:
 $1',
 	'score-chdirerr' => 'Het was niet mogelijk naar de map $1 te gaan.',
