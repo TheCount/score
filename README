@@ -56,45 +56,43 @@ For a simple score, use e.g.
 
 <score>\relative c' { f d f a d f e d cis a cis e a g f e }</score>
 
-This will render the appropriate score as a PNG image. The lilypond software
-is also capable of creating MIDI files. Use
+This will render the appropriate score as a PNG image.
 
-<score midi="1">…</score>
+You may also specify attributes to the score tags in the general form
 
-and the rendered image will be embedded into a hyperlink to an appropriate
-MIDI file. Use
+<score attribute1="value1" attribute2="value2">…</score>.
 
-<score vorbis="1">…</score>
+The following attributes are available:
 
-and the rendered image will be embedded in an Ogg/Vorbis handler (provided you
-installed the OggHandler extension, see above under Prerequisites). Since the
-Vorbis file is created from the midi, the "vorbis" attribute implies the
-"midi" attribute.
+* Attribute: lang
+  Allowed values: ABC, lilypond (default)
+  Effect: Sets the score language. For example, to provide a score in ABC
+          notation, you might use
 
-For more complex scores, you may supply a complete lilypond file
-with
+          <score lang="ABC" midi="1">
+          X:1
+          M:C
+          L:1/4
+          K:C
+          C, D, E, F,|G, A, B, C|D E F G|A B c d|
+          e f g a|b c' d' e'|f' g' a' b'|]
+          </score>.
 
-<score raw="1">…</score>
+* Attribute: midi
+  Allowed values: 0 (default), 1
+  Effect: The rendered image(s) will be embedded into a hyperlink to an
+          appropriate MIDI file.
 
-You may also combine the "raw" and "midi"/"vorbis" attributes, but remember
-that in this case, you need to provide the necessary \midi block yourself.
+* Attribute: raw
+  Allowed valued: 0 (default), 1
+  Effect: The score code is interpreted as a complete LilyPond file. Use this
+          option if you want to create more complex scores. If the score
+          language (lang attribute) is not set to lilypond, this attribute
+          is ignored.
 
-The extension also supports the ABC music notation through LilyPond's abc2ly
-converter (see the documentation for $wgScoreAbc2Ly above). Use
-
-<score lang="ABC">…</score>
-
-to write music in ABC, for example
-
-<score lang="ABC" midi="1">
-X:1
-M:C
-L:1/4
-K:C
-C, D, E, F,|G, A, B, C|D E F G|A B c d|e f g a|b c' d' e'|f' g' a' b'|]
-</score>
-
-As you can see, you may combine the lang attribute with the midi attribute.
-The raw attribute will be ignored if lang is specified to be anything else than
-"lilypond".
+* Attribute: vorbis
+  Allowed values: 0 (default), 1
+  Effect: An Ogg/Vorbis file will be generated for the score, provided you
+          installed and configures the OggHandler extension. An Ogg/Vorbis
+          player will be embedded in the HTML below the score image(s).
 
