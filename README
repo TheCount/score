@@ -69,7 +69,7 @@ The following attributes are available:
   Effect: Sets the score language. For example, to provide a score in ABC
           notation, you might use
 
-          <score lang="ABC" midi="1">
+          <score lang="ABC">
           X:1
           M:C
           L:1/4
