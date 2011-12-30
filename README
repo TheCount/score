@@ -80,19 +80,20 @@ The following attributes are available:
 
 * Attribute: midi
   Allowed values: 0 (default), 1
-  Effect: The rendered image(s) will be embedded into a hyperlink to an
-          appropriate MIDI file.
+  Effect: If set to 1, the rendered image(s) will be embedded into a hyperlink
+          to an appropriate MIDI file.
 
 * Attribute: raw
   Allowed valued: 0 (default), 1
-  Effect: The score code is interpreted as a complete LilyPond file. Use this
-          option if you want to create more complex scores. If the score
-          language (lang attribute) is not set to lilypond, this attribute
-          is ignored.
+  Effect: If set to 1, the score code is interpreted as a complete LilyPond
+          file. Use this option if you want to create more complex scores.
+          If the score language (lang attribute) is not set to lilypond, this
+          attribute is ignored.
 
 * Attribute: vorbis
   Allowed values: 0 (default), 1
-  Effect: An Ogg/Vorbis file will be generated for the score, provided you
-          installed and configures the OggHandler extension. An Ogg/Vorbis
-          player will be embedded in the HTML below the score image(s).
+  Effect: If set to 1, an Ogg/Vorbis file will be generated for the score,
+          provided you installed and configured the OggHandler extension.
+          An Ogg/Vorbis player will be embedded in the HTML below the score
+          image(s).
 
