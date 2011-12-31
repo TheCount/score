@@ -346,7 +346,7 @@ class Score {
 					throw new ScoreException( wfMessage( 'score-novorbislink', $e->getMessage() ), 0, $e );
 				}
 			}
-			if ( $options['override_ogg'] ) {
+			if ( $options['override_ogg'] !== false ) {
 				try {
 					$link .= $parser->recursiveTagParse( "[[File:{$options['override_ogg']}]]" );
 				} catch ( Exception $e ) {
