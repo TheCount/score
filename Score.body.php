@@ -215,9 +215,7 @@ class Score {
 			}
 
 			/* Midi rendering? */
-			if ( $options['vorbis'] ) {
-				$options['midi'] = true;
-			} elseif ( array_key_exists( 'midi', $args ) ) {
+			if ( array_key_exists( 'midi', $args ) ) {
 				$options['midi'] = $args['midi'];
 			} else {
 				$options['midi'] = false;
@@ -288,7 +286,8 @@ class Score {
 
 		try {
 			/* Generate PNG and MIDI files if necessary */
-			if ( ( !file_exists( $image ) && !file_exists( $multi1 ) ) || ( $options['midi'] && !file_exists( $midi ) ) ) {
+			if ( ( !file_exists( $image ) && !file_exists( $multi1 ) )
+					|| ( ( $options['midi'] || $options['vorbis'] ) && !file_exists( $midi ) ) ) {
 				self::generatePngAndMidi( $code, $options, $filePrefix, $factoryDirectory );
 			}
 
@@ -431,7 +430,7 @@ class Score {
 		if ( $rc2 != 0 ) {
 			self::throwCallException( wfMessage( 'score-compilererr' ), $output );
 		}
-		if ( $options['midi'] && !file_exists( $factoryMidi ) ) {
+		if ( ( $options['midi'] || $options['vorbis'] ) && !file_exists( $factoryMidi ) ) {
 			throw new ScoreException( wfMessage( 'score-nomidi' ) );
 		}
 
@@ -494,7 +493,7 @@ class Score {
 			. "\\score {\n"
 			. $lilypondCode
 			. "\t\\layout { }\n"
-			. ( $options['midi'] ? "\t\\midi { }\n" : "" )
+			. ( ( $options['midi'] || $options['vorbis'] ) ? "\t\\midi { }\n" : "" )
 			. "}\n";
 		return $raw;
 	}
