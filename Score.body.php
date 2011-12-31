@@ -204,6 +204,20 @@ class Score {
 				throw new ScoreException( wfMessage( 'score-invalidlang', $options['lang'] ) );
 			}
 
+			/* Override OGG file? */
+			if ( array_key_exists( 'override_ogg', $args ) ) {
+				$t = Title::newFromText( $args['override_ogg'], NS_FILE );
+				if ( is_null( $t ) ) {
+					throw new ScoreException( wfMessage( 'score-invalidoggoverride' ) );
+				}
+				if ( !$t->isKnown() ) {
+					throw new ScoreException( wfMessage( 'score-oggoverridenotfound' ) );
+				}
+				$options['override_ogg'] = $args['override_ogg'];
+			} else {
+				$options['override_ogg'] = false;
+			}
+
 			/* Vorbis rendering? */
 			if ( array_key_exists( 'vorbis', $args ) ) {
 				$options['vorbis'] = $args['vorbis'];
@@ -212,6 +226,9 @@ class Score {
 			}
 			if ( $options['vorbis'] && !( class_exists( 'OggHandler' ) && class_exists( 'OggAudioDisplay' ) ) ) {
 				throw new ScoreException( wfMessage( 'score-noogghandler' ) );
+			}
+			if ( $options['vorbis'] && ( $options['override_ogg'] !== false ) ) {
+				throw new ScoreException( wfMessage( 'score-vorbisoverrideogg' ) );
 			}
 
 			/* Midi rendering? */
@@ -228,7 +245,7 @@ class Score {
 				$options['raw'] = false;
 			}
 
-			$html = self::generateHTML( $code, $options );
+			$html = self::generateHTML( $parser, $code, $options );
 		} catch ( ScoreException $e ) {
 			$html = "$e";
 		}
@@ -239,6 +256,7 @@ class Score {
 	/**
 	 * Generates the HTML code for a score tag.
 	 *
+	 * @param $parser Parser MediaWiki parser.
 	 * @param $code score code.
 	 * @param $options array of music rendering options. Available options keys are:
 	 * 	* lang: score language,
@@ -250,7 +268,7 @@ class Score {
 	 *
 	 * @throws ScoreException if an error occurs.
 	 */
-	private static function generateHTML( $code, $options ) {
+	private static function generateHTML( &$parser, $code, $options ) {
 		global $wgUploadDirectory, $wgUploadPath, $wgTmpDirectory, $wgOut;
 
 		$prof = new ScopedProfiling( __METHOD__ );
@@ -324,6 +342,13 @@ class Score {
 					$oh->setHeaders( $wgOut );
 					$oad = new OggAudioDisplay( new UnregisteredLocalFile( false, false, $ogg ), $oggPath, self::DEFAULT_PLAYER_WIDTH, 0, 0, $oggPath, false );
 					$link .= $oad->toHtml( array( 'alt' => $code ) );
+				} catch ( Exception $e ) {
+					throw new ScoreException( wfMessage( 'score-novorbislink', $e->getMessage() ), 0, $e );
+				}
+			}
+			if ( $options['override_ogg'] ) {
+				try {
+					$link .= $parser->recursiveTagParse( "[[File:{$options['override_ogg']}]]" );
 				} catch ( Exception $e ) {
 					throw new ScoreException( wfMessage( 'score-novorbislink', $e->getMessage() ), 0, $e );
 				}
