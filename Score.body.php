@@ -383,18 +383,10 @@ class Score {
 		$multiFormat = "$filePrefix-%d.png";
 
 		/* delete old files if necessary */
-		$rc = true;
-		if ( file_exists( $midi ) ) {
-			$rc = $rc && unlink( $midi );
-		}
-		if ( file_exists( $image ) ) {
-			$rc = $rc && unlink( $image );
-		}
+		self::cleanupFile( $midi );
+		self::cleanupFile( $image );
 		for ( $i = 1; file_exists( $f = sprintf( $multiFormat, $i ) ); ++$i ) {
-			$rc = $rc && unlink( $f );
-		}
-		if ( !$rc ) {
-			throw new ScoreException( wfMessage( 'score-cleanerr' ) );
+			self::cleanupFile( $f );
 		}
 
 		/* Create the working environment */
@@ -543,6 +535,9 @@ class Score {
 		$midi = "$filePrefix.midi";
 		$ogg = "$filePrefix.ogg";
 
+		/* Delete old file if necessary */
+		self::cleanupFile( $ogg );
+
 		/* Run timidity */
 		if ( !is_executable( $wgScoreTimidity ) ) {
 			throw new ScoreException( wfMessage( 'score-timiditynotexecutable', $wgScoreTimidity ) );
@@ -581,6 +576,10 @@ class Score {
 
 		$ly = "$filePrefix.ly";
 
+		/* Delete old file if necessary */
+		self::cleanupFile( $ly );
+
+		/* Generate LilyPond code by score language */
 		switch ( $options['lang'] ) {
 		case 'ABC':
 			$lilypondCode = self::generateLilypondFromAbc( $code, $factoryDirectory );
@@ -591,6 +590,7 @@ class Score {
 			throw new MWException( 'Unknown score language in ' . __METHOD__ . ". This should not happen.\n" );
 		}
 
+		/* Create LilyPond file and return the code */
 		$rc = file_put_contents( $ly, $lilypondCode );
 		if ( $rc === false ) {
 			self::debug( "Unable to write LilyPond code to $ly.\n" );
@@ -705,6 +705,23 @@ class Score {
 		} else {
 			/* Nothing to do */
 			return true;
+		}
+	}
+
+	/**
+	 * Deletes a file if it exists.
+	 *
+	 * @param $path string path to the file to be deleted.
+	 *
+	 * @throws ScoreException if the file specified by $path exists but
+	 * 	could not be deleted.
+	 */
+	private static function cleanupFile( $path ) {
+		if ( file_exists( $path ) ) {
+			$rc = unlink( $path );
+			if ( !$rc ) {
+				throw new ScoreException( wfMessage( 'score-cleanerr' ) );
+			}
 		}
 	}
 
