@@ -249,6 +249,45 @@ $1',
 	'score-vorbisoverrideogg' => 'Non pode solicitar unha renderización Ogg/Vorbis e asemade especificar override_ogg.',
 );
 
+/** Interlingua (Interlingua)
+ * @author McDutchie
+ */
+$messages['ia'] = array(
+	'score-abc2lynotexecutable' => 'Le convertitor ABC a LilyPond non poteva esser executate: $1 non es un file executabile. Assecura te que <code>$wgScoreAbc2Ly</code> es definite correctemente.',
+	'score-abcconversionerr' => 'Impossibile converter le file ABC al formato LilyPond:
+$1',
+	'score-chdirerr' => 'Impossibile cambiar al directorio $1',
+	'score-cleanerr' => 'Impossibile rader le vetere files ante de regenerar',
+	'score-compilererr' => 'Impossibile compilar le file de entrata LilyPond:
+$1',
+	'score-desc' => 'Adde un etiquetta pro le rendition de partituras musical con LilyPond',
+	'score-getcwderr' => 'Impossibile obtener le directorio de labor actual',
+	'score-invalidlang' => 'Linguage de partitura invalide: lang="$1". Le linguages actualmente recognoscite es lang="lilypond" (le predefinition) e lang="ABC".',
+	'score-invalidoggoverride' => 'Le file que tu specificava con override_ogg es invalide. Per favor specifica le nomine del file solmente, omittente <nowiki>[[…]]</nowiki> e le prefixo "File:".',
+	'score-noabcinput' => 'Le file de fonte ABC $1 non poteva esser create.',
+	'score-nofactory' => 'Le creation del directorio de fabrica LilyPond ha fallite.',
+	'score-noinput' => 'Le creation del file de entrata LilyPond $1 ha fallite.',
+	'score-noogghandler' => 'Le conversion in Ogg/Vorbis require un extension OggHandler installate e configurate, vide [//www.mediawiki.org/wiki/Extension:OggHandler Extension:OggHandler].',
+	'score-nomidi' => 'Nulle file MIDI ha essite generate, malgrado que illo esseva requestate. Si tu travalia in modo LilyPond brute, assecura te de fornir un bloco \\midi correcte.',
+	'score-nooutput' => 'Le creation del directorio de imagine LilyPond $1 ha fallite.',
+	'score-notexecutable' => 'Impossibile executar LilyPond: $1 non es un file executabile. Assecura te que <code>$wgScoreLilyPond</code> es definite correctemente.',
+	'score-novorbislink' => 'Impossibile generar ligamine Ogg/Vorbis: $1',
+	'score-oggconversionerr' => 'Impossibile converter MIDI in Ogg/Vorbis:
+$1',
+	'score-oggoverridenotfound' => 'Le file que tu specificava con override_ogg non existe.',
+	'score-page' => 'Pagina $1',
+	'score-pregreplaceerr' => 'Le reimplaciamento del expression regular PCRE ha fallite',
+	'score-readerr' => 'Impossibile leger le file $1.',
+	'score-timiditynotexecutable' => 'TiMidity++ non poteva esser executate: $1 non es un file executabile. Assecura te que <code>$wgScoreTimidity</code> es definite correctemente.',
+	'score-renameerr' => 'Error durante le displaciamento de files de partitura al directorio de incargamento.',
+	'score-trimerr' => 'Le imagine non poteva esser taliate:
+$1
+Defini <code>$wgScoreTrim=false</code> si iste problema persiste.',
+	'score-versionerr' => 'Impossibile obtener le version de LilyPond:
+$1',
+	'score-vorbisoverrideogg' => 'Tu non pote requestar un rendition in Ogg/Vorbis e specificar override_ogg al mesme tempore.',
+);
+
 /** Luxembourgish (Lëtzebuergesch)
  * @author Robby
  */
@@ -298,6 +337,7 @@ $1',
 );
 
 /** Dutch (Nederlands)
+ * @author Patio
  * @author SPQRobin
  * @author Siebrand
  */
@@ -312,6 +352,7 @@ $1',
 	'score-desc' => 'Voegt een label toe voor het weergeven van bladmuziek met LilyPond',
 	'score-getcwderr' => 'Het was niet mogelijk de ingestelde werkmap te gebruiken',
 	'score-invalidlang' => 'Er is een onjuiste taal voor bladmuziek aangegeven (lang="$1"). Op dit moment worden lang="lilypond" (standaard) en lang="ABC" ondersteund.',
+	'score-invalidoggoverride' => 'Het bestand dat u hebt opgegeven met override_ogg is ongeldig. Gebruik alleen de bestandsnaam, laat <nowiki>[[…]]</nowiki> weg en zet "bestand:" ervoor.',
 	'score-noabcinput' => 'Het ABC-bronbestand $1 kon niet aangemaakt worden',
 	'score-nofactory' => 'Het was niet mogelijk de factorymap voor LilyPond aan te maken',
 	'score-noinput' => 'Het was niet mogelijk het invoerbestand $1 voor LilyPond aan te maken',
@@ -322,6 +363,7 @@ $1',
 	'score-novorbislink' => 'Het was niet mogelijk een Ogg/Vorbis-verwijzing aan te maken: $1',
 	'score-oggconversionerr' => 'Het was niet mogelijk MIDI naar Ogg/Vorbis om te zetten:
 $1',
+	'score-oggoverridenotfound' => 'Het bestand dat u hebt opgegeven met "override_ogg" bestaat niet.',
 	'score-page' => 'Pagina $1',
 	'score-pregreplaceerr' => 'Vervangen met behulp van een PCRE reguliere expressie is mislukt',
 	'score-readerr' => 'Het bestand $1 kan niet gelezen worden.',
@@ -332,5 +374,6 @@ $1
 Stel de volgende waarde in als dit probleem blijft bestaan: <code>$wgScoreTrim=false</code>.',
 	'score-versionerr' => 'Het was niet mogelijk de LiliPond-versie te achterhalen:
 $1',
+	'score-vorbisoverrideogg' => 'U kunt niet vragen om Ogg/Vorbisrendering en tegelijkertijd "override_ogg" gebruiken.',
 );
 
