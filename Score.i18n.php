@@ -146,6 +146,7 @@ $1',
 	'score-invalidoggoverride' => 'Die Datei, die für <code>override_ogg</code> angegeben wurde, ist ungültig. Bitte nur den Dateinamen angeben und dabei <nowiki>[[…]]</nowiki> sowie das Prefix „Datei:“ weglassen.',
 	'score-noabcinput' => 'Die ABC-Quelldatei $1 konnte nicht erstellt werden.',
 	'score-nofactory' => 'Das Arbeitsverzeichnis für LilyPond konnte nicht erstellt werden',
+	'score-noimages' => 'Es wurden keine Bilder zur Partitur generiert. Bitte prüfe den Code zur Partitur.',
 	'score-noinput' => 'Die Eingabedatei $1 für LilyPond konnte nicht erstellt werden.',
 	'score-noogghandler' => 'Um eine Ogg-Vorbnis-Konvertierung durchführen zu können, muss eine Erweiterung zur Nutzung von Ogg installiert sein. Siehe hierzu die [//www.mediawiki.org/wiki/Extension:OggHandler Erweiterung OggHandler].',
 	'score-nomidi' => 'Ungeachtet einer entsprechenden Anforderung wurde keine MIDI-Datei generiert. Sofern der reine LilyPond-Modus genutzt wird, muss ein richtiger „\\midi“-Block angegeben werden.',
@@ -166,6 +167,13 @@ In der Konfigurationsdatei muss <code>$wgScoreTrim = false;</code> festgelegt we
 	'score-versionerr' => 'Die Version von LilyPond konnte nicht ermittelt werden:
 $1',
 	'score-vorbisoverrideogg' => 'Es kann kein Ogg-Vorbis-Rendern angefordert und gleichzeitig <code>override_ogg</code> angegeben werden.',
+);
+
+/** German (formal address) (‪Deutsch (Sie-Form)‬)
+ * @author Kghbln
+ */
+$messages['de-formal'] = array(
+	'score-noimages' => 'Es wurden keine Bilder zur Partitur generiert. Bitte prüfen Sie den Code zur Partitur.',
 );
 
 /** French (Français)
@@ -293,6 +301,7 @@ $1',
  */
 $messages['lb'] = array(
 	'score-chdirerr' => 'Et konnt net op de Repertoire $1 gewiesselt ginn',
+	'score-oggoverridenotfound' => 'De Fichier deen Dir uginn hutt override_ogg gëtt et net.',
 	'score-page' => 'Säit $1',
 	'score-readerr' => 'De Fichier $1 konnt net geliest ginn.',
 );
