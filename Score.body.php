@@ -329,9 +329,8 @@ class Score {
 					) );
 				}
 			} else {
-				/* No images; this may actually happen in raw lilypond mode */
-				self::debug( "No output images $image or $multi1!\n" );
-				$link = 'No image';
+				/* No images; this may happen in raw mode or when the user omits the score code */
+				throw new ScoreException( wfMessage( 'score-noimages' ) );
 			}
 			if ( $options['midi'] ) {
 				$link = Html::rawElement( 'a', array( 'href' => $midiPath ), $link );
