@@ -93,6 +93,21 @@ $messages['qqq'] = array(
 	'score-vorbisoverrideogg' => 'Displayed if both vorbis="1" and override_ogg="…" were specified.',
 );
 
+/** Belarusian (Taraškievica orthography) (‪Беларуская (тарашкевіца)‬)
+ * @author EugeneZelenko
+ * @author Wizardist
+ */
+$messages['be-tarask'] = array(
+	'score-abc2lynotexecutable' => 'Пераўтваральнік з ABC у LilyPond ня можа быць выкліканы: $1 не зьяўляецца выканальным файлам. Праверце, ці <code>$wgScoreAbc2Ly</code> устаноўлены слушна.',
+	'score-abcconversionerr' => 'Немагчыма пераўтварыць ABC-файл у фармат LilyPond:
+$1',
+	'score-chdirerr' => 'Немагчыма зьмяніць дырэкторыю $1',
+	'score-cleanerr' => 'Немагчыма ачысьціць старыя файлы перад паказам',
+	'score-compilererr' => 'Немагчыма скампіляваць зыходны файл LilyPond:
+$1',
+	'score-desc' => 'Дадае тэг для паказу музычных нот праз LilyPond',
+);
+
 /** Danish (Dansk)
  * @author Peter Alberti
  */
