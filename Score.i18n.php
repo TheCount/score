@@ -270,6 +270,13 @@ $1',
 	'score-vorbisoverrideogg' => 'Non pode solicitar unha renderización Ogg/Vorbis e asemade especificar override_ogg.',
 );
 
+/** Upper Sorbian (Hornjoserbsce)
+ * @author Michawiki
+ */
+$messages['hsb'] = array(
+	'score-page' => 'Strona $1',
+);
+
 /** Interlingua (Interlingua)
  * @author McDutchie
  */
