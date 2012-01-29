@@ -127,7 +127,7 @@ class Score {
 			$message->rawParams(
 				Html::rawElement( 'pre',
 					array(),
-					strip_tags( $output )
+					htmlspecialchars( $output )
 				)
 			)
 		);
@@ -209,7 +209,7 @@ class Score {
 				$options['lang'] = 'lilypond';
 			}
 			if ( !in_array( $options['lang'], self::$supportedLangs ) ) {
-				throw new ScoreException( wfMessage( 'score-invalidlang', $options['lang'] ) );
+				throw new ScoreException( wfMessage( 'score-invalidlang', htmlspecialchars( $options['lang'] ) ) );
 			}
 
 			/* image file path and URL prefixes */
@@ -376,14 +376,14 @@ class Score {
 					);
 					$link .= $oad->toHtml( array( 'alt' => $code ) );
 				} catch ( Exception $e ) {
-					throw new ScoreException( wfMessage( 'score-novorbislink', $e->getMessage() ), 0, $e );
+					throw new ScoreException( wfMessage( 'score-novorbislink', htmlspecialchars( $e->getMessage() ) ), 0, $e );
 				}
 			}
 			if ( $options['override_ogg'] !== false ) {
 				try {
 					$link .= $parser->recursiveTagParse( "[[File:{$options['ogg_name']}]]" );
 				} catch ( Exception $e ) {
-					throw new ScoreException( wfMessage( 'score-novorbislink', $e->getMessage() ), 0, $e );
+					throw new ScoreException( wfMessage( 'score-novorbislink', htmlspecialchars( $e->getMessage() ) ), 0, $e );
 				}
 			}
 		} catch ( Exception $e ) {
