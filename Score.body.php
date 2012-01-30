@@ -234,10 +234,10 @@ class Score {
 			if ( array_key_exists( 'override_ogg', $args ) ) {
 				$t = Title::newFromText( $args['override_ogg'], NS_FILE );
 				if ( is_null( $t ) ) {
-					throw new ScoreException( wfMessage( 'score-invalidoggoverride' ) );
+					throw new ScoreException( wfMessage( 'score-invalidoggoverride', htmlspecialchars( $args['override_ogg'] ) ) );
 				}
 				if ( !$t->isKnown() ) {
-					throw new ScoreException( wfMessage( 'score-oggoverridenotfound' ) );
+					throw new ScoreException( wfMessage( 'score-oggoverridenotfound', htmlspecialchars( $args['override_ogg'] ) ) );
 				}
 				$options['override_ogg'] = true;
 				$options['ogg_name'] = $args['override_ogg'];
