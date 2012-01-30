@@ -212,6 +212,24 @@ class Score {
 				throw new ScoreException( wfMessage( 'score-invalidlang', htmlspecialchars( $options['lang'] ) ) );
 			}
 
+			/* Override MIDI file? */
+			if ( array_key_exists( 'override_midi', $args ) ) {
+				$file = wfFindFile( $args['override_midi'] );
+				if ( $file === false ) {
+					throw new ScoreException( wfMessage( 'score-midioverridenotfound', htmlspecialchars( $args['override_midi'] ) ) );
+				}
+				$options['override_midi'] = true;
+				$options['midi_file'] = $file;
+				$options['midi_path'] = $file->getLocalRefPath();
+				/* Set OGG stuff in case Vorbis rendering is requested */
+				$sha1 = $file->getSha1();
+				$oggRel = self::LILYPOND_DIR_NAME . "/{$sha1[0]}/{$sha1[0]}{$sha1[1]}/$sha1.ogg";
+				$options['ogg_path'] = "$wgUploadDirectory/$oggRel";
+				$options['ogg_url'] = "$wgUploadPath/$oggRel";
+			} else {
+				$options['override_midi'] = false;
+			}
+	
 			/* image file path and URL prefixes */
 			$imageCacheName = wfBaseConvert( sha1( $code ), 16, 36, 31 );
 			$imagePrefixEnd = self::LILYPOND_DIR_NAME . '/'
@@ -226,8 +244,11 @@ class Score {
 				$options['link_midi'] = false;
 			}
 			if ( $options['link_midi'] ) {
-				$options['midi_path'] = "{$options['image_path_prefix']}.midi";
-				$options['midi_url'] = "{$options['image_url_prefix']}.midi";
+				if ( $options['override_midi'] ) {
+					$options['midi_url'] = $options['midi_file']->getUrl();
+				} else {
+					$options['midi_url'] = "{$options['image_url_prefix']}.midi";
+				}
 			}
 
 			/* Override OGG file? */
@@ -257,9 +278,15 @@ class Score {
 			if ( $options['generate_vorbis'] && ( $options['override_ogg'] !== false ) ) {
 				throw new ScoreException( wfMessage( 'score-vorbisoverrideogg' ) );
 			}
-			if ( $options['generate_vorbis'] ) {
+			if ( $options['generate_vorbis'] && !$options['override_midi'] ) {
 				$options['ogg_path'] = "{$options['image_path_prefix']}.ogg";
 				$options['ogg_url'] = "{$options['image_url_prefix']}.ogg";
+			}
+
+			/* Generate MIDI? */
+			$options['generate_midi'] = ( $options['override_midi'] === false ) && ( $options['link_midi'] || $options['generate_vorbis'] );
+			if ( $options['generate_midi'] && !array_key_exists( 'midi_path', $options ) ) {
+				$options['midi_path'] = "{$options['image_path_prefix']}.midi";
 			}
 
 			/* Raw rendering? */
@@ -287,6 +314,9 @@ class Score {
 	 * 	* factory_directory: string Path to directory in which files
 	 * 		may be generated without stepping on someone else's
 	 * 		toes. The directory may not exist yet. Required.
+	 * 	* generate_midi: bool Whether to create a MIDI file, either
+	 * 		to subsequently generate a vorbis file, or to provide
+	 * 		a link to the MIDI file. Required.
 	 * 	* generate_vorbis: bool Whether to create an Ogg/Vorbis file in
 	 * 		an OggHandler. If set to true, the override_ogg option
 	 * 		must be set to false. Required.
@@ -295,8 +325,10 @@ class Score {
 	 * 	* image_url_prefix: string Prefix to the image URL. Required.
 	 * 	* lang: string Score language. Required.
 	 * 	* link_midi: bool Whether to link to a MIDI file. Required.
-	 * 	* midi_path: string Local MIDI path. Required if the link_midi
-	 * 		option is set to true, ignored otherwise.
+	 * 	* midi_file: MIDI file object.
+	 * 	* midi_path: string Local MIDI path. Required if the link_midi,
+	 * 		override_midi, or the generate_vorbis option is set to
+	 * 		true, ignored otherwise.
 	 * 	* midi_url: string MIDI URL. Required if the link_midi option
 	 * 		is set to true, ignored otherwise.
 	 * 	* ogg_name: string Name of the OGG file. Required if the
@@ -307,6 +339,8 @@ class Score {
 	 * 	* ogg_url: string Ogg/Vorbis URL. Required if the
 	 * 		generate_vorbis option is set to true, ignored
 	 * 		otherwise.
+	 * 	* override_midi: bool Whether to use a user-provided MIDI file.
+	 * 		Required.
 	 * 	* override_ogg: bool Whether to generate a wikilink to a
 	 * 		user-provided OGG file. If set to true, the vorbis
 	 * 		option must be set to false. Required.
@@ -326,10 +360,6 @@ class Score {
 			/* Generate PNG and MIDI files if necessary */
 			$imagePath = "{$options['image_path_prefix']}.png";
 			$multi1Path = "{$options['image_path_prefix']}-1.png";
-			if ( !$options['link_midi'] && $options['generate_vorbis'] && !file_exists( $options['ogg_path'] ) ) {
-				/* We need a MIDI file to generate a Vorbis file */
-				$options['midi_path'] = "{$options['factory_directory']}/file.midi";
-			}
 			if ( ( !file_exists( $imagePath ) && !file_exists( $multi1Path ) )
 					|| ( array_key_exists( 'midi_path', $options ) && !file_exists( $options['midi_path'] ) ) ) {
 				self::generatePngAndMidi( $code, $options );
@@ -401,9 +431,9 @@ class Score {
 	 *
 	 * @param $code string Score code.
 	 * @param $options array Rendering options. They are the same as for
-	 * 	Score::generateHTML() with the exception that the link_midi
-	 * 	option is ignored and the midi file is generated if the
-	 * 	midi_path option is present.
+	 * 	Score::generateHTML(). The MIDI file specified by the midi_path
+	 * 	option is generated if and only	if the generate_midi option
+	 * 	evaluates to true.
 	 *
 	 * @throws ScoreException on error.
 	 */
@@ -417,7 +447,7 @@ class Score {
 		$multiFormat = "{$options['image_path_prefix']}-%d.png";
 
 		/* delete old files if necessary */
-		if ( array_key_exists( 'midi_path', $options ) ) {
+		if ( $options['generate_midi'] ) {
 			self::cleanupFile( $options['midi_path'] );
 		}
 		self::cleanupFile( $image );
@@ -477,7 +507,7 @@ class Score {
 		if ( $rc2 != 0 ) {
 			self::throwCallException( wfMessage( 'score-compilererr' ), $output );
 		}
-		if ( array_key_exists( 'midi_path', $options ) && !file_exists( $factoryMidi ) ) {
+		if ( $options['generate_midi'] && !file_exists( $factoryMidi ) ) {
 			throw new ScoreException( wfMessage( 'score-nomidi' ) );
 		}
 
@@ -496,7 +526,7 @@ class Score {
 
 		/* move files to proper places */
 		$rc = true;
-		if ( array_key_exists( 'midi_path', $options ) ) {
+		if ( $options['generate_midi'] ) {
 			self::renameFile( $factoryMidi, $options['midi_path'] );
 		}
 		if ( file_exists( $factoryImageTrimmed ) ) {
@@ -512,9 +542,8 @@ class Score {
 	 *
 	 * @param $lilypondCode string Simple LilyPond code.
 	 * @param $options array Rendering options. The are the same as for
-	 * 	Score::generateHTML() except that the link_midi option is
-	 * 	ignored and a MIDI block is embedded if and only if the
-	 * 	midi_path option is present.
+	 * 	Score::generateHTML(). A MIDI block is embedded if and only if
+	 * 	the generate_midi option evaluates to true.
 	 *
 	 * @return string Raw lilypond code.
 	 *
@@ -540,7 +569,7 @@ class Score {
 			. "\\score {\n"
 			. $lilypondCode
 			. "\t\\layout { }\n"
-			. ( array_key_exists( 'midi_path', $options ) ? "\t\\midi { }\n" : "" )
+			. ( $options['generate_midi'] ? "\t\\midi { }\n" : '' )
 			. "}\n";
 		return $raw;
 	}
