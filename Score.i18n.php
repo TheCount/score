@@ -413,3 +413,43 @@ $1',
 	'score-vorbisoverrideogg' => 'U kunt niet vragen om Ogg/Vorbisrendering en tegelijkertijd "override_ogg" gebruiken.',
 );
 
+/** Vietnamese (Tiếng Việt)
+ * @author Minh Nguyen
+ */
+$messages['vi'] = array(
+	'score-abc2lynotexecutable' => 'Không thể thực thi trình chuyển đổi ABC qua LilyPond: $1 không phải là một tập tin thực thi. Hãy chắc chắn rằng <code>$wgScoreAbc2Ly</code> có giá trị chính xác.',
+	'score-abcconversionerr' => 'Không thể chuyển đổi tập tin ABC qua định dạng LilyPond:
+$1',
+	'score-chdirerr' => 'Không thể chuyển đến thư mục $1',
+	'score-cleanerr' => 'Không thể xóa sạch các tập tin cũ trước khi kết xuất lại',
+	'score-compilererr' => 'Không thể biên dịch tập tin đầu vào LilyPond:
+$1',
+	'score-desc' => 'Cung cấp thẻ để vẽ tài liệu âm nhạc dùng LilyPond',
+	'score-getcwderr' => 'Không thể lấy thư mục làm việc hiện tại',
+	'score-invalidlang' => 'Ngôn ngữ nốt nhạc lang="<nowiki>$1</nowiki>" không hợp lệ. Các ngôn ngữ đang được chấp nhận là lang="lilypond" (mặc định) và lang="ABC".',
+	'score-invalidoggoverride' => 'Tập tin “<nowiki>$1</nowiki>” mà bạn chỉ định override_ogg không hợp lệ. Xin vui lòng chỉ đưa vào tên tập tin; bỏ qua <nowiki>[[…]]</nowiki> và tiền tố “{{ns:file}}:”.',
+	'score-midioverridenotfound' => 'Tập tin “<nowiki>$1</nowiki>” mà bạn chỉ định override_midi không hợp lệ. Xin vui lòng chỉ đưa vào tên tập tin; bỏ qua <nowiki>[[…]]</nowiki> và tiền tố “{{ns:file}}:”.',
+	'score-noabcinput' => 'Không thể tạo ra tập tin mã nguồn ABC $1.',
+	'score-noimages' => 'Các hình tài liệu âm nhạc không được tạo ra. Xin vui lòng kiểm tra lại mã nguồn.',
+	'score-noinput' => 'Thất bại trong việc tạo ra tập tin đầu vào LilyPond $1.',
+	'score-noogghandler' => 'Tính năng chuyển đổi Ogg/Vorbis cần cài đặt và thiết lập phần mở rộng OggHandler; xem [//www.mediawiki.org/wiki/Extension:OggHandler/vi?uselang=vi Extension:OggHandler].',
+	'score-nomidi' => 'Tập tin MIDI đã yêu cầu không được tạo ra. Nếu bạn đang làm việc trong chế độ LilyPond nguyên văn, hãy chắc chắn cung cấp một khối \\midi hợp lệ.',
+	'score-nooutput' => 'Thất bại trong việc tạo ra thư mục đầu ra $1.',
+	'score-notexecutable' => 'Không thể thực thi LilyPond: $1 không phải là một tập tin thực thi. Hãy chắc chắn rằng <code>$wgScoreLilyPond</code> có giá trị chính xác.',
+	'score-novorbislink' => 'Không thể tạo ra liên kết Ogg/Vorbis: $1',
+	'score-oggconversionerr' => 'Không thể chuyển đổi MIDI qua Ogg/Vorbis:
+$1',
+	'score-oggoverridenotfound' => 'Tập tin “<nowiki>$1</nowiki>” mà bạn chỉ định override_ogg không tồn tại.',
+	'score-page' => 'Trang $1',
+	'score-pregreplaceerr' => 'Thất bại trong việc thay thế theo biểu thưc chính quy PCRE',
+	'score-readerr' => 'Không thể đọc tập tin $1.',
+	'score-timiditynotexecutable' => 'Không thể thực thi TiMidity++: $1 không phải là một tập tin thực thi. Hãy chắc chắn rằng <code>$wgScoreTimidity</code> có giá trị chính xác.',
+	'score-renameerr' => 'Lỗi khi di chuyển các tập tin tài liệu âm nhạc sang thư mục tải lên.',
+	'score-trimerr' => 'Không thể tỉa hình:
+$1
+Nếu vấn đề này vẫn còn xuất hiện, hãy đặt <code>$wgScoreTrim=false</code>.',
+	'score-versionerr' => 'Không thể lấy phiên bản của LilyPond:
+$1',
+	'score-vorbisoverrideogg' => 'Bạn không thể yêu cầu kết xuất Ogg/Vorbis và định override_ogg cùng lúc.',
+);
+
