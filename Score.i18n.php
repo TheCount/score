@@ -327,7 +327,7 @@ $1',
  */
 $messages['lb'] = array(
 	'score-chdirerr' => 'Et konnt net op de Repertoire $1 gewiesselt ginn',
-	'score-oggoverridenotfound' => 'De Fichier deen Dir uginn hutt override_ogg gëtt et net.',
+	'score-oggoverridenotfound' => 'De Fichier "<nowiki>$1</nowiki>" deen Dir mat override_ogg uginn hutt  gëtt et net.',
 	'score-page' => 'Säit $1',
 	'score-readerr' => 'De Fichier $1 konnt net geliest ginn.',
 );
