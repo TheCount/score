@@ -124,15 +124,19 @@ $1',
 	'score-desc' => 'Tilføjer et tag til at gengive partiturer ved hjælp af LilyPond',
 	'score-getcwderr' => 'Kunne ikke bestemme navnet på den gældende arbejdsfolder',
 	'score-invalidlang' => 'lang="<nowiki>$1</nowiki>" er et ugyldigt partitursprog. De sprog, der kan genkendes i øjeblikket, er lang="lilypond" (standardværdien) og lang="ABC".',
+	'score-invalidoggoverride' => 'Filen "<nowiki>$1</nowiki>", som du angav med override_ogg, er ugyldig. Angiv venligst kun filnavnet og udelad <nowiki>[[…]]</nowiki> og "{{ns:file}}:"-præfikset.',
+	'score-midioverridenotfound' => 'Kunne ikke finde filen "<nowiki>$1</nowiki>", som du angav med override_midi. Angiv venligst kun filnavnet og udelad <nowiki>[[…]]</nowiki> og "{{ns:file}}:"-præfikset.',
 	'score-noabcinput' => 'Kunne ikke oprette ABC-kildefilen $1.',
+	'score-noimages' => 'Ingen partiturbilleder blev dannet. Kontroller venligst om din kode er korrekt.',
 	'score-noinput' => 'Kunne ikke oprette inddatafil til LilyPond, $1.',
 	'score-noogghandler' => 'Omdannelse til Ogg/Vorbis kræver at udvidelsen OggHandler er installeret og sat op, se [//www.mediawiki.org/wiki/Extension:OggHandler Extension:OggHandler].',
 	'score-nomidi' => 'Ingen MIDI blev dannet på trods af anmodning. Hvis du arbejder i rå LilyPond-tilstand, sørg for at angive en passende \\midi-blok.',
-	'score-nooutput' => 'Kunne ikke oprette folder til LilyPond-billeder, $1.',
+	'score-nooutput' => 'Kunne ikke oprette folderen $1 til uddata.',
 	'score-notexecutable' => 'Kunne ikke køre LilyPond: $1 er ikke en eksekverbar fil. Kontroller at <code>$wgScoreLilyPond</code> er sat korrekt.',
 	'score-novorbislink' => 'Kunne ikke oprette henvisning til Ogg/Vorbis: $1',
 	'score-oggconversionerr' => 'Kunne ikke omdanne MIDI til Ogg/Vorbis:
 $1',
+	'score-oggoverridenotfound' => 'Filen "<nowiki>$1</nowiki>", som du angav med override_ogg, findes ikke.',
 	'score-page' => 'Side $1',
 	'score-pregreplaceerr' => 'Erstatning med PCRE regulært udtryk lykkedes ikke',
 	'score-readerr' => 'Kunne ikke læse filen $1.',
@@ -143,6 +147,7 @@ $1
 Sæt $wgScoreTrim=false, hvis dette problem fortsætter.',
 	'score-versionerr' => 'Kunne ikke bestemme LilyPonds version:
 $1',
+	'score-vorbisoverrideogg' => 'Du kan ikke anmode om omdannelse til Ogg/Vorbis og bruge override_ogg samtidigt.',
 );
 
 /** German (Deutsch)
