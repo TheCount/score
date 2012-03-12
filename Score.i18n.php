@@ -197,6 +197,46 @@ $messages['de-formal'] = array(
 	'score-noimages' => 'Es wurden keine Bilder zur Partitur generiert. Bitte prüfen Sie den Code zur Partitur.',
 );
 
+/** Spanish (Español)
+ * @author Armando-Martin
+ */
+$messages['es'] = array(
+	'score-abc2lynotexecutable' => 'No se pudo ejecutar el conversor ABC a LilyPond: "$1" no es un archivo ejecutable. Asegúrese de que <code>$wgScoreAbc2Ly</code> está definido correctamente.',
+	'score-abcconversionerr' => 'No se ha podido convertir el archivo ABC a formato LilyPond:
+$1',
+	'score-chdirerr' => 'No se pudo cambiar al directorio $1',
+	'score-cleanerr' => 'No se han podido limpiar los archivos antiguos antes de volver a generar la imagen (renderizar)',
+	'score-compilererr' => 'No se pudo compilar el archivo de entrada LilyPond:
+$1',
+	'score-desc' => 'Agrega una etiqueta para renderizar partituras musicales con LilyPond',
+	'score-getcwderr' => 'No se ha podido obtener el directorio de trabajo actual',
+	'score-invalidlang' => 'El idioma de la partitura lang="<nowiki>$1</nowiki>" es incorrecto. Los únicos idiomas reconocidos en estos momentos son lang="lilypond" (predeterminado) e lang="ABC".',
+	'score-invalidoggoverride' => 'El archivo "<nowiki>$1</nowiki>" que ha especificado con override_ogg no es válido. Especifique únicamente el nombre del archivo, omita <nowiki>[[…]]</nowiki> y el prefijo "{{ns:file}}:".',
+	'score-midioverridenotfound' => 'El archivo "<nowiki>$1</nowiki>" que ha especificado con override_midi no pudo ser encontrado. Especifique únicamente el nombre del archivo, omita <nowiki>[[…]]</nowiki> y el prefijo "{{ns:file}}:".',
+	'score-noabcinput' => 'No se pudo crear el archivo fuente ABC "$1".',
+	'score-noimages' => 'No se generó ninguna imagen de partitura. Compruebe su código de partitura.',
+	'score-noinput' => 'Error al crear el archivo de entrada "$1" de LilyPond.',
+	'score-noogghandler' => 'La conversión Ogg/Vorbis necesita una extensión OggHandler instalada y configurada, ver [//www.mediawiki.org/wiki/Extension:OggHandler Extensión:OggHandler].',
+	'score-nomidi' => 'No se generó el archivo MIDI a pesar de que fue solicitado. Si está a trabajando en modo LilyPond en bruto, asegúrese de proporcionar un bloque \\midi adecuado.',
+	'score-nooutput' => 'Error al crear el directorio de salida "$1".',
+	'score-notexecutable' => 'No se pudo ejecutar LilyPond: "$1" no es un archivo ejecutable. Asegúrese de que <code>$wgScoreLilyPond</code> está definido correctamente.',
+	'score-novorbislink' => 'No se pudo generar el enlace Ogg/Vorbis: $1',
+	'score-oggconversionerr' => 'No se pudo converter de MIDI a Ogg/Vorbis:
+$1',
+	'score-oggoverridenotfound' => 'El archivo "<nowiki>$1</nowiki>" que ha especificado con override_ogg no existe.',
+	'score-page' => 'Página $1',
+	'score-pregreplaceerr' => 'Falló la substitución de la expresión regular PCRE',
+	'score-readerr' => 'No se pudo leer el archivo "$1".',
+	'score-timiditynotexecutable' => 'No se pudo ejecutar TiMidity++: $1 no es un archivo ejecutable. Asegúrese de que <code>$wgScoreTimidity</code> está definido correctamente.',
+	'score-renameerr' => 'Error al mover los archivos de partituras al directorio de cargas.',
+	'score-trimerr' => 'No se pudo ajustar la imagen:
+$1
+Defina <code>$wgScoreTrim=false</code> si persiste el problema.',
+	'score-versionerr' => 'No se pudo obtener la versión de LilyPond:
+$1',
+	'score-vorbisoverrideogg' => 'No puede solicitar una renderización Ogg/Vorbis y especificar override_ogg al mismo tiempo.',
+);
+
 /** French (Français)
  * @author Crochet.david
  * @author Gomoko
