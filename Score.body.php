@@ -122,7 +122,11 @@ class Score {
 	 *
 	 * @throws ScoreException always.
 	 */
-	private static function throwCallException( $message, $output ) {
+	private static function throwCallException( $message, $output, $options = array() ) {
+		/* clean up the output a bit */
+		if ( isset( $options['factory_directory'] ) ) {
+			$output = str_replace( $options['factory_directory'], '...', $output );
+		}
 		throw new ScoreException(
 			$message->rawParams(
 				Html::rawElement( 'pre',
@@ -408,9 +412,10 @@ class Score {
 			if ( $options['generate_vorbis'] ) {
 				try {
 					$oh = new OggHandler();
-					$oh->setHeaders( $wgOut );
+					$file = new UnregisteredLocalFile( false, false, $options['ogg_path'] );
+					$oh->parserTransformHook( $parser, $file );
 					$oad = new OggAudioDisplay(
-						new UnregisteredLocalFile( false, false, $options['ogg_path'] ),
+						$file,
 						$options['ogg_url'],
 						self::DEFAULT_PLAYER_WIDTH, 0, 0,
 						$options['ogg_url'],
@@ -508,8 +513,7 @@ class Score {
 			throw new ScoreException( wfMessage( 'score-notexecutable', $wgScoreLilyPond ) );
 		}
 		$cmd = wfEscapeShellArg( $wgScoreLilyPond )
-			. ' -dsafe='
-			. wfEscapeShellArg( '#t' )
+			. ' ' . wfEscapeShellArg( '-dsafe=#t' )
 			. ' -dbackend=eps --png --header=texidoc '
 			. wfEscapeShellArg( $factoryLy )
 			. ' 2>&1';
@@ -519,7 +523,7 @@ class Score {
 			throw new ScoreException( wfMessage( 'score-chdirerr', $oldcwd ) );
 		}
 		if ( $rc2 != 0 ) {
-			self::throwCallException( wfMessage( 'score-compilererr' ), $output );
+			self::throwCallException( wfMessage( 'score-compilererr' ), $output, $options );
 		}
 		if ( $options['generate_midi'] && !file_exists( $factoryMidi ) ) {
 			throw new ScoreException( wfMessage( 'score-nomidi' ) );
@@ -568,22 +572,40 @@ class Score {
 		if ( self::$lilypondVersion === null ) {
 			self::getLilypondVersion();
 		}
+		$version = self::$lilypondVersion;
+
+		if ( $options['generate_midi'] ) {
+			/* Set the default MIDI tempo to 100, 60 is a bit too slow */
+			$midi = <<<LILYPOND
+				\\midi {
+					\\context {
+						\\Score
+						tempoWholesPerMinute = #(ly:make-moment 100 4)
+					}
+				}
+LILYPOND;
+		} else {
+			$midi = '';
+		}
 
 		/* Raw code. In Scheme, ##f is false and ##t is true. */
-		$raw = "\\header {\n"
-			. "\ttagline = ##f\n"
-			. "}\n"
-			. "\\paper {\n"
-			. "\traggedright = ##t\n"
-			. "\traggedbottom = ##t\n"
-			. "\tindent = 0\mm\n"
-			. "}\n"
-			. '\version "' . self::$lilypondVersion . "\"\n"
-			. "\\score {\n"
-			. $lilypondCode
-			. "\t\\layout { }\n"
-			. ( $options['generate_midi'] ? "\t\\midi { }\n" : '' )
-			. "}\n";
+		$raw = <<<LILYPOND
+			\\header {
+				tagline = ##f
+			}
+			\\paper {
+				raggedright = ##t
+				raggedbottom = ##t
+				indent = 0\mm
+			}
+			\\version "$version"
+			\\score {
+				$lilypondCode
+				\\layout { }
+				$midi
+			}
+LILYPOND;
+
 		return $raw;
 	}
 
@@ -614,12 +636,12 @@ class Score {
 		}
 		$cmd = wfEscapeShellArg( $wgScoreTimidity )
 			. ' -Ov' // Vorbis output
-			. ' --output-file=' . wfEscapeShellArg( $factoryOgg )
+			. ' ' . wfEscapeShellArg( '--output-file=' . $factoryOgg )
 			. ' ' . wfEscapeShellArg( $options['midi_path'] )
 			. ' 2>&1';
 		$output = wfShellExec( $cmd, $rc );
 		if ( ( $rc != 0 ) || !file_exists( $factoryOgg ) ) {
-			self::throwCallException( wfMessage( 'score-oggconversionerr' ), $output );
+			self::throwCallException( wfMessage( 'score-oggconversionerr' ), $output, $options );
 		}
 
 		/* Move resultant file to proper place */
@@ -690,12 +712,12 @@ class Score {
 
 		$cmd = wfEscapeShellArg( $wgScoreAbc2Ly )
 			. ' -s'
-			. ' --output=' . wfEscapeShellArg( $factoryLy )
+			. ' ' . wfEscapeShellArg( '--output=' . $factoryLy )
 			. ' ' . wfEscapeShellArg( $factoryAbc )
 			. ' 2>&1';
 		$output = wfShellExec( $cmd, $rc );
 		if ( ( $rc != 0 ) || !file_exists( $factoryLy ) ) {
-			self::throwCallException( wfMessage( 'score-abcconversionerr' ), $output );
+			self::throwCallException( wfMessage( 'score-abcconversionerr' ), $output, $options );
 		}
 
 		/* The output file has a tagline which should be removed in a wiki context */
