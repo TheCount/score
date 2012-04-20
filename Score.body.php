@@ -32,7 +32,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
  * It produces matching wfProfileIn/Out calls for scopes.
  * This class would be superfluous if PHP had a try-finally construct.
  */
-class ScopedProfiling {
+class Score_ScopedProfiling {
 	/**
 	 * Profiling ID such as a method name.
 	 */
@@ -142,7 +142,7 @@ class Score {
 	private static function getLilypondVersion() {
 		global $wgScoreLilyPond;
 
-		$prof = new ScopedProfiling( __METHOD__ );
+		$prof = new Score_ScopedProfiling( __METHOD__ );
 
 		if ( !is_executable( $wgScoreLilyPond ) ) {
 			throw new ScoreException( wfMessage( 'score-notexecutable', $wgScoreLilyPond ) );
@@ -193,7 +193,7 @@ class Score {
 	public static function render( $code, array $args, Parser $parser, PPFrame $frame ) {
 		global $wgTmpDirectory, $wgUploadDirectory, $wgUploadPath;
 
-		$prof = new ScopedProfiling( __METHOD__ );
+		$prof = new Score_ScopedProfiling( __METHOD__ );
 
 		try {
 			$options = array(); // options to self::generateHTML()
@@ -209,14 +209,16 @@ class Score {
 				$options['lang'] = 'lilypond';
 			}
 			if ( !in_array( $options['lang'], self::$supportedLangs ) ) {
-				throw new ScoreException( wfMessage( 'score-invalidlang', htmlspecialchars( $options['lang'] ) ) );
+				throw new ScoreException( wfMessage( 'score-invalidlang', 
+					htmlspecialchars( $options['lang'] ) ) );
 			}
 
 			/* Override MIDI file? */
 			if ( array_key_exists( 'override_midi', $args ) ) {
 				$file = wfFindFile( $args['override_midi'] );
 				if ( $file === false ) {
-					throw new ScoreException( wfMessage( 'score-midioverridenotfound', htmlspecialchars( $args['override_midi'] ) ) );
+					throw new ScoreException( wfMessage( 'score-midioverridenotfound', 
+						htmlspecialchars( $args['override_midi'] ) ) );
 				}
 				$options['override_midi'] = true;
 				$options['midi_file'] = $file;
@@ -255,10 +257,12 @@ class Score {
 			if ( array_key_exists( 'override_ogg', $args ) ) {
 				$t = Title::newFromText( $args['override_ogg'], NS_FILE );
 				if ( is_null( $t ) ) {
-					throw new ScoreException( wfMessage( 'score-invalidoggoverride', htmlspecialchars( $args['override_ogg'] ) ) );
+					throw new ScoreException( wfMessage( 'score-invalidoggoverride', 
+						htmlspecialchars( $args['override_ogg'] ) ) );
 				}
 				if ( !$t->isKnown() ) {
-					throw new ScoreException( wfMessage( 'score-oggoverridenotfound', htmlspecialchars( $args['override_ogg'] ) ) );
+					throw new ScoreException( wfMessage( 'score-oggoverridenotfound', 
+						htmlspecialchars( $args['override_ogg'] ) ) );
 				}
 				$options['override_ogg'] = true;
 				$options['ogg_name'] = $args['override_ogg'];
@@ -272,7 +276,9 @@ class Score {
 			} else {
 				$options['generate_vorbis'] = false;
 			}
-			if ( $options['generate_vorbis'] && !( class_exists( 'OggHandler' ) && class_exists( 'OggAudioDisplay' ) ) ) {
+			if ( $options['generate_vorbis'] 
+				&& !( class_exists( 'OggHandler' ) && class_exists( 'OggAudioDisplay' ) ) ) 
+			{
 				throw new ScoreException( wfMessage( 'score-noogghandler' ) );
 			}
 			if ( $options['generate_vorbis'] && ( $options['override_ogg'] !== false ) ) {
@@ -284,7 +290,8 @@ class Score {
 			}
 
 			/* Generate MIDI? */
-			$options['generate_midi'] = ( $options['override_midi'] === false ) && ( $options['link_midi'] || $options['generate_vorbis'] );
+			$options['generate_midi'] = ( $options['override_midi'] === false ) 
+				&& ( $options['link_midi'] || $options['generate_vorbis'] );
 			if ( $options['generate_midi'] && !array_key_exists( 'midi_path', $options ) ) {
 				$options['midi_path'] = "{$options['image_path_prefix']}.midi";
 			}
@@ -311,40 +318,40 @@ class Score {
 	 * @param $code string Score code.
 	 * @param $options array of rendering options.
 	 * 	The options keys are:
-	 * 	* factory_directory: string Path to directory in which files
+	 * 	- factory_directory: string Path to directory in which files
 	 * 		may be generated without stepping on someone else's
 	 * 		toes. The directory may not exist yet. Required.
-	 * 	* generate_midi: bool Whether to create a MIDI file, either
+	 * 	- generate_midi: bool Whether to create a MIDI file, either
 	 * 		to subsequently generate a vorbis file, or to provide
 	 * 		a link to the MIDI file. Required.
-	 * 	* generate_vorbis: bool Whether to create an Ogg/Vorbis file in
+	 * 	- generate_vorbis: bool Whether to create an Ogg/Vorbis file in
 	 * 		an OggHandler. If set to true, the override_ogg option
 	 * 		must be set to false. Required.
-	 * 	* image_path_prefix: string Prefix to the local image path.
+	 * 	- image_path_prefix: string Prefix to the local image path.
 	 * 		Required.
-	 * 	* image_url_prefix: string Prefix to the image URL. Required.
-	 * 	* lang: string Score language. Required.
-	 * 	* link_midi: bool Whether to link to a MIDI file. Required.
-	 * 	* midi_file: MIDI file object.
-	 * 	* midi_path: string Local MIDI path. Required if the link_midi,
+	 * 	- image_url_prefix: string Prefix to the image URL. Required.
+	 * 	- lang: string Score language. Required.
+	 * 	- link_midi: bool Whether to link to a MIDI file. Required.
+	 * 	- midi_file: MIDI file object.
+	 * 	- midi_path: string Local MIDI path. Required if the link_midi,
 	 * 		override_midi, or the generate_vorbis option is set to
 	 * 		true, ignored otherwise.
-	 * 	* midi_url: string MIDI URL. Required if the link_midi option
+	 * 	- midi_url: string MIDI URL. Required if the link_midi option
 	 * 		is set to true, ignored otherwise.
-	 * 	* ogg_name: string Name of the OGG file. Required if the
+	 * 	- ogg_name: string Name of the OGG file. Required if the
 	 * 		override_ogg option is set to true, ignored otherwise.
-	 * 	* ogg_path: string Local Ogg/Vorbis path. Required if the
+	 * 	- ogg_path: string Local Ogg/Vorbis path. Required if the
 	 * 		generate_vorbis option is set to true, ignored
 	 * 		otherwise.
-	 * 	* ogg_url: string Ogg/Vorbis URL. Required if the
+	 * 	- ogg_url: string Ogg/Vorbis URL. Required if the
 	 * 		generate_vorbis option is set to true, ignored
 	 * 		otherwise.
-	 * 	* override_midi: bool Whether to use a user-provided MIDI file.
+	 * 	- override_midi: bool Whether to use a user-provided MIDI file.
 	 * 		Required.
-	 * 	* override_ogg: bool Whether to generate a wikilink to a
+	 * 	- override_ogg: bool Whether to generate a wikilink to a
 	 * 		user-provided OGG file. If set to true, the vorbis
 	 * 		option must be set to false. Required.
-	 * 	* raw: bool Whether to assume raw LilyPond code. Ignored if the
+	 * 	- raw: bool Whether to assume raw LilyPond code. Ignored if the
 	 * 		language is not lilypond, required otherwise.
 	 *
 	 * @return string HTML.
@@ -354,14 +361,18 @@ class Score {
 	private static function generateHTML( &$parser, $code, $options ) {
 		global $wgOut;
 
-		$prof = new ScopedProfiling( __METHOD__ );
+		$prof = new Score_ScopedProfiling( __METHOD__ );
 
 		try {
 			/* Generate PNG and MIDI files if necessary */
 			$imagePath = "{$options['image_path_prefix']}.png";
 			$multi1Path = "{$options['image_path_prefix']}-1.png";
 			if ( ( !file_exists( $imagePath ) && !file_exists( $multi1Path ) )
-					|| ( array_key_exists( 'midi_path', $options ) && !file_exists( $options['midi_path'] ) ) ) {
+				|| ( 
+					array_key_exists( 'midi_path', $options ) 
+					&& !file_exists( $options['midi_path'] ) 
+				) ) 
+			{
 				self::generatePngAndMidi( $code, $options );
 			}
 
@@ -383,7 +394,8 @@ class Score {
 				for ( $i = 1; file_exists( sprintf( $multiPathFormat, $i ) ); ++$i ) {
 					$link .= Html::rawElement( 'img', array(
 						'src' => sprintf( $multiUrlFormat, $i ),
-						'alt' => wfMessage( 'score-page' )->inContentLanguage()->numParams( $i )->plain()
+						'alt' => wfMessage( 'score-page' )
+							->inContentLanguage()->numParams( $i )->plain()
 					) );
 				}
 			} else {
@@ -406,14 +418,16 @@ class Score {
 					);
 					$link .= $oad->toHtml( array( 'alt' => $code ) );
 				} catch ( Exception $e ) {
-					throw new ScoreException( wfMessage( 'score-novorbislink', htmlspecialchars( $e->getMessage() ) ), 0, $e );
+					throw new ScoreException( wfMessage( 'score-novorbislink', 
+						htmlspecialchars( $e->getMessage() ) ), 0, $e );
 				}
 			}
 			if ( $options['override_ogg'] !== false ) {
 				try {
 					$link .= $parser->recursiveTagParse( "[[File:{$options['ogg_name']}]]" );
 				} catch ( Exception $e ) {
-					throw new ScoreException( wfMessage( 'score-novorbislink', htmlspecialchars( $e->getMessage() ) ), 0, $e );
+					throw new ScoreException( wfMessage( 'score-novorbislink', 
+						htmlspecialchars( $e->getMessage() ) ), 0, $e );
 				}
 			}
 		} catch ( Exception $e ) {
@@ -440,7 +454,7 @@ class Score {
 	private static function generatePngAndMidi( $code, $options ) {
 		global $wgScoreLilyPond, $wgScoreTrim;
 
-		$prof = new ScopedProfiling( __METHOD__ );
+		$prof = new Score_ScopedProfiling( __METHOD__ );
 
 		/* Various filenames */
 		$image = "{$options['image_path_prefix']}.png";
@@ -555,8 +569,7 @@ class Score {
 			self::getLilypondVersion();
 		}
 
-		/* Raw code. Note: the "strange" ##f, ##t, etc., are actually part of the lilypond code!
-		 * The raw code is based on the raw code from the original LilyPond extension */
+		/* Raw code. In Scheme, ##f is false and ##t is true. */
 		$raw = "\\header {\n"
 			. "\ttagline = ##f\n"
 			. "}\n"
@@ -586,7 +599,7 @@ class Score {
 	private static function generateOgg( $options ) {
 		global $wgScoreTimidity;
 
-		$prof = new ScopedProfiling(  __METHOD__ );
+		$prof = new Score_ScopedProfiling(  __METHOD__ );
 
 		/* Working environment */
 		self::createDirectory( $options['factory_directory'], 0700 );
@@ -625,7 +638,7 @@ class Score {
 	 * @throws ScoreException if an error occurs.
 	 */
 	private static function generateLilypond( $code, $options ) {
-		$prof = new ScopedProfiling( __METHOD__ );
+		$prof = new Score_ScopedProfiling( __METHOD__ );
 
 		/* Delete old file if necessary */
 		self::cleanupFile( $options['lilypond_path'] );
@@ -636,9 +649,11 @@ class Score {
 			self::generateLilypondFromAbc( $code, $options );
 			break;
 		case 'lilypond':
-			throw new MWException( 'lang="lilypond" in ' . __METHOD__ . ". This should not happen.\n" );
+			throw new MWException( 'lang="lilypond" in ' . __METHOD__ . ". " . 
+				"This should not happen.\n" );
 		default:
-			throw new MWException( 'Unknown score language in ' . __METHOD__ . ". This should not happen.\n" );
+			throw new MWException( 'Unknown score language in ' . __METHOD__ . ". " . 
+				"This should not happen.\n" );
 		}
 
 	}
@@ -655,7 +670,7 @@ class Score {
 	private static function generateLilypondFromAbc( $code, $options ) {
 		global $wgScoreAbc2Ly;
 
-		$prof = new ScopedProfiling( __METHOD__ );
+		$prof = new Score_ScopedProfiling( __METHOD__ );
 
 		/* File names */
 		$factoryDirectory = $options['factory_directory'];
@@ -712,7 +727,7 @@ class Score {
 	private static function trimImage( $source, $dest ) {
 		global $wgImageMagickConvertCommand;
 
-		$prof = new ScopedProfiling( __METHOD__ );
+		$prof = new Score_ScopedProfiling( __METHOD__ );
 
 		$cmd = wfEscapeShellArg( $wgImageMagickConvertCommand )
 			. ' -trim '
