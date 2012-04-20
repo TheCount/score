@@ -94,11 +94,6 @@ class ScoreException extends Exception {
  */
 class Score {
 	/**
-	 * Cache directory name.
-	 */
-	const LILYPOND_DIR_NAME = 'lilypond';
-
-	/**
 	 * Default audio player width.
 	 */
 	const DEFAULT_PLAYER_WIDTH = 300;
@@ -184,6 +179,24 @@ class Score {
 		}
 	}
 
+	private static function getBaseUrl() {
+		global $wgScorePath, $wgUploadPath;
+		if ( $wgScorePath === false ) {
+			return "{$wgUploadPath}/lilypond";
+		} else {
+			return $wgScorePath;
+		}
+	}
+
+	private static function getBaseDirectory() {
+		global $wgScoreDirectory, $wgUploadDirectory;
+		if ( $wgScoreDirectory === false ) {
+			return "{$wgUploadDirectory}/lilypond";
+		} else {
+			return $wgScoreDirectory;
+		}
+	}
+
 	/**
 	 * Renders the score code (LilyPond, ABC, etc.) in a <score>…</score> tag.
 	 *
@@ -195,11 +208,14 @@ class Score {
 	 * @return Image link HTML, and possibly anchor to MIDI file.
 	 */
 	public static function render( $code, array $args, Parser $parser, PPFrame $frame ) {
-		global $wgTmpDirectory, $wgUploadDirectory, $wgUploadPath;
+		global $wgTmpDirectory;
 
 		$prof = new Score_ScopedProfiling( __METHOD__ );
 
 		try {
+			$baseUrl = self::getBaseUrl();
+			$baseDirectory = self::getBaseDirectory();
+
 			$options = array(); // options to self::generateHTML()
 
 			/* temporary working directory to use */
@@ -229,19 +245,25 @@ class Score {
 				$options['midi_path'] = $file->getLocalRefPath();
 				/* Set OGG stuff in case Vorbis rendering is requested */
 				$sha1 = $file->getSha1();
-				$oggRel = self::LILYPOND_DIR_NAME . "/{$sha1[0]}/{$sha1[0]}{$sha1[1]}/$sha1.ogg";
-				$options['ogg_path'] = "$wgUploadDirectory/$oggRel";
-				$options['ogg_url'] = "$wgUploadPath/$oggRel";
+				$oggRel = "{$sha1[0]}/{$sha1[0]}{$sha1[1]}/$sha1.ogg";
+				$options['ogg_path'] = "$baseDirectory/$oggRel";
+				$options['ogg_url'] = "$baseUrl/$oggRel";
 			} else {
 				$options['override_midi'] = false;
 			}
-	
+
+			/* include the input language in the cache name hash */
+			$cacheOptions = array(
+				'code' => $code,
+				'lang' => $options['lang']
+			);
+
 			/* image file path and URL prefixes */
-			$imageCacheName = wfBaseConvert( sha1( $code ), 16, 36, 31 );
-			$imagePrefixEnd = self::LILYPOND_DIR_NAME . '/'
-				. "{$imageCacheName[0]}/{$imageCacheName[0]}{$imageCacheName[1]}/$imageCacheName";
-			$options['image_path_prefix'] = "$wgUploadDirectory/$imagePrefixEnd";
-			$options['image_url_prefix'] = "$wgUploadPath/$imagePrefixEnd";
+			$imageCacheName = wfBaseConvert( sha1( serialize( $cacheOptions ) ), 16, 36, 31 );
+			$imagePrefixEnd = "{$imageCacheName[0]}/" . 
+				"{$imageCacheName[0]}{$imageCacheName[1]}/$imageCacheName";
+			$options['image_path_prefix'] = "$baseDirectory/$imagePrefixEnd";
+			$options['image_url_prefix'] = "$baseUrl/$imagePrefixEnd";
 
 			/* Midi linking? */
 			if ( array_key_exists( 'midi', $args ) ) {

@@ -55,6 +55,18 @@ $wgScoreAbc2Ly = '/usr/bin/abc2ly';
 /* Path to TiMidity++ */
 $wgScoreTimidity = '/usr/bin/timidity';
 
+/**
+ * The URL path of the directory where files will be stored. 
+ * Defaults to "{$wgUploadPath}/lilypond".
+ */
+$wgScorePath = false;
+
+/**
+ * The filesystem path where files will be stored.
+ * Defaults to "{$wgUploadDirectory}/lilypond".
+ */
+$wgScoreDirectory = false;
+
 /*
  * Extension credits
  */
