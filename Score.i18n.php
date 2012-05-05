@@ -95,6 +95,46 @@ $messages['qqq'] = array(
 	'score-vorbisoverrideogg' => 'Displayed if both vorbis="1" and override_ogg="…" were specified.',
 );
 
+/** Asturian (Asturianu)
+ * @author Xuacu
+ */
+$messages['ast'] = array(
+	'score-abc2lynotexecutable' => 'Nun se pudo executar el convertidor ABC a LilyPond: "$1" nun ye un ficheru executable. Asegurate de que <code>$wgScoreAbc2Ly</code> ta configuráu correutamente.',
+	'score-abcconversionerr' => 'Non se pudo convertir el ficheru ABC al formatu LilyPond:
+$1',
+	'score-chdirerr' => 'Nun se pudo cambiar al direutoriu "$1"',
+	'score-cleanerr' => 'Non se pudieron llimpiar los ficheros vieyos enantes de volver a renderizar',
+	'score-compilererr' => "Nun se pudo compilar el ficheru d'entrada LilyPond:
+$1",
+	'score-desc' => 'Amiesta una etiqueta pa renderizar partitures musicales con LilyPond',
+	'score-getcwderr' => 'Nun se pudo saber el direutoriu de trabayu actual',
+	'score-invalidlang' => 'La llingua de la partitura lang="<nowiki>$1</nowiki>" ye inválida. Les llingües reconocíes nesti momentu son lang="lilypond" (predeterminada) y lang="ABC".',
+	'score-invalidoggoverride' => "El ficheru «<nowiki>$1</nowiki>» qu'especificasti con override_ogg ye inválidu. Conseña namái el nome de ficheru, y omiti <nowiki>[[…]]</nowiki> y el prefixu «{{ns:file}}:».",
+	'score-midioverridenotfound' => "El ficheru «<nowiki>$1</nowiki>» qu'especificasti con override_midi nun se pudo alcontrar. Conseña namái el nome de ficheru, y omiti <nowiki>[[…]]</nowiki> y el prefixu «{{ns:file}}:».",
+	'score-noabcinput' => 'Nun se pudo crear el ficheru fonte ABC "$1".',
+	'score-noimages' => 'Nun se xeneró denguna imaxe de partitura. Comprueba el códigu de la partitura.',
+	'score-noinput' => "Hebo un fallu al crear el ficheru d'entrada de LilyPond $1.",
+	'score-noogghandler' => 'La conversión Ogg/Vorbis necesita la estensión OggHandler instalada y configurada, visita [https://www.mediawiki.org/wiki/Extension:OggHandler Extensión:OggHandler].',
+	'score-nomidi' => 'Nun se xeneró dengún ficheru MIDI anque se pidió. Si tas trabayando en mou LilyPond en bruto, asegurate de dar un bloque \\midi afayadizu.',
+	'score-nooutput' => 'Hebo un fallu al crear el direutoriu de salida $1.',
+	'score-notexecutable' => 'Nun se pudo executar LilyPond: $1 nun ye un ficheru executable. Asegurate de que <code>$wgScoreLilyPond</code> ta configuráu de mou correutu.',
+	'score-novorbislink' => "Nun se pudo xenerar l'enllaz Ogg/Vorbis: $1",
+	'score-oggconversionerr' => 'Nun se pudo convertir el MIDI a Ogg/Vorbis:
+$1',
+	'score-oggoverridenotfound' => "El ficheru «<nowiki>$1</nowiki>» qu'especificasti con override_ogg nun esiste.",
+	'score-page' => 'Páxina $1',
+	'score-pregreplaceerr' => 'Falló la sustitución de la espresión regular PCRE',
+	'score-readerr' => 'Nun se pudo lleer el ficheru $1.',
+	'score-timiditynotexecutable' => 'TiMidity++ nun se pudo executar: $1 nun ye un ficheru executable. Asegurate de que <code>$wgScoreTimidity</code> ta configuráu de mou correutu.',
+	'score-renameerr' => 'Error al mover los ficheros de partitures al direutoriu de xubíes.',
+	'score-trimerr' => 'Nun se pudo recortar la imaxe:
+$1
+Configura <code>$wgScoreTrim=false</code> si el problema persiste.',
+	'score-versionerr' => 'Nun se pudo saber la versión de LilyPond:
+$1',
+	'score-vorbisoverrideogg' => 'Nun pues solicitar una renderización Ogg/Vorbis y especificar override_ogg al mesmu tiempu.',
+);
+
 /** Belarusian (Taraškievica orthography) (‪Беларуская (тарашкевіца)‬)
  * @author EugeneZelenko
  * @author Wizardist
