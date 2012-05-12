@@ -56,7 +56,7 @@ $wgScoreAbc2Ly = '/usr/bin/abc2ly';
 $wgScoreTimidity = '/usr/bin/timidity';
 
 /**
- * The URL path of the directory where files will be stored. 
+ * The URL path of the directory where files will be stored.
  * Defaults to "{$wgUploadPath}/lilypond".
  */
 $wgScorePath = false;

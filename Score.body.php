@@ -229,7 +229,7 @@ class Score {
 				$options['lang'] = 'lilypond';
 			}
 			if ( !in_array( $options['lang'], self::$supportedLangs ) ) {
-				throw new ScoreException( wfMessage( 'score-invalidlang', 
+				throw new ScoreException( wfMessage( 'score-invalidlang',
 					htmlspecialchars( $options['lang'] ) ) );
 			}
 
@@ -237,7 +237,7 @@ class Score {
 			if ( array_key_exists( 'override_midi', $args ) ) {
 				$file = wfFindFile( $args['override_midi'] );
 				if ( $file === false ) {
-					throw new ScoreException( wfMessage( 'score-midioverridenotfound', 
+					throw new ScoreException( wfMessage( 'score-midioverridenotfound',
 						htmlspecialchars( $args['override_midi'] ) ) );
 				}
 				$options['override_midi'] = true;
@@ -260,7 +260,7 @@ class Score {
 
 			/* image file path and URL prefixes */
 			$imageCacheName = wfBaseConvert( sha1( serialize( $cacheOptions ) ), 16, 36, 31 );
-			$imagePrefixEnd = "{$imageCacheName[0]}/" . 
+			$imagePrefixEnd = "{$imageCacheName[0]}/" .
 				"{$imageCacheName[0]}{$imageCacheName[1]}/$imageCacheName";
 			$options['image_path_prefix'] = "$baseDirectory/$imagePrefixEnd";
 			$options['image_url_prefix'] = "$baseUrl/$imagePrefixEnd";
@@ -283,11 +283,11 @@ class Score {
 			if ( array_key_exists( 'override_ogg', $args ) ) {
 				$t = Title::newFromText( $args['override_ogg'], NS_FILE );
 				if ( is_null( $t ) ) {
-					throw new ScoreException( wfMessage( 'score-invalidoggoverride', 
+					throw new ScoreException( wfMessage( 'score-invalidoggoverride',
 						htmlspecialchars( $args['override_ogg'] ) ) );
 				}
 				if ( !$t->isKnown() ) {
-					throw new ScoreException( wfMessage( 'score-oggoverridenotfound', 
+					throw new ScoreException( wfMessage( 'score-oggoverridenotfound',
 						htmlspecialchars( $args['override_ogg'] ) ) );
 				}
 				$options['override_ogg'] = true;
@@ -302,8 +302,8 @@ class Score {
 			} else {
 				$options['generate_vorbis'] = false;
 			}
-			if ( $options['generate_vorbis'] 
-				&& !( class_exists( 'OggHandler' ) && class_exists( 'OggAudioDisplay' ) ) ) 
+			if ( $options['generate_vorbis']
+				&& !( class_exists( 'OggHandler' ) && class_exists( 'OggAudioDisplay' ) ) )
 			{
 				throw new ScoreException( wfMessage( 'score-noogghandler' ) );
 			}
@@ -316,7 +316,7 @@ class Score {
 			}
 
 			/* Generate MIDI? */
-			$options['generate_midi'] = ( $options['override_midi'] === false ) 
+			$options['generate_midi'] = ( $options['override_midi'] === false )
 				&& ( $options['link_midi'] || $options['generate_vorbis'] );
 			if ( $options['generate_midi'] && !array_key_exists( 'midi_path', $options ) ) {
 				$options['midi_path'] = "{$options['image_path_prefix']}.midi";
@@ -394,10 +394,10 @@ class Score {
 			$imagePath = "{$options['image_path_prefix']}.png";
 			$multi1Path = "{$options['image_path_prefix']}-1.png";
 			if ( ( !file_exists( $imagePath ) && !file_exists( $multi1Path ) )
-				|| ( 
-					array_key_exists( 'midi_path', $options ) 
-					&& !file_exists( $options['midi_path'] ) 
-				) ) 
+				|| (
+					array_key_exists( 'midi_path', $options )
+					&& !file_exists( $options['midi_path'] )
+				) )
 			{
 				self::generatePngAndMidi( $code, $options );
 			}
@@ -445,7 +445,7 @@ class Score {
 					);
 					$link .= $oad->toHtml( array( 'alt' => $code ) );
 				} catch ( Exception $e ) {
-					throw new ScoreException( wfMessage( 'score-novorbislink', 
+					throw new ScoreException( wfMessage( 'score-novorbislink',
 						htmlspecialchars( $e->getMessage() ) ), 0, $e );
 				}
 			}
@@ -453,7 +453,7 @@ class Score {
 				try {
 					$link .= $parser->recursiveTagParse( "[[File:{$options['ogg_name']}]]" );
 				} catch ( Exception $e ) {
-					throw new ScoreException( wfMessage( 'score-novorbislink', 
+					throw new ScoreException( wfMessage( 'score-novorbislink',
 						htmlspecialchars( $e->getMessage() ) ), 0, $e );
 				}
 			}
@@ -693,10 +693,10 @@ LILYPOND;
 			self::generateLilypondFromAbc( $code, $options );
 			break;
 		case 'lilypond':
-			throw new MWException( 'lang="lilypond" in ' . __METHOD__ . ". " . 
+			throw new MWException( 'lang="lilypond" in ' . __METHOD__ . ". " .
 				"This should not happen.\n" );
 		default:
-			throw new MWException( 'Unknown score language in ' . __METHOD__ . ". " . 
+			throw new MWException( 'Unknown score language in ' . __METHOD__ . ". " .
 				"This should not happen.\n" );
 		}
 
