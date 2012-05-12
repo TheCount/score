@@ -423,7 +423,9 @@ class Score {
 					$link .= Html::rawElement( 'img', array(
 						'src' => sprintf( $multiUrlFormat, $i ),
 						'alt' => wfMessage( 'score-page' )
-							->inContentLanguage()->numParams( $i )->plain()
+							->inContentLanguage()
+							->numParams( $i )
+							->plain()
 					) );
 				}
 			} else {
@@ -476,12 +478,18 @@ class Score {
 	 * @param $options array Rendering options. They are the same as for
 	 * 	Score::generateHTML().
 	 *
+	 * @return int Number of generated images.
+	 *
 	 * @throws ScoreException on error.
 	 */
 	private static function generatePngAndMidi( $code, $options ) {
 		global $wgScoreLilyPond, $wgScoreTrim;
 
 		$prof = new Score_ScopedProfiling( __METHOD__ );
+
+		if ( !is_executable( $wgScoreLilyPond ) ) {
+			throw new ScoreException( wfMessage( 'score-notexecutable', $wgScoreLilyPond ) );
+		}
 
 		/* Various filenames */
 		$image = "{$options['image_path_prefix']}.png";
@@ -511,10 +519,6 @@ class Score {
 		} else {
 			$options['lilypond_path'] = $factoryLy;
 			self::generateLilypond( $code, $options );
-		}
-
-		if ( !is_executable( $wgScoreLilyPond ) ) {
-			throw new ScoreException( wfMessage( 'score-notexecutable', $wgScoreLilyPond ) );
 		}
 
 		/* generate lilypond output files in working environment */
@@ -557,20 +561,26 @@ class Score {
 			$factoryMultiTrimmedFormat = $factoryMultiFormat;
 		}
 
-		/* move files to proper places */
-		$rc = true;
+		// Number of created images
+		$images = 0;
+
+		// Move files to proper places
 		self::cleanupFile( $options['generated_midi_path'] );
 		self::renameFile( $factoryMidi, $options['generated_midi_path'] );
 
 		if ( file_exists( $factoryImageTrimmed ) ) {
 			self::cleanupFile( $image );
 			self::renameFile( $factoryImageTrimmed, $image );
+			$images = 1;
 		} else {
 			for ( $i = 1; file_exists( $f = sprintf( $factoryMultiTrimmedFormat, $i ) ); ++$i ) {
 				self::cleanupFile( $f );
 				self::renameFile( $f, sprintf( $multiFormat, $i ) );
+				$images++;
 			}
 		}
+		// Return number of created images
+		return $images;
 	}
 
 	/**
@@ -630,17 +640,15 @@ LILYPOND;
 
 		$prof = new Score_ScopedProfiling(  __METHOD__ );
 
+		if ( !is_executable( $wgScoreTimidity ) ) {
+			throw new ScoreException( wfMessage( 'score-timiditynotexecutable', $wgScoreTimidity ) );
+		}
+
 		/* Working environment */
 		self::createDirectory( $options['factory_directory'], 0700 );
 		$factoryOgg = "{$options['factory_directory']}/file.ogg";
 
-		/* Delete old file if necessary */
-		self::cleanupFile( $options['ogg_path'] );
-
 		/* Run timidity */
-		if ( !is_executable( $wgScoreTimidity ) ) {
-			throw new ScoreException( wfMessage( 'score-timiditynotexecutable', $wgScoreTimidity ) );
-		}
 		$cmd = wfEscapeShellArg( $wgScoreTimidity )
 			. ' -Ov' // Vorbis output
 			. ' ' . wfEscapeShellArg( '--output-file=' . $factoryOgg )
@@ -652,6 +660,7 @@ LILYPOND;
 		}
 
 		/* Move resultant file to proper place */
+		self::cleanupFile( $options['ogg_path'] );
 		self::renameFile( $factoryOgg, $options['ogg_path'] );
 	}
 
@@ -701,10 +710,14 @@ LILYPOND;
 
 		$prof = new Score_ScopedProfiling( __METHOD__ );
 
+		if ( !is_executable( $wgScoreAbc2Ly ) ) {
+			throw new ScoreException( wfMessage( 'score-abc2lynotexecutable', $wgScoreAbc2Ly ) );
+		}
+
 		/* File names */
 		$factoryDirectory = $options['factory_directory'];
 		$factoryAbc = "$factoryDirectory/file.abc";
-		$factoryLy = "$factoryDirectory/file.ly";
+		$factoryLy = $options['lilypond_path'];
 
 		/* Create ABC input file */
 		$rc = file_put_contents( $factoryAbc, $code );
@@ -713,10 +726,6 @@ LILYPOND;
 		}
 
 		/* Convert to LilyPond file */
-		if ( !is_executable( $wgScoreAbc2Ly ) ) {
-			throw new ScoreException( wfMessage( 'score-abc2lynotexecutable', $wgScoreAbc2Ly ) );
-		}
-
 		$cmd = wfEscapeShellArg( $wgScoreAbc2Ly )
 			. ' -s'
 			. ' ' . wfEscapeShellArg( '--output=' . $factoryLy )
@@ -740,9 +749,6 @@ LILYPOND;
 		if ( $rc === false ) {
 			throw new ScoreException( wfMessage( 'score-noinput', $factoryLy ) );
 		}
-
-		/* Move resultant file to proper place */
-		self::renameFile( $factoryLy, $options['lilypond_path'] );
 	}
 
 	/**
