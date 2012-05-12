@@ -500,6 +500,20 @@ $1',
 	'score-vorbisoverrideogg' => 'U kunt niet vragen om Ogg/Vorbisrendering en tegelijkertijd "override_ogg" gebruiken.',
 );
 
+/** Polish (Polski)
+ * @author BeginaFelicysym
+ */
+$messages['pl'] = array(
+	'score-chdirerr' => 'Nie można zmienić do katalogu $1',
+	'score-cleanerr' => 'Nie można usunąć starych plików przed ponownym wyrenderowaniem',
+	'score-nooutput' => 'Nie można utworzyć katalogu docelowego  $1 .',
+	'score-novorbislink' => 'Nie można wygenerować łącza Ogg/Vorbis: $1',
+	'score-oggconversionerr' => 'Nie można przekonwertować MIDI na Ogg/Vorbis:
+$1',
+	'score-page' => 'Strona $1',
+	'score-readerr' => 'Nie można odczytać pliku  $1 .',
+);
+
 /** Vietnamese (Tiếng Việt)
  * @author Minh Nguyen
  */
