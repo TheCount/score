@@ -334,6 +334,10 @@ class Score {
 			$html = "$e";
 		}
 
+		// Mark the page as using the score extension, it makes easier
+		// to track all those pages.
+		$parser->getOutput()->setProperty( 'score' , true );
+
 		return $html;
 	}
 
