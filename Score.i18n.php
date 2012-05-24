@@ -364,7 +364,21 @@ $1',
  * @author Michawiki
  */
 $messages['hsb'] = array(
+	'score-abcconversionerr' => 'ABC-dataja njeda so do formata LilyPond konwertować: $1',
+	'score-chdirerr' => 'Njejo móžno do zapisa $1 přeńć',
+	'score-compilererr' => 'Zapodawanska dataja LilyPond njeda so kompilować:
+$1',
+	'score-noabcinput' => 'Žórłowa ABC-dataja $1 njeda so wutworić.',
+	'score-noinput' => 'Zapodawanska dataja LilyPond $1 njeda so wutworić.',
+	'score-nooutput' => 'Wudawanski zapis $1 njeda so wutworić.',
+	'score-novorbislink' => 'Wotkaz Ogg/Vorbis njeda so generować: $1',
+	'score-oggconversionerr' => 'MIDI njeda so do Ogg/Vorbis konwertować:
+$1',
+	'score-oggoverridenotfound' => 'Dataja "<nowiki>$1</nowiki>", kotruž sy z override_ogg podał, njeeksistuje.',
 	'score-page' => 'Strona $1',
+	'score-readerr' => 'Dataja $1 njeda so čitać.',
+	'score-versionerr' => 'Wersija LilyPond njeda so zwěsćić:
+$1',
 );
 
 /** Interlingua (Interlingua)
