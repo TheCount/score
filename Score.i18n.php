@@ -150,6 +150,13 @@ $1',
 	'score-desc' => 'Дадае тэг для паказу музычных нот праз LilyPond',
 );
 
+/** Breton (brezhoneg)
+ * @author Fulup
+ */
+$messages['br'] = array(
+	'score-page' => 'Pajenn $1',
+);
+
 /** Danish (Dansk)
  * @author Peter Alberti
  */
