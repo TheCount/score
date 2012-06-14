@@ -95,7 +95,7 @@ $messages['qqq'] = array(
 	'score-vorbisoverrideogg' => 'Displayed if both vorbis="1" and override_ogg="…" were specified.',
 );
 
-/** Asturian (Asturianu)
+/** Asturian (asturianu)
  * @author Xuacu
  */
 $messages['ast'] = array(
@@ -157,7 +157,7 @@ $messages['br'] = array(
 	'score-page' => 'Pajenn $1',
 );
 
-/** Danish (Dansk)
+/** Danish (dansk)
  * @author Peter Alberti
  */
 $messages['da'] = array(
@@ -244,7 +244,7 @@ $messages['de-formal'] = array(
 	'score-noimages' => 'Es wurden keine Bilder zur Partitur generiert. Bitte prüfen Sie den Code zur Partitur.',
 );
 
-/** Spanish (Español)
+/** Spanish (español)
  * @author Armando-Martin
  */
 $messages['es'] = array(
@@ -284,7 +284,7 @@ $1',
 	'score-vorbisoverrideogg' => 'No puede solicitar una renderización Ogg/Vorbis y especificar override_ogg al mismo tiempo.',
 );
 
-/** French (Français)
+/** French (français)
  * @author Crochet.david
  * @author Gomoko
  * @author Od1n
@@ -388,7 +388,7 @@ $1',
 $1',
 );
 
-/** Interlingua (Interlingua)
+/** Interlingua (interlingua)
  * @author McDutchie
  */
 $messages['ia'] = array(
@@ -446,7 +446,7 @@ $messages['lb'] = array(
 	'score-readerr' => 'De Fichier $1 konnt net geliest ginn.',
 );
 
-/** Macedonian (Македонски)
+/** Macedonian (македонски)
  * @author Bjankuloski06
  */
 $messages['mk'] = array(
@@ -528,7 +528,7 @@ $1',
 	'score-vorbisoverrideogg' => 'U kunt niet vragen om Ogg/Vorbisrendering en tegelijkertijd "override_ogg" gebruiken.',
 );
 
-/** Polish (Polski)
+/** Polish (polski)
  * @author BeginaFelicysym
  */
 $messages['pl'] = array(
