@@ -432,6 +432,7 @@ $1',
  * @author Shirayuki
  */
 $messages['ja'] = array(
+	'score-desc' => 'LilyPond で楽譜を描画する、タグを追加する',
 	'score-page' => 'ページ $1',
 );
 
