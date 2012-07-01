@@ -135,7 +135,7 @@ $1',
 	'score-vorbisoverrideogg' => 'Nun pues solicitar una renderización Ogg/Vorbis y especificar override_ogg al mesmu tiempu.',
 );
 
-/** Belarusian (Taraškievica orthography) (‪Беларуская (тарашкевіца)‬)
+/** Belarusian (Taraškievica orthography) (‪беларуская (тарашкевіца)‬)
  * @author EugeneZelenko
  * @author Wizardist
  */
@@ -327,7 +327,7 @@ $1",
 	'score-vorbisoverrideogg' => 'Vous ne peut pas demander de rendu de Ogg/Vorbis et spécifier override_ogg en même temps.',
 );
 
-/** Galician (Galego)
+/** Galician (galego)
  * @author Toliño
  */
 $messages['gl'] = array(
@@ -367,7 +367,7 @@ $1',
 	'score-vorbisoverrideogg' => 'Non pode solicitar unha renderización Ogg/Vorbis e asemade especificar override_ogg.',
 );
 
-/** Upper Sorbian (Hornjoserbsce)
+/** Upper Sorbian (hornjoserbsce)
  * @author Michawiki
  */
 $messages['hsb'] = array(
