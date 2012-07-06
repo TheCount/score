@@ -428,6 +428,13 @@ $1',
 	'score-vorbisoverrideogg' => 'Tu non pote requestar un rendition in Ogg/Vorbis e specificar override_ogg al mesme tempore.',
 );
 
+/** Italian (italiano)
+ * @author Beta16
+ */
+$messages['it'] = array(
+	'score-page' => 'Pagina $1',
+);
+
 /** Japanese (日本語)
  * @author Shirayuki
  */
