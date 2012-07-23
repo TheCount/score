@@ -244,6 +244,13 @@ $messages['de-formal'] = array(
 	'score-noimages' => 'Es wurden keine Bilder zur Partitur generiert. Bitte prüfen Sie den Code zur Partitur.',
 );
 
+/** Zazaki (Zazaki)
+ * @author Erdemaslancan
+ */
+$messages['diq'] = array(
+	'score-page' => 'Pela $1',
+);
+
 /** Spanish (español)
  * @author Armando-Martin
  */
@@ -548,6 +555,21 @@ $messages['pl'] = array(
 $1',
 	'score-page' => 'Strona $1',
 	'score-readerr' => 'Nie można odczytać pliku  $1 .',
+);
+
+/** Tagalog (Tagalog)
+ * @author AnakngAraw
+ */
+$messages['tl'] = array(
+	'score-nooutput' => 'Nabigo sa paglikha ng direktoryo ng kinalabasan na $1.',
+	'score-novorbislink' => 'Hindi nagawang likhain ang kawing ng Ogg/Vorbis: $1',
+	'score-oggconversionerr' => 'Hindi nagawang palitan ang MIDI upang maging Ogg/Vorbis:
+$1',
+	'score-page' => 'Pahinang $1',
+	'score-pregreplaceerr' => 'Nabigo ang pagpapalit ng karaniwang pagsasaad ng PCRE',
+	'score-readerr' => 'Hindi nagawang basahin ang talaksang $1.',
+	'score-renameerr' => 'Kamalian sa paglilipat ng mga talaksan ng puntos papunta sa direktoryo ng pagkakargang papaitaas.',
+	'score-versionerr' => 'Hindi nagawang makamtan ang bersiyon ng LilyPond: $1',
 );
 
 /** Vietnamese (Tiếng Việt)
