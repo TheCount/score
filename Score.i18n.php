@@ -557,19 +557,50 @@ $1',
 	'score-readerr' => 'Nie można odczytać pliku  $1 .',
 );
 
+/** Romanian (română)
+ * @author Stelistcristi
+ */
+$messages['ro'] = array(
+	'score-page' => 'Pagina $1',
+);
+
 /** Tagalog (Tagalog)
  * @author AnakngAraw
  */
 $messages['tl'] = array(
+	'score-abc2lynotexecutable' => 'Hindi maisakatuparan ang pampalit ng ABC upang maging LilyPond: Ang $1 ay hindi isang talaksang maisasakatuparan. Tiyakin na nakatakda nang tama ang <code>$wgScoreAbc2Ly</code>.',
+	'score-abcconversionerr' => 'Hindi nagawang palitan ang talaksan ng ABC upang maging nasa anyo ng LilyPond:
+$1',
+	'score-chdirerr' => 'Hindi nagawang palitan upang maging direktoryo ng $1',
+	'score-cleanerr' => 'Hindi nagawang maglinis ng lumang mga talaksan bago muling iharap',
+	'score-compilererr' => 'Hindi nagawang tipunin ang talaksan ng pagpapasok ng LilyPond:
+$1',
+	'score-desc' => 'Nagdaragdag ng isang tatak para sa paghaharap ng mga iskor na pangtutugtugin sa pamamagitan ng LilyPond',
+	'score-getcwderr' => 'Hindi nagawang makamtan ang pangkasalukuyang direktoryong pangtrabaho',
+	'score-invalidlang' => 'Hindi katanggap-tanggap na wika ng iskor="<nowiki>$1</nowiki>". Ang pangkasalukuyang nakikilalang mga wika ay ang wika="lilypond" (ang likas na katakdaan) at wika="ABC".',
+	'score-invalidoggoverride' => 'Hindi katanggap-tanggap ang talaksang "<nowiki>$1</nowiki>" na tinukoy mo na mayroong override_ogg. Paki tukuyin ang pangalan ng talaksan lamang, huwag isama ang <nowiki>[[…]]</nowiki> at ang unlaping "{{ns:file}}:".',
+	'score-midioverridenotfound' => 'Hindi matagpuan ang talaksang "<nowiki>$1</nowiki>" tinukoy mo na mayroong override_midi. Paki tukuyin ang pangalan ng talaksan lamang, huwag isama ang <nowiki>[[…]]</nowiki> at ang unlaping "{{ns:file}}:".',
+	'score-noabcinput' => 'Hindi malikha ang talaksang pinagmulan ng ABC na $1.',
+	'score-noimages' => 'Walang malikha na mga imahe ng iskor. Paki siyasatin ang iyong kodigo ng iskor.',
+	'score-noinput' => 'Nabigo sa paglikha ng talaksan ng pagpapasok na $1 ng LilyPond.',
+	'score-noogghandler' => 'Ang pagpapalit ng Ogg/Vorbis ay nangangailangan ng isang naitalaga at naisaayos na dugtong ng OggHandler, tingnan ang  [https://www.mediawiki.org/wiki/Extension:OggHandler Dugtong:OggHandler].',
+	'score-nomidi' => 'Walang nalikha na talaksan ng MIDI kahit na hinihiling. Kung nagtatrabaho ka na nasa gawi ng hilaw na LilyPond, paki tiyakin na makapagbigay ka ng isang naaangkop na tipak ng \\midi.',
 	'score-nooutput' => 'Nabigo sa paglikha ng direktoryo ng kinalabasan na $1.',
+	'score-notexecutable' => 'Hindi maisakatuparan ang LilyPond: Ang $1 ay isang hindi naisasakatuparang talaksan. Paki tiyakin na nakatakda nang tama ang <code>$wgScoreLilyPond</code>',
 	'score-novorbislink' => 'Hindi nagawang likhain ang kawing ng Ogg/Vorbis: $1',
 	'score-oggconversionerr' => 'Hindi nagawang palitan ang MIDI upang maging Ogg/Vorbis:
 $1',
+	'score-oggoverridenotfound' => 'Hindi umiiral ang tinukoy mong talaksan na "<nowiki>$1</nowiki>" na mayroong override_ogg.',
 	'score-page' => 'Pahinang $1',
 	'score-pregreplaceerr' => 'Nabigo ang pagpapalit ng karaniwang pagsasaad ng PCRE',
 	'score-readerr' => 'Hindi nagawang basahin ang talaksang $1.',
+	'score-timiditynotexecutable' => 'Hindi maisakatuparan ang TiMidity++: Ang $1 ay hindi isang talaksang maisasakatuparan. Tiyakin na nakatakda nang tama ang <code>$wgScoreTimidity</code>.',
 	'score-renameerr' => 'Kamalian sa paglilipat ng mga talaksan ng puntos papunta sa direktoryo ng pagkakargang papaitaas.',
+	'score-trimerr' => 'Hindi magupitan ang imahe:
+$1
+Itakda ang <code>$wgScoreTrim=false</code> kapag nagtagal ang suliraning ito.',
 	'score-versionerr' => 'Hindi nagawang makamtan ang bersiyon ng LilyPond: $1',
+	'score-vorbisoverrideogg' => 'Hindi mo mahihiling nang sabayan ang paghaharap ng Ogg/Vorbis at ang pagtukoy ng override_ogg.',
 );
 
 /** Vietnamese (Tiếng Việt)
