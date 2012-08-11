@@ -450,6 +450,13 @@ $messages['ja'] = array(
 	'score-page' => 'ページ $1',
 );
 
+/** Georgian (ქართული)
+ * @author David1010
+ */
+$messages['ka'] = array(
+	'score-page' => 'გვერდი $1',
+);
+
 /** Luxembourgish (Lëtzebuergesch)
  * @author Robby
  */
