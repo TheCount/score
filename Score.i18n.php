@@ -571,6 +571,13 @@ $messages['ro'] = array(
 	'score-page' => 'Pagina $1',
 );
 
+/** Tamil (தமிழ்)
+ * @author Karthi.dr
+ */
+$messages['ta'] = array(
+	'score-readerr' => 'கோப்பு $1 ஐப் படிக்க முடியவில்லை.',
+);
+
 /** Tagalog (Tagalog)
  * @author AnakngAraw
  */
