@@ -571,6 +571,13 @@ $messages['ro'] = array(
 	'score-page' => 'Pagina $1',
 );
 
+/** Swahili (Kiswahili)
+ * @author Stephenwanjau
+ */
+$messages['sw'] = array(
+	'score-page' => 'Ukurasa $1',
+);
+
 /** Tamil (தமிழ்)
  * @author Karthi.dr
  */
