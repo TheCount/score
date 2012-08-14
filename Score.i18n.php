@@ -437,8 +437,10 @@ $1',
 
 /** Italian (italiano)
  * @author Beta16
+ * @author F. Cosoleto
  */
 $messages['it'] = array(
+	'score-nooutput' => 'Creazione della directory di output $1 non riuscita.',
 	'score-page' => 'Pagina $1',
 );
 
