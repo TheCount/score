@@ -334,6 +334,14 @@ $1",
 	'score-vorbisoverrideogg' => 'Vous ne peut pas demander de rendu de Ogg/Vorbis et spécifier override_ogg en même temps.',
 );
 
+/** Franco-Provençal (arpetan)
+ * @author ChrisPtDe
+ */
+$messages['frp'] = array(
+	'score-page' => 'Pâge $1',
+	'score-readerr' => 'Empossiblo de liére lo fichiér $1.',
+);
+
 /** Galician (galego)
  * @author Toliño
  */
@@ -450,6 +458,7 @@ $messages['it'] = array(
 $messages['ja'] = array(
 	'score-desc' => 'LilyPond で楽譜を描画する、タグを追加する',
 	'score-page' => 'ページ $1',
+	'score-pregreplaceerr' => 'PCRE 正規表現置換に失敗しました',
 );
 
 /** Georgian (ქართული)
