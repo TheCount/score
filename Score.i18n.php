@@ -448,8 +448,23 @@ $1',
  * @author F. Cosoleto
  */
 $messages['it'] = array(
+	'score-abc2lynotexecutable' => 'Il convertitore ABC a LilyPond non può essere eseguito: $1 non è un file eseguibile. Assicurarsi che <code>$wgScoreAbc2Ly</code> è configurato correttamente.',
+	'score-abcconversionerr' => 'Impossibile convertire file ABC al formato LilyPond:
+$1',
+	'score-chdirerr' => 'Impossibile cambiare alla directory: $1',
+	'score-compilererr' => "Compilazione del file d'input LilyPond fallita:
+$1",
+	'score-getcwderr' => 'Impossibile accedere alla directory di lavoro corrente',
+	'score-noinput' => "Creazione del file d'input LilyPond $1 non riuscita.",
 	'score-nooutput' => 'Creazione della directory di output $1 non riuscita.',
+	'score-oggconversionerr' => 'Conversione da MIDI a Ogg/Vorbis non riuscita:
+$1',
+	'score-oggoverridenotfound' => 'Il file "<nowiki>$1</nowiki>" indicato con override_ogg non esiste.',
 	'score-page' => 'Pagina $1',
+	'score-pregreplaceerr' => 'La sostituzione con espressione regolare PCRE non è riuscita',
+	'score-readerr' => 'Lettura del file $1 fallita.',
+	'score-timiditynotexecutable' => 'TiMidity++ non può essere eseguito: $1 non è un file eseguibile. Assicurarsi che <code>$wgScoreTimidity</code> è configurato correttamente.',
+	'score-renameerr' => 'Errore nello spostamento dei file di partitura alla directory di upload.',
 );
 
 /** Japanese (日本語)
