@@ -455,25 +455,62 @@ $1',
 	'score-compilererr' => "Compilazione del file d'input LilyPond fallita:
 $1",
 	'score-getcwderr' => 'Impossibile accedere alla directory di lavoro corrente',
+	'score-noimages' => 'Non si possono generare immagini di partiture, controllare il codice della partitura.',
 	'score-noinput' => "Creazione del file d'input LilyPond $1 non riuscita.",
+	'score-noogghandler' => "La conversione OGG/Vorbis richiede un'estensione OggHandler installata e configurata, vedere [https://www.mediawiki.org/wiki/Extension:OggHandler Extension:OggHandler].",
+	'score-nomidi' => 'Nessun file MIDI generato sebbene sia richiesto. Se si lavora manualmente con codice LilyPond, assicurarsi della presenza di un corretto blocco \\midi.',
 	'score-nooutput' => 'Creazione della directory di output $1 non riuscita.',
+	'score-notexecutable' => 'LilyPond non può essere eseguito:  $1 non è un file eseguibile. Assicurarsi che <code>$wgScoreLilyPond</code> sia configurato correttamente.',
+	'score-novorbislink' => 'Impossibile generare il collegamento Ogg/Vorbis: $1',
 	'score-oggconversionerr' => 'Conversione da MIDI a Ogg/Vorbis non riuscita:
 $1',
 	'score-oggoverridenotfound' => 'Il file "<nowiki>$1</nowiki>" indicato con override_ogg non esiste.',
 	'score-page' => 'Pagina $1',
 	'score-pregreplaceerr' => 'La sostituzione con espressione regolare PCRE non è riuscita',
 	'score-readerr' => 'Lettura del file $1 fallita.',
-	'score-timiditynotexecutable' => 'TiMidity++ non può essere eseguito: $1 non è un file eseguibile. Assicurarsi che <code>$wgScoreTimidity</code> è configurato correttamente.',
+	'score-timiditynotexecutable' => 'TiMidity++ non può essere eseguito: $1 non è un file eseguibile. Assicurarsi che <code>$wgScoreTimidity</code> sia configurato correttamente.',
 	'score-renameerr' => 'Errore nello spostamento dei file di partitura alla directory di upload.',
+	'score-versionerr' => 'Impossibile ottenere la versione di LilyPond:
+$1',
 );
 
 /** Japanese (日本語)
  * @author Shirayuki
  */
 $messages['ja'] = array(
+	'score-abc2lynotexecutable' => 'ABC から LilyPond へのコンバーターを実行できません: $1 は実行可能ファイルではありません。<code>$wgScoreAbc2Ly</code> が正しく設定されているか確認してください。',
+	'score-abcconversionerr' => 'ABC ファイルを LilyPond 形式に変換できません:
+$1',
+	'score-chdirerr' => '現在のディレクトリを $1 に変更できません',
+	'score-cleanerr' => '再レンダリングの前に、古いファイルを消去できませんでした',
+	'score-compilererr' => 'LilyPond 入力ファイルをコンパイルできません:
+$1',
 	'score-desc' => 'LilyPond で楽譜を描画する、タグを追加する',
+	'score-getcwderr' => '現在のディレクトリを取得できません',
+	'score-invalidlang' => '楽譜の言語 lang="<nowiki>$1</nowiki>" は無効です。現在認識できる言語は lang="lilypond" (既定) および lang="ABC" です。',
+	'score-invalidoggoverride' => 'override_ogg に指定されたファイル「<nowiki>$1</nowiki>」は無効です。<nowiki>[[…]]</nowiki> や「{{ns:file}}:」を省略して、ファイル名のみを指定してください。',
+	'score-midioverridenotfound' => 'override_midi で指定されたファイル「<nowiki>$1</nowiki>」が見つかりません。<nowiki>[[…]]</nowiki> や「{{ns:file}}:」を省略して、ファイル名のみを指定してください。',
+	'score-noabcinput' => 'ABC ソース ファイル $1 を作成できませんでした。',
+	'score-noimages' => '楽譜画像を生成できませんでした。ソースコードを確認してください。',
+	'score-noinput' => 'LilyPond 入力ファイル $1 の作成に失敗しました。',
+	'score-noogghandler' => 'Ogg/Vorbis 変換には、OggHandler 拡張機能のインストール/設定が必要です。[https://www.mediawiki.org/wiki/Extension:OggHandler/ja Extension:OggHandler/ja] をご覧ください。',
+	'score-nooutput' => '出力ディレクトリ $1 の作成に失敗しました。',
+	'score-notexecutable' => 'LilyPond を実行できませんでした: $1 は実行可能ファイルではありません。<code>$wgScoreLilyPond</code> が正しく設定されているか確認してください。',
+	'score-novorbislink' => 'Ogg/Vorbis リンクを生成できません: $1',
+	'score-oggconversionerr' => 'MIDI を Ogg/Vorbis に変換できません:
+$1',
+	'score-oggoverridenotfound' => 'override_ogg で指定されたファイル「$1」は存在しません。',
 	'score-page' => 'ページ $1',
 	'score-pregreplaceerr' => 'PCRE 正規表現置換に失敗しました',
+	'score-readerr' => 'ファイル $1 から読み取れません。',
+	'score-timiditynotexecutable' => 'TiMidity++ を実行できませんでした: $1 は実行可能ファイルではありません。<code>$wgScoreTimidity</code> が正しく設定されているか確認してください。',
+	'score-renameerr' => '楽譜ファイルをアップロードディレクトリに移動する際にエラーが発生しました。',
+	'score-trimerr' => '画像をトリミングできませんでした:
+$1
+この問題が続く場合は、<code>$wgScoreTrim=false</code> を設定してください。',
+	'score-versionerr' => 'LilyPond のバージョンを取得できません:
+$1',
+	'score-vorbisoverrideogg' => 'Ogg/Vorbis のレンダリングの要求と override_ogg の指定は、同時にはできません。',
 );
 
 /** Georgian (ქართული)
