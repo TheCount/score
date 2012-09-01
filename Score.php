@@ -82,11 +82,12 @@ $wgExtensionCredits['parserhooks'][] = array(
 /*
  * Setup
  */
+$scoreBase = __DIR__;
 $wgHooks['ParserFirstCallInit'][] = 'efScoreExtension';
-$wgExtensionMessagesFiles['Score'] = dirname( __FILE__ ) . '/Score.i18n.php';
-$wgAutoloadClasses['Score'] = dirname( __FILE__ ) . '/Score.body.php';
-$wgAutoloadClasses['ScoreException'] = dirname( __FILE__ ) . '/Score.body.php';
-$wgAutoloadClasses['ScopedProfiling'] = dirname( __FILE__ ) . '/Score.body.php';
+$wgExtensionMessagesFiles['Score'] = "$scoreBase/Score.i18n.php";
+$wgAutoloadClasses['Score'] = "$scoreBase/Score.body.php";
+$wgAutoloadClasses['ScoreException'] = "$scoreBase/Score.body.php";
+$wgAutoloadClasses['ScopedProfiling'] = "$scoreBase/Score.body.php";
 
 /**
  * Init routine.
