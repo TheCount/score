@@ -67,6 +67,13 @@ $wgScorePath = false;
  */
 $wgScoreDirectory = false;
 
+/**
+ * The name of a file backend ($wgFileBackends) to be used for storing files.
+ * Defaults to FSFileBackend using $wgScoreDirectory as a base path. Files will
+ * be stored in a container internally called "score-render".
+ */
+$wgScoreFileBackend = false;
+
 /*
  * Extension credits
  */
