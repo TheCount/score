@@ -525,6 +525,7 @@ $messages['ka'] = array(
  */
 $messages['lb'] = array(
 	'score-chdirerr' => 'Et konnt net op de Repertoire $1 gewiesselt ginn',
+	'score-cleanerr' => 'Déi al Fichiere konnten net geläscht ginn ier se nei generéiert goufen',
 	'score-novorbislink' => 'Den Ogg/Vorbis Link konnt net generéiert ginn: $1',
 	'score-oggoverridenotfound' => 'De Fichier "<nowiki>$1</nowiki>" deen Dir mat override_ogg uginn hutt  gëtt et net.',
 	'score-page' => 'Säit $1',
