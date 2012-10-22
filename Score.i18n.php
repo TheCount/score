@@ -25,7 +25,6 @@
 
 $messages = array();
 
-/* English */
 $messages['en'] = array(
 	'score-abc2lynotexecutable' => 'ABC to LilyPond converter could not be executed: $1 is not an executable file. Make sure <code>$wgScoreAbc2Ly</code> is set correctly.',
 	'score-abcconversionerr' => 'Unable to convert ABC file to LilyPond format:
@@ -63,7 +62,8 @@ $1',
 	'score-vorbisoverrideogg' => 'You cannot request Ogg/Vorbis rendering and specify override_ogg at the same time.',
 );
 
-/** Message documentation (Message documentation) */
+/** Message documentation (Message documentation)
+ */
 $messages['qqq'] = array(
 	'score-abc2lynotexecutable' => 'Displayed if the ABC to LilyPond converter could not be executed. $1 is the path to the abc2ly binary.',
 	'score-abcconversionerr' => 'Displayed if the ABC to LilyPond conversion failed. $1 is the error (generally big block of text in a pre tag)',
@@ -727,4 +727,3 @@ Nếu vấn đề này vẫn còn xuất hiện, hãy đặt <code>$wgScoreTrim=
 $1',
 	'score-vorbisoverrideogg' => 'Bạn không thể yêu cầu kết xuất Ogg/Vorbis và định override_ogg cùng lúc.',
 );
-
