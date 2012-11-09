@@ -197,6 +197,7 @@ $1',
 
 /** German (Deutsch)
  * @author Kghbln
+ * @author Metalhead64
  */
 $messages['de'] = array(
 	'score-abc2lynotexecutable' => 'Der Konverter von ABC nach LilyPond konnte nicht ausgeführt werden: $1 ist keine ausführbare Datei. Es muss sichergestellt sein, dass <code>$wgScoreAbc2Ly</code> in der Konfigurationsdatei richtig eingestellt wurde.',
@@ -205,6 +206,8 @@ $1',
 	'score-chdirerr' => 'Es konnte nicht zum Verzeichnis $1 gewechselt werden',
 	'score-cleanerr' => 'Die alten Dateien konnten vor dem erneuten Rendern nicht bereinigt werden',
 	'score-compilererr' => 'Die Eingabedatei von LilyPond konnte nicht kompiliert werden:
+$1',
+	'score-backend-error' => 'Die erzeugten Dateien konnten nicht an ihren Zielort kopiert werden:
 $1',
 	'score-desc' => 'Ergänzt das Tag <code><score></code>, welches das Rendern und Einbetten von Partituren mit LilyPond ermöglicht',
 	'score-getcwderr' => 'Das aktuelle Arbeitsverzeichnis konnte nicht aufgerufen werden',
@@ -531,6 +534,8 @@ $1',
 	'score-chdirerr' => 'Не можам да го сменам директориумот $1',
 	'score-cleanerr' => 'Не можам да ги исчистам старите податотеки пред да извршам повторен испис',
 	'score-compilererr' => 'Не можам да составам влезна податотека за LilyPond:
+$1',
+	'score-backend-error' => 'Не можам да ги ставам создадените податотеки на нивното конечно место:
 $1',
 	'score-desc' => 'Додава ознака за испис на музички партитури со LilyPond',
 	'score-getcwderr' => 'Не можам да го добијам тековниот работен директориум',
