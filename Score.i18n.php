@@ -351,6 +351,8 @@ $1',
 	'score-cleanerr' => 'Non se puideron limpar os ficheiros vellos antes de volver renderizar',
 	'score-compilererr' => 'Non se puido compilar o ficheiro de entrada LilyPond:
 $1',
+	'score-backend-error' => 'Non se puideron copiar os ficheiros xerados á súa localización final:
+$1',
 	'score-desc' => 'Engade unha etiqueta para renderizar partituras musicais co LilyPond',
 	'score-getcwderr' => 'Non se puido obter o directorio de traballo actual',
 	'score-invalidlang' => 'A lingua da partitura lang="<nowiki>$1</nowiki>" é incorrecta. As linguas recoñecidas nestes momentos son lang="lilypond" (predeterminada) e lang="ABC".',
@@ -478,6 +480,8 @@ $1',
 	'score-chdirerr' => '現在のディレクトリを $1 に変更できません',
 	'score-cleanerr' => '再レンダリングの前に、古いファイルを消去できませんでした',
 	'score-compilererr' => 'LilyPond 入力ファイルをコンパイルできません:
+$1',
+	'score-backend-error' => '生成したファイルを最終的な出力先にコピーできません:
 $1',
 	'score-desc' => 'LilyPond で楽譜を描画する、タグを追加する',
 	'score-getcwderr' => '現在のディレクトリを取得できません',
@@ -688,6 +692,8 @@ $1',
 	'score-chdirerr' => 'Không thể chuyển đến thư mục $1',
 	'score-cleanerr' => 'Không thể xóa sạch các tập tin cũ trước khi kết xuất lại',
 	'score-compilererr' => 'Không thể biên dịch tập tin đầu vào LilyPond:
+$1',
+	'score-backend-error' => 'Không thể sao chép các tập tin được tạo ra vào vị trí cuối cùng:
 $1',
 	'score-desc' => 'Cung cấp thẻ để vẽ tài liệu âm nhạc dùng LilyPond',
 	'score-getcwderr' => 'Không thể lấy thư mục làm việc hiện tại',
