@@ -106,6 +106,8 @@ $1',
 	'score-cleanerr' => 'Non se pudieron llimpiar los ficheros vieyos enantes de volver a renderizar',
 	'score-compilererr' => "Nun se pudo compilar el ficheru d'entrada LilyPond:
 $1",
+	'score-backend-error' => 'Nun se pudieron copiar los ficheros xeneraos al so destín final:
+$1',
 	'score-desc' => 'Amiesta una etiqueta pa renderizar partitures musicales con LilyPond',
 	'score-getcwderr' => 'Nun se pudo saber el direutoriu de trabayu actual',
 	'score-invalidlang' => 'La llingua de la partitura lang="<nowiki>$1</nowiki>" ye inválida. Les llingües reconocíes nesti momentu son lang="lilypond" (predeterminada) y lang="ABC".',
