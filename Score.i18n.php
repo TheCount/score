@@ -264,6 +264,8 @@ $1',
 	'score-cleanerr' => 'No se han podido limpiar los archivos antiguos antes de volver a generar la imagen (renderizar)',
 	'score-compilererr' => 'No se pudo compilar el archivo de entrada LilyPond:
 $1',
+	'score-backend-error' => 'No se pueden copiar los archivos generados en su ubicación final:
+$1',
 	'score-desc' => 'Agrega una etiqueta para renderizar partituras musicales con LilyPond',
 	'score-getcwderr' => 'No se ha podido obtener el directorio de trabajo actual',
 	'score-invalidlang' => 'El idioma de la partitura lang="<nowiki>$1</nowiki>" es incorrecto. Los únicos idiomas reconocidos en estos momentos son lang="lilypond" (predeterminado) e lang="ABC".',
