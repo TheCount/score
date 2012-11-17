@@ -255,6 +255,7 @@ $messages['diq'] = array(
 
 /** Spanish (español)
  * @author Armando-Martin
+ * @author Dalton2
  */
 $messages['es'] = array(
 	'score-abc2lynotexecutable' => 'No se pudo ejecutar el conversor ABC a LilyPond: "$1" no es un archivo ejecutable. Asegúrese de que <code>$wgScoreAbc2Ly</code> está definido correctamente.',
@@ -285,7 +286,7 @@ $1',
 	'score-pregreplaceerr' => 'Falló la substitución de la expresión regular PCRE',
 	'score-readerr' => 'No se pudo leer el archivo "$1".',
 	'score-timiditynotexecutable' => 'No se pudo ejecutar TiMidity++: $1 no es un archivo ejecutable. Asegúrese de que <code>$wgScoreTimidity</code> está definido correctamente.',
-	'score-renameerr' => 'Error al mover los archivos de partituras al directorio de cargas.',
+	'score-renameerr' => 'Error al trasladar los archivos de partituras al directorio de cargas.',
 	'score-trimerr' => 'No se pudo ajustar la imagen:
 $1
 Defina <code>$wgScoreTrim=false</code> si persiste el problema.',
