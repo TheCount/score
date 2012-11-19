@@ -94,14 +94,14 @@ $wgHooks['ParserFirstCallInit'][] = 'efScoreExtension';
 $wgExtensionMessagesFiles['Score'] = "$scoreBase/Score.i18n.php";
 $wgAutoloadClasses['Score'] = "$scoreBase/Score.body.php";
 $wgAutoloadClasses['ScoreException'] = "$scoreBase/Score.body.php";
-$wgAutoloadClasses['ScopedProfiling'] = "$scoreBase/Score.body.php";
+$wgAutoloadClasses['Score_ScopedProfiling'] = "$scoreBase/Score.body.php";
 
 /**
  * Init routine.
  *
  * @param $parser Parser Mediawiki parser
  *
- * @return true if initialisation was successful, false otherwise.
+ * @return bool Returns true
  */
 function efScoreExtension( Parser &$parser ) {
 	global $wgUseImageMagick, $wgScoreTrim;
@@ -112,6 +112,5 @@ function efScoreExtension( Parser &$parser ) {
 	}
 
 	$parser->setHook( 'score', 'Score::render' );
-
 	return true;
 }

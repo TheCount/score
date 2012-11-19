@@ -67,7 +67,7 @@ class ScoreException extends Exception {
 	 * Constructor.
 	 *
 	 * @param $message Message to create error message from. Should have one $1 parameter.
-	 * @param $code optionally, an error code.
+	 * @param $code int optionally, an error code.
 	 * @param $previous Exception that caused this exception.
 	 */
 	public function __construct( $message, $code = 0, Exception $previous = null ) {
@@ -78,7 +78,7 @@ class ScoreException extends Exception {
 	 * Auto-renders exception as HTML error message in the wiki's content
 	 * language.
 	 *
-	 * @return error message HTML.
+	 * @return string Error message HTML.
 	 */
 	public function  __toString() {
 		return Html::rawElement(
@@ -118,8 +118,8 @@ class Score {
 	 * Throws proper ScoreException in case of failed shell executions.
 	 *
 	 * @param $message Message to display.
-	 * @param $output collected output from wfShellExec().
-	 * @param $factoryDir The factory directory to replace with "..."
+	 * @param $output string collected output from wfShellExec().
+	 * @param $factoryDir string|bool The factory directory to replace with "..."
 	 *
 	 * @throws ScoreException always.
 	 */
@@ -185,6 +185,9 @@ class Score {
 		}
 	}
 
+	/**
+	 * @return bool|string
+	 */
 	private static function getBaseUrl() {
 		global $wgScorePath, $wgUploadPath;
 		if ( $wgScorePath === false ) {
@@ -224,12 +227,13 @@ class Score {
 	/**
 	 * Renders the score code (LilyPond, ABC, etc.) in a <score>…</score> tag.
 	 *
-	 * @param $code score code.
+	 * @param $code string score code.
 	 * @param $args array of score tag attributes.
 	 * @param $parser Parser of Mediawiki.
 	 * @param $frame PPFrame expansion frame, not used by this extension.
 	 *
-	 * @return Image link HTML, and possibly anchor to MIDI file.
+	 * @throws ScoreException
+	 * @return string Image link HTML, and possibly anchor to MIDI file.
 	 */
 	public static function render( $code, array $args, Parser $parser, PPFrame $frame ) {
 		global $wgTmpDirectory;
@@ -360,7 +364,7 @@ class Score {
 	 * 	- generate_ogg: bool Whether to create an Ogg/Vorbis file in
 	 * 		an OggHandler. If set to true, the override_ogg option
 	 * 		must be set to false. Required.
-	 *  - dest_storage_path: The path of the destination directory relative to 
+	 *  - dest_storage_path: The path of the destination directory relative to
 	 *  	the current backend. Required.
 	 *  - dest_url: The default destination URL. Required.
 	 *  - file_name_prefix: The filename prefix used for all files
@@ -386,11 +390,10 @@ class Score {
 	 *
 	 * @return string HTML.
 	 *
+	 * @throws Exception
 	 * @throws ScoreException if an error occurs.
 	 */
 	private static function generateHTML( &$parser, $code, $options ) {
-		global $wgOut;
-
 		$prof = new Score_ScopedProfiling( __METHOD__ );
 		try {
 			$backend = self::getBackend();
@@ -454,7 +457,7 @@ class Score {
 					'src' => "{$options['dest_url']}/$imageFileName",
 					'alt' => $code,
 				) );
-			} elseif ( isset( $existingFiles[$multi1Path] ) ) {
+			} elseif ( isset( $existingFiles[$multi1Path] ) ) { // @fixme: $multi1Path is undefined
 				$link = '';
 				for ( $i = 1; ; ++$i ) {
 					$fileName = "{$options['file_name_prefix']}-$i.png";
@@ -705,9 +708,9 @@ LILYPOND;
 	/**
 	 * Generates an Ogg/Vorbis file from a MIDI file using timidity.
 	 *
-	 * @param $sourceFile The local filename of the MIDI file
-	 * @param $factoryDir The local temporary directory
-	 * @param $remoteDest The backend storage path to upload the Ogg file to
+	 * @param $sourceFile string The local filename of the MIDI file
+	 * @param $factoryDir string The local temporary directory
+	 * @param $remoteDest string The backend storage path to upload the Ogg file to
 	 *
 	 * @throws ScoreException if an error occurs.
 	 */
@@ -754,7 +757,7 @@ LILYPOND;
 	 * 	* lilypond_path: local path to the LilyPond file that is to be
 	 * 		generated.
 	 *
-	 * @throws ScoreException if an error occurs.
+	 * @throws MWException if an error occurs.
 	 */
 	private static function generateLilypond( $code, $options ) {
 		$prof = new Score_ScopedProfiling( __METHOD__ );
@@ -782,7 +785,7 @@ LILYPOND;
 	 * Runs abc2ly, creating the LilyPond input file.
 	 *
 	 * @param $code string ABC code.
-	 * @param $factoryDirectory Local temporary directory
+	 * @param $factoryDirectory string Local temporary directory
 	 * @param $destFile string Local destination path
 	 *
 	 * @throws ScoreException if the conversion fails.
@@ -813,7 +816,7 @@ LILYPOND;
 			. ' 2>&1';
 		$output = wfShellExec( $cmd, $rc );
 		if ( ( $rc != 0 ) || !file_exists( $destFile ) ) {
-			self::throwCallException( wfMessage( 'score-abcconversionerr' ), $output, $factoryDir );
+			self::throwCallException( wfMessage( 'score-abcconversionerr' ), $output, $factoryDirectory );
 		}
 
 		/* The output file has a tagline which should be removed in a wiki context */
@@ -860,7 +863,7 @@ LILYPOND;
 	 *
 	 * @param $dir string Local path to the directory that is to be deleted.
 	 *
-	 * @return true on success, false on error
+	 * @return Bool true on success, false on error
 	 */
 	private static function eraseFactory( $dir ) {
 		if( file_exists( $dir ) ) {
