@@ -309,6 +309,8 @@ $1',
 	'score-cleanerr' => 'Impossible d’effacer les anciens fichiers avant de regénérer',
 	'score-compilererr' => 'Impossible de compiler le fichier d’entrée LilyPond :
 $1',
+	'score-backend-error' => 'Impossible de copier les fichiers générés vers leur emplacement cible:
+$1',
 	'score-desc' => 'Ajoute une balise pour le rendu d’extraits musicaux avec LilyPond',
 	'score-getcwderr' => 'Impossible d’obtenir le répertoire de travail actuel',
 	'score-invalidlang' => 'Langage de partition invalide lang="<nowiki>$1</nowiki>". Les langages actuellement reconnus sont lang="lilypond" (par défaut) et lang="ABC".',
@@ -528,6 +530,8 @@ $messages['ka'] = array(
 $messages['lb'] = array(
 	'score-chdirerr' => 'Et konnt net op de Repertoire $1 gewiesselt ginn',
 	'score-cleanerr' => 'Déi al Fichiere konnten net geläscht ginn ier se nei generéiert goufen',
+	'score-oggconversionerr' => 'MIDI konnt net an Ogg/Vorbis ëmgewandelt ginn:
+$1',
 	'score-oggoverridenotfound' => 'De Fichier "<nowiki>$1</nowiki>" deen Dir mat override_ogg uginn hutt  gëtt et net.',
 	'score-page' => 'Säit $1',
 	'score-readerr' => 'De Fichier $1 konnt net geliest ginn.',
