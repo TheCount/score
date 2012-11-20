@@ -211,7 +211,7 @@ $1',
 $1',
 	'score-backend-error' => 'Die erzeugten Dateien konnten nicht an ihren Zielort kopiert werden:
 $1',
-	'score-desc' => 'Ergänzt das Tag <code><score></code>, welches das Rendern und Einbetten von Partituren mit LilyPond ermöglicht',
+	'score-desc' => 'Ergänzt ein Tag, welches das Rendern und Einbetten von Partituren mit LilyPond ermöglicht',
 	'score-getcwderr' => 'Das aktuelle Arbeitsverzeichnis konnte nicht aufgerufen werden',
 	'score-invalidlang' => 'Die für die Partitur verwendete Sprache <code>lang="<nowiki>$1</nowiki>"</code> ist ungültig. Die derzeit verwendbaren Sprache sind <code>lang="lilypond"</code> (Standardeinstellung) und <code>lang="ABC"</code>.',
 	'score-invalidoggoverride' => 'Die zu <code>override_ogg</code> angegebene Datei „<nowiki>$1</nowiki>“ ist ungültig. Bitte nur den Dateinamen angeben und dabei <nowiki>[[…]]</nowiki> sowie das Prefix „{{ns:file}}:“ weglassen.',
