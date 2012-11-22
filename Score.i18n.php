@@ -524,6 +524,17 @@ $messages['ka'] = array(
 	'score-page' => 'გვერდი $1',
 );
 
+/** Korean (한국어)
+ * @author 아라
+ */
+$messages['ko'] = array(
+	'score-chdirerr' => '$1 디렉토리를 바꿀 수 없습니다',
+	'score-oggconversionerr' => 'MIDI를 Ogg/Vorbis로 변환할 수 없습니다:
+$1',
+	'score-page' => '문서 $1개',
+	'score-readerr' => '$1 파일을 읽을 수 없습니다.',
+);
+
 /** Luxembourgish (Lëtzebuergesch)
  * @author Robby
  */
