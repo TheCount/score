@@ -529,10 +529,20 @@ $messages['ka'] = array(
  */
 $messages['ko'] = array(
 	'score-chdirerr' => '$1 디렉토리를 바꿀 수 없습니다',
+	'score-desc' => 'LilyPond로 악보를 그리는 태그 추가',
+	'score-invalidlang' => 'lang="<nowiki>$1</nowiki>" 악보 언어가 잘못되었습니다.  현재 인식한 언어는 lang="lilypond" (기본값)과 lang="ABC" 입니다.',
+	'score-noabcinput' => '$1 ABC 원본 파일을 만들 수 없습니다.',
+	'score-noimages' => '악보 그림을 생성할 수 없습니다. 악보 코드를 확인하세요.',
+	'score-noinput' => '$1 LilyPond 입력 파일을 만드는 데 실패했습니다.',
 	'score-oggconversionerr' => 'MIDI를 Ogg/Vorbis로 변환할 수 없습니다:
 $1',
+	'score-oggoverridenotfound' => 'override_ogg로 지정한 "<nowiki>$1</nowiki>" 파일이 존재하지 않습니다.',
 	'score-page' => '문서 $1개',
+	'score-pregreplaceerr' => 'PCRE 정규 표현식을 대체하는 데 실패했습니다',
 	'score-readerr' => '$1 파일을 읽을 수 없습니다.',
+	'score-renameerr' => '업로드 디렉토리로 악보 파일을 이동하는 중 오류가 났습니다.',
+	'score-versionerr' => 'LilyPond 버전을 가져울 수 없습니다:
+$1',
 );
 
 /** Luxembourgish (Lëtzebuergesch)
