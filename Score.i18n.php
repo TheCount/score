@@ -450,15 +450,24 @@ $1',
 /** Italian (italiano)
  * @author Beta16
  * @author F. Cosoleto
+ * @author Gianfranco
  */
 $messages['it'] = array(
 	'score-abc2lynotexecutable' => 'Il convertitore ABC a LilyPond non può essere eseguito: $1 non è un file eseguibile. Assicurarsi che <code>$wgScoreAbc2Ly</code> è configurato correttamente.',
 	'score-abcconversionerr' => 'Impossibile convertire file ABC al formato LilyPond:
 $1',
 	'score-chdirerr' => 'Impossibile cambiare alla directory: $1',
+	'score-cleanerr' => 'Impossibile ripulire i vecchi file prima di rifare il rendering',
 	'score-compilererr' => "Compilazione del file d'input LilyPond fallita:
 $1",
+	'score-backend-error' => 'Impossibile copiare i file generati nella loro destinazione finale:
+$1',
+	'score-desc' => 'Aggiunge un tag per il rendering di spartiti musicali con LilyPond',
 	'score-getcwderr' => 'Impossibile accedere alla directory di lavoro corrente',
+	'score-invalidlang' => 'Risultato non valido per il linguaggio lang="<nowiki>$1</nowiki>". I linguaggi attualmente riconosciuti sono lang="lilypond" (predefinito) e lang="ABC".',
+	'score-invalidoggoverride' => 'Il file "<nowiki>$1</nowiki>" che hai specificato con override_ogg non è valido. Per favore, specifica solo il nome del file, ometti <nowiki>[[…]]</nowiki> e il prefisso "{{ns:file}}:".',
+	'score-midioverridenotfound' => 'Il file "<nowiki>$1</nowiki>" che hai specificato con override_midi non è stato trovato. Per favore, specifica solo il nome del file, ometti <nowiki>[[…]]</nowiki> e il prefisso "{{ns:file}}:".',
+	'score-noabcinput' => 'Non è stato possibile creare $1, file sorgente ABC.',
 	'score-noimages' => 'Non si possono generare immagini di partiture, controllare il codice della partitura.',
 	'score-noinput' => "Creazione del file d'input LilyPond $1 non riuscita.",
 	'score-noogghandler' => "La conversione OGG/Vorbis richiede un'estensione OggHandler installata e configurata, vedere [https://www.mediawiki.org/wiki/Extension:OggHandler Extension:OggHandler].",
@@ -473,8 +482,12 @@ $1',
 	'score-readerr' => 'Lettura del file $1 fallita.',
 	'score-timiditynotexecutable' => 'TiMidity++ non può essere eseguito: $1 non è un file eseguibile. Assicurarsi che <code>$wgScoreTimidity</code> sia configurato correttamente.',
 	'score-renameerr' => 'Errore nello spostamento dei file di partitura alla directory di upload.',
+	'score-trimerr' => 'Non si è potuto ritagliare questa immagine:
+$1
+Definisci <code>$wgScoreTrim=false</code> se il problema persiste.',
 	'score-versionerr' => 'Impossibile ottenere la versione di LilyPond:
 $1',
+	'score-vorbisoverrideogg' => 'Non è possibile richiedere un rendering Ogg/Vorbis e specificare override_ogg allo stesso tempo.',
 );
 
 /** Japanese (日本語)
