@@ -30,7 +30,8 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 /**
  * Helper class for mixing profiling with code that throws exceptions.
  * It produces matching wfProfileIn/Out calls for scopes.
- * This class would be superfluous if PHP had a try-finally construct.
+ * This could be done with a try-finally construct instead, but we want to be
+ * backwards compatible with PHP 5.3 for now.
  */
 class Score_ScopedProfiling {
 	/**
