@@ -388,6 +388,47 @@ $1',
 	'score-vorbisoverrideogg' => 'Non pode solicitar unha renderización Ogg/Vorbis e asemade especificar override_ogg.',
 );
 
+/** Hebrew (עברית)
+ * @author Amire80
+ */
+$messages['he'] = array(
+	'score-abc2lynotexecutable' => 'המרה מ־ABC ל־LilyPond לא יכלה להתבצע: $1 אינו קובץ בר־הרצה. נא לודא שהמשתנה <code>$wgScoreAbc2Ly</code> מוגדר נכון.',
+	'score-abcconversionerr' => 'לא ניתן להמיר את קובץ ה־ABC לתסדיר LilyPond:
+$1',
+	'score-chdirerr' => 'לא ניתן לעבור את התיקייה $1',
+	'score-cleanerr' => 'לא ניתן לנקות קבצים ישנים לפני ציור מחדש',
+	'score-compilererr' => 'לא ניתן לקמפל קובץ קלט של LilyPond:
+$1',
+	'score-backend-error' => 'לא ניתן להעתיק את הקבצים שנוצרו ליעדם הסופי:
+$1',
+	'score-desc' => 'הוספת תג להצגת תווים מוזיקליים באמצעות LilyPond',
+	'score-getcwderr' => 'לא ניתן לקבל את התיקייה הנוכחית',
+	'score-invalidlang' => 'שפת תווים מוזיקליים בלתי־תקינה <span dir="ltr">lang="<nowiki>$1</nowiki>"</span>. כרגע השפות המוּכרות הן <span dir="ltr">lang="lilypond"</span> ו־<span dir="ltr">lang="<nowiki>ABC</nowiki>"</span>.',
+	'score-invalidoggoverride' => 'הקובץ "<nowiki>$1</nowiki>" שציינת עם override_ogg אינו תקין. נא לציין את שם הקובץ בלבד, להשמיט את <nowiki>[[…]]</nowiki> ואת התחילית "{{ns:file}}:".',
+	'score-midioverridenotfound' => 'הקובץ "<nowiki>$1</nowiki>" שציינת עם override_midi אינו תקין. נא לציין את שם הקובץ בלבד, להשמיט את <nowiki>[[…]]</nowiki> ואת התחילית "{{ns:file}}:".',
+	'score-noabcinput' => 'קובץ $1 עם קוד המקור של ABC לא יכול היה להיווצר.',
+	'score-noimages' => 'לא נוצרו תמונות של תווים. נא לבדוק את קוד התווים שלך.',
+	'score-noinput' => 'יצירת הקובץ $1 עם קלט של LilyPond לא הצליחה.',
+	'score-noogghandler' => "המרת Ogg/Vorbis דורשת התקנה והגדרה של ההרחבה OggHandler, ר' [https://www.mediawiki.org/wiki/Extension:OggHandler Extension:OggHandler].",
+	'score-nomidi' => 'לא נוצר שום קובץ MIDI, למקות ש התבקש כזה. אם זה מצב LilyPond טהור, יש לספק גוש <span dir="ltr">\\midi</span> מתאים.',
+	'score-nooutput' => 'לא ניתן היה ליצור את תיקיית הפלט $1.',
+	'score-notexecutable' => 'לא ניתן להריץ את LilyPond: הקובץ $1 אינו בר־הרצה. נא לוודא שנמשתנה <code>$wgScoreLilyPond</code> מוגדר נכון.',
+	'score-oggconversionerr' => 'לא ניתן להמיר קובץ MIDI ל־Ogg/Vorbis:
+$1',
+	'score-oggoverridenotfound' => 'הקובץ "<nowiki>$1</nowiki>" שהציינת עם override_ogg אינו קיים.',
+	'score-page' => 'עמוד $1',
+	'score-pregreplaceerr' => 'החלפה ביטויים רגולריים עם PCRE נכשלה',
+	'score-readerr' => 'לא ניתן לקרוא את הקובץ $1.',
+	'score-timiditynotexecutable' => 'לא ניתן להריץ את <span dir="ltr">TiMidity++</span>: הקובץ $1 אינו בר־הרצה. נא לוודא שנמשתנה <code>$wgScoreLilyPond</code> מוגדר נכון.',
+	'score-renameerr' => 'שגיאה בהעברת קובצי תווים לתיקיית ההעלאה.',
+	'score-trimerr' => 'לא ניתן לקצץ את התמונה:
+$1
+יש להגדיר <code dir="ltr">$wgScoreTrim=false</code> אם הבעיה ממשיכה.',
+	'score-versionerr' => 'לא ניתן לקבל את גרסת LilyPond:
+$1',
+	'score-vorbisoverrideogg' => 'לא ניתן לקבל הצגה כ־Ogg/Vorbis ולציין override_ogg באותו הזמן.',
+);
+
 /** Upper Sorbian (hornjoserbsce)
  * @author Michawiki
  */
@@ -541,21 +582,41 @@ $messages['ka'] = array(
  * @author 아라
  */
 $messages['ko'] = array(
+	'score-abc2lynotexecutable' => 'ABC에서 LilyPond로의 변환기를 실행할 수 없습니다. $1(은)는 실행 파일이 아닙니다. <code>$wgScoreAbc2Ly</code>가 올바르게 설정되어 있는지 확인하세요.',
+	'score-abcconversionerr' => 'ABC 파일을 LilyPond 형식으로 변환할 수 없습니다:
+$1',
 	'score-chdirerr' => '$1 디렉토리를 바꿀 수 없습니다',
+	'score-cleanerr' => '다시 렌더링하기 전에 오래된 파일을 지울 수 없습니다',
+	'score-compilererr' => 'LilyPond 입력 파일을 컴파일할 수 없습니다:
+$1',
+	'score-backend-error' => '생성한 파일을 최종 위치에 복사할 수 없습니다:
+$1',
 	'score-desc' => 'LilyPond로 악보를 그리는 태그 추가',
-	'score-invalidlang' => 'lang="<nowiki>$1</nowiki>" 악보 언어가 잘못되었습니다.  현재 인식한 언어는 lang="lilypond" (기본값)과 lang="ABC" 입니다.',
+	'score-getcwderr' => '현재 작업 디렉토리를 얻을 수 없습니다',
+	'score-invalidlang' => 'lang="<nowiki>$1</nowiki>" 악보 언어가 잘못되었습니다. 현재 인식한 언어는 lang="lilypond" (기본값)과 lang="ABC" 입니다.',
+	'score-invalidoggoverride' => 'override_ogg로 지정한 "<nowiki>$1</nowiki>" 파일이 잘못되었습니다. <nowiki>[[…]]</nowiki>와 "{{ns:file}}:" 접두어를 생략하고 파일 이름만 지정하세요.',
+	'score-midioverridenotfound' => 'override_midi로 지정한 "<nowiki>$1</nowiki>" 파일을 찾을 수 없습니다. <nowiki>[[…]]</nowiki>와 "{{ns:file}}:" 접두어를 생략하고 파일 이름만 지정하세요.',
 	'score-noabcinput' => '$1 ABC 원본 파일을 만들 수 없습니다.',
 	'score-noimages' => '악보 그림을 생성할 수 없습니다. 악보 코드를 확인하세요.',
 	'score-noinput' => '$1 LilyPond 입력 파일을 만드는 데 실패했습니다.',
+	'score-noogghandler' => 'Ogg/Vorbis 변환기는 OggHandler 확장 기능을 설치와 설정이 필요합니다, [https://www.mediawiki.org/wiki/Extension:OggHandler Extension:OggHandler]를 참고하삽시오.',
+	'score-nomidi' => '요청했음에도 생성한 MIDI 파일이 없습니다. 원본 LilyPond 모드에서 작업하려면 적절한 \\midi 블록을 제공해야 합니다.',
+	'score-nooutput' => '$1 출력 디렉토리를 만드는 데 실패했습니다.',
+	'score-notexecutable' => 'LilyPond를 실행할 수 없습니다: $1(은)는 실행 파일이 아닙니다. <code>$wgScoreLilyPond</code>가 올바르게 설정되어 있는지 확인하세요.',
 	'score-oggconversionerr' => 'MIDI를 Ogg/Vorbis로 변환할 수 없습니다:
 $1',
 	'score-oggoverridenotfound' => 'override_ogg로 지정한 "<nowiki>$1</nowiki>" 파일이 존재하지 않습니다.',
 	'score-page' => '문서 $1개',
 	'score-pregreplaceerr' => 'PCRE 정규 표현식을 대체하는 데 실패했습니다',
 	'score-readerr' => '$1 파일을 읽을 수 없습니다.',
+	'score-timiditynotexecutable' => 'TiMidity++를 실행할 수 없습니다: $1(은)는 실행 파일이 아닙니다. <code>$wgScoreTimidity</code>가 올바르게 설정되어 있는지 확인하세요.',
 	'score-renameerr' => '업로드 디렉토리로 악보 파일을 이동하는 중 오류가 났습니다.',
-	'score-versionerr' => 'LilyPond 버전을 가져울 수 없습니다:
+	'score-trimerr' => '그림을 자를 수 없습니다:
+$1
+이 문제가 계속되면 <code>$wgScoreTrim=false</code>를 설정하세요.',
+	'score-versionerr' => 'LilyPond 버전을 얻을 수 없습니다:
 $1',
+	'score-vorbisoverrideogg' => 'Ogg/Vorbis 렌더링을 요청하고 동시에 override_ogg를 지정할 수 없습니다.',
 );
 
 /** Luxembourgish (Lëtzebuergesch)
@@ -610,6 +671,47 @@ $1
 	'score-versionerr' => 'Не можам да ја добијам верзијата на LilyPond.
 $1',
 	'score-vorbisoverrideogg' => 'Не можете истовремено да побарате испис во Ogg/Vorbis и да укажете override_ogg.',
+);
+
+/** Malay (Bahasa Melayu)
+ * @author Anakmalaysia
+ */
+$messages['ms'] = array(
+	'score-abc2lynotexecutable' => 'Penukar ABC ke LilyPond tidak boleh dilaksanakan: $1 bukan fail yang boleh dilaksanakan. Pastikan <code>$wgScoreAbc2Ly</code> diset dengan betul.',
+	'score-abcconversionerr' => 'Fail ABC tidak dapat ditukarkan ke format LilyPond:
+$1',
+	'score-chdirerr' => 'Tidak dapat diubah ke direktori $1',
+	'score-cleanerr' => 'Fail-fail lama tidak dapat dibersihkan sebelum persembahan semula',
+	'score-compilererr' => 'Fail input LilyPond tidak dapat dikompilkan:
+$1',
+	'score-backend-error' => 'Fail-fail yang dihasilkan tidak dapat disalin ke lokasi akhirnya:
+$1',
+	'score-desc' => 'Membubuh teg untuk mempersembahkan skor muzik dengan LilyPond',
+	'score-getcwderr' => 'Direktori berfungsi semasa tidak dapat diperoleh',
+	'score-invalidlang' => 'Bahasa skor lang="<nowiki>$1</nowiki>" tidak sah. Bahasa-bahasa yang dikenali kini adalah lang="lilypond" (azali) dan lang="ABC".',
+	'score-invalidoggoverride' => 'Fail "<nowiki>$1</nowiki>" yang anda nyatakan dengan override_ogg tidak sah. Sila nyatakan nama fail sahaja, gugurkan <nowiki>[[…]]</nowiki> dan awalan "{{ns:file}}:".',
+	'score-midioverridenotfound' => 'Fail "<nowiki>$1</nowiki>" yang anda nyatakan dengan override_midi tidak dapat dijumpai. Sila nyatakan nama fail sahaja, gugurkan <nowiki>[[…]]</nowiki> dan awalan "{{ns:file}}:".',
+	'score-noabcinput' => 'Fail sumber ABC $1 tidak dapat diwujudkan.',
+	'score-noimages' => 'Tiada imej skor dihasilkan. Sila semak kod skor anda.',
+	'score-noinput' => 'Fail input LilyPond $1 tidak dapat dicipta.',
+	'score-noogghandler' => 'Penukaran Ogg/Vorbis memerlukan sambungan OggHandler yang terpasang dan terkonfigurasi, oleh itu rujuk [https://www.mediawiki.org/wiki/Extension:OggHandler Extension:OggHandler].',
+	'score-nomidi' => 'Tiada fail MIDI yang dihasilkan biarpun dipohon. Jika anda menggunakan ragam LilyPond mentah, jangan lupa untuk menyediakan blok \\midi yang betul.',
+	'score-nooutput' => 'Direktori output $1 tidak dapat dicipta.',
+	'score-notexecutable' => 'LilyPond tidak dapat dilaksanakan: $1 bukan fail yang boleh dilaksanakan. Pastikan <code>$wgScoreLilyPond</code> diset dengan betul.',
+	'score-oggconversionerr' => 'MIDI tidak dapat ditukarkan kepada Ogg/Vorbis:
+$1',
+	'score-oggoverridenotfound' => 'Fail "<nowiki>$1</nowiki>" yang anda nyatakan dengan override_ogg tidak wujud.',
+	'score-page' => 'Halaman $1',
+	'score-pregreplaceerr' => 'Ungkapan nalar PCRE gagal digantikan',
+	'score-readerr' => 'Fail $1 tidak dapat dibaca.',
+	'score-timiditynotexecutable' => 'TiMidity++ tidak boleh dilaksanakan: $1 bukan fail yang boleh dilaksanakan. Pastikan <code>$wgScoreTimidity</code> diset dengan betul.',
+	'score-renameerr' => 'Ralat ketika memindahkan fail skor ke direktori muat naik.',
+	'score-trimerr' => 'Imej tidak dapat dirapikan:
+$1
+Setkan <code>$wgScoreTrim=false</code> jika masalah ini berterusan.',
+	'score-versionerr' => 'Versi LilyPond tidak dapat diperoleh:
+$1',
+	'score-vorbisoverrideogg' => 'Anda tidak boleh memohon persembahan Ogg/Vorbis dan menyatakan override_ogg pada masa yang sama.',
 );
 
 /** Dutch (Nederlands)
