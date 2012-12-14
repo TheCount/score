@@ -295,6 +295,13 @@ $1',
 	'score-vorbisoverrideogg' => 'No puede solicitar una renderización Ogg/Vorbis y especificar override_ogg al mismo tiempo.',
 );
 
+/** Finnish (suomi)
+ * @author Crt
+ */
+$messages['fi'] = array(
+	'score-page' => 'Sivu $1',
+);
+
 /** French (français)
  * @author Crochet.david
  * @author Gomoko
