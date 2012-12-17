@@ -734,6 +734,8 @@ $1',
 	'score-cleanerr' => 'Het was niet mogelijk de oude bestanden op te ruimen voor het opnieuw aanmaken van de afbeeldingen',
 	'score-compilererr' => 'Het was niet mogelijk de LilyPondinvoer te compileren:
 $1',
+	'score-backend-error' => 'Het was niet mogelijk de gemaakte bestanden naar hun uiteindelijke plaats te kopiëren:
+$1',
 	'score-desc' => 'Voegt een label toe voor het weergeven van bladmuziek met LilyPond',
 	'score-getcwderr' => 'Het was niet mogelijk de ingestelde werkmap te gebruiken',
 	'score-invalidlang' => 'Er is een onjuiste taal voor bladmuziek aangegeven (lang="<nowiki>$1</nowiki>"). Op dit moment worden lang="lilypond" (standaard) en lang="ABC" ondersteund.',
