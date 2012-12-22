@@ -836,6 +836,13 @@ Itakda ang <code>$wgScoreTrim=false</code> kapag nagtagal ang suliraning ito.',
 	'score-vorbisoverrideogg' => 'Hindi mo mahihiling nang sabayan ang paghaharap ng Ogg/Vorbis at ang pagtukoy ng override_ogg.',
 );
 
+/** Ukrainian (українська)
+ * @author Steve.rusyn
+ */
+$messages['uk'] = array(
+	'score-page' => 'Сторінка $1',
+);
+
 /** Vietnamese (Tiếng Việt)
  * @author Minh Nguyen
  */
@@ -875,4 +882,11 @@ Nếu vấn đề này vẫn còn xuất hiện, hãy đặt <code>$wgScoreTrim=
 	'score-versionerr' => 'Không thể lấy phiên bản của LilyPond:
 $1',
 	'score-vorbisoverrideogg' => 'Bạn không thể yêu cầu kết xuất Ogg/Vorbis và định override_ogg cùng lúc.',
+);
+
+/** Simplified Chinese (中文（简体）‎)
+ * @author Shirayuki
+ */
+$messages['zh-hans'] = array(
+	'score-page' => '页面$1',
 );
