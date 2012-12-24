@@ -1,4 +1,5 @@
-*.swp
 *#
-*~
 .svn
+*~
+*.kate-swp
+.*.swp
