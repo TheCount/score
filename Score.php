@@ -55,6 +55,25 @@ $wgScoreAbc2Ly = '/usr/bin/abc2ly';
 /* Path to TiMidity++ */
 $wgScoreTimidity = '/usr/bin/timidity';
 
+/**
+ * The URL path of the directory where files will be stored.
+ * Defaults to "{$wgUploadPath}/lilypond".
+ */
+$wgScorePath = false;
+
+/**
+ * The filesystem path where files will be stored.
+ * Defaults to "{$wgUploadDirectory}/lilypond".
+ */
+$wgScoreDirectory = false;
+
+/**
+ * The name of a file backend ($wgFileBackends) to be used for storing files.
+ * Defaults to FSFileBackend using $wgScoreDirectory as a base path. Files will
+ * be stored in a container internally called "score-render".
+ */
+$wgScoreFileBackend = false;
+
 /*
  * Extension credits
  */
@@ -70,18 +89,19 @@ $wgExtensionCredits['parserhooks'][] = array(
 /*
  * Setup
  */
+$scoreBase = __DIR__;
 $wgHooks['ParserFirstCallInit'][] = 'efScoreExtension';
-$wgExtensionMessagesFiles['Score'] = dirname( __FILE__ ) . '/Score.i18n.php';
-$wgAutoloadClasses['Score'] = dirname( __FILE__ ) . '/Score.body.php';
-$wgAutoloadClasses['ScoreException'] = dirname( __FILE__ ) . '/Score.body.php';
-$wgAutoloadClasses['ScopedProfiling'] = dirname( __FILE__ ) . '/Score.body.php';
+$wgExtensionMessagesFiles['Score'] = "$scoreBase/Score.i18n.php";
+$wgAutoloadClasses['Score'] = "$scoreBase/Score.body.php";
+$wgAutoloadClasses['ScoreException'] = "$scoreBase/Score.body.php";
+$wgAutoloadClasses['Score_ScopedProfiling'] = "$scoreBase/Score.body.php";
 
 /**
  * Init routine.
  *
  * @param $parser Parser Mediawiki parser
  *
- * @return true if initialisation was successful, false otherwise.
+ * @return bool Returns true
  */
 function efScoreExtension( Parser &$parser ) {
 	global $wgUseImageMagick, $wgScoreTrim;
@@ -92,6 +112,5 @@ function efScoreExtension( Parser &$parser ) {
 	}
 
 	$parser->setHook( 'score', 'Score::render' );
-
 	return true;
 }

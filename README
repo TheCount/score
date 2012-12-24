@@ -34,7 +34,7 @@ Setup
 
    require_once("$IP/extensions/Score/Score.php");
    $wgScoreLilyPond = '/path/to/your/lilypond/executable'; /* required */
-   $wgScoreAbc2Ly = '/path/to/your/abc2ly/executable'; /* if you want ABC to 
+   $wgScoreAbc2Ly = '/path/to/your/abc2ly/executable'; /* if you want ABC to
                                                           LilyPond conversion */
    $wgScoreTimidty = '/path/to/your/timidty/executable'; /* if you want MIDI to
                                                             Vorbis conversion */

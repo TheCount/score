@@ -30,9 +30,10 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 /**
  * Helper class for mixing profiling with code that throws exceptions.
  * It produces matching wfProfileIn/Out calls for scopes.
- * This class would be superfluous if PHP had a try-finally construct.
+ * This could be done with a try-finally construct instead, but we want to be
+ * backwards compatible with PHP 5.3 for now.
  */
-class ScopedProfiling {
+class Score_ScopedProfiling {
 	/**
 	 * Profiling ID such as a method name.
 	 */
@@ -67,7 +68,7 @@ class ScoreException extends Exception {
 	 * Constructor.
 	 *
 	 * @param $message Message to create error message from. Should have one $1 parameter.
-	 * @param $code optionally, an error code.
+	 * @param $code int optionally, an error code.
 	 * @param $previous Exception that caused this exception.
 	 */
 	public function __construct( $message, $code = 0, Exception $previous = null ) {
@@ -78,12 +79,12 @@ class ScoreException extends Exception {
 	 * Auto-renders exception as HTML error message in the wiki's content
 	 * language.
 	 *
-	 * @return error message HTML.
+	 * @return string Error message HTML.
 	 */
 	public function  __toString() {
 		return Html::rawElement(
-			'span',
-			array( 'class' => 'error' ),
+			'div',
+			array( 'class' => 'errorbox' ),
 			$this->getMessage()
 		);
 	}
@@ -93,11 +94,6 @@ class ScoreException extends Exception {
  * Score class.
  */
 class Score {
-	/**
-	 * Cache directory name.
-	 */
-	const LILYPOND_DIR_NAME = 'lilypond';
-
 	/**
 	 * Default audio player width.
 	 */
@@ -115,14 +111,24 @@ class Score {
 	private static $lilypondVersion = null;
 
 	/**
+	 * FileBackend instance cache
+	 */
+	private static $backend;
+
+	/**
 	 * Throws proper ScoreException in case of failed shell executions.
 	 *
 	 * @param $message Message to display.
-	 * @param $output collected output from wfShellExec().
+	 * @param $output string collected output from wfShellExec().
+	 * @param $factoryDir string|bool The factory directory to replace with "..."
 	 *
 	 * @throws ScoreException always.
 	 */
-	private static function throwCallException( $message, $output ) {
+	private static function throwCallException( $message, $output, $factoryDir = false ) {
+		/* clean up the output a bit */
+		if ( $factoryDir ) {
+			$output = str_replace( $factoryDir, '...', $output );
+		}
 		throw new ScoreException(
 			$message->rawParams(
 				Html::rawElement( 'pre',
@@ -142,7 +148,7 @@ class Score {
 	private static function getLilypondVersion() {
 		global $wgScoreLilyPond;
 
-		$prof = new ScopedProfiling( __METHOD__ );
+		$prof = new Score_ScopedProfiling( __METHOD__ );
 
 		if ( !is_executable( $wgScoreLilyPond ) ) {
 			throw new ScoreException( wfMessage( 'score-notexecutable', $wgScoreLilyPond ) );
@@ -162,10 +168,10 @@ class Score {
 	}
 
 	/**
-	 * Creates the specified directory if it does not exist yet.
+	 * Creates the specified local directory if it does not exist yet.
 	 * Otherwise does nothing.
 	 *
-	 * @param $path string Path to directory to be created.
+	 * @param $path string Local path to directory to be created.
 	 * @param $mode integer Chmod value of the new directory.
 	 *
 	 * @throws ScoreException if the directory does not exist and could not
@@ -181,21 +187,66 @@ class Score {
 	}
 
 	/**
+	 * @return bool|string
+	 */
+	private static function getBaseUrl() {
+		global $wgScorePath, $wgUploadPath;
+		if ( $wgScorePath === false ) {
+			return "{$wgUploadPath}/lilypond";
+		} else {
+			return $wgScorePath;
+		}
+	}
+
+	/**
+	 * @return FileBackend
+	 */
+	private static function getBackend() {
+		global $wgScoreFileBackend;
+
+		if ( $wgScoreFileBackend ) {
+			return FileBackendGroup::singleton()->get( $wgScoreFileBackend );
+		} else {
+			if ( !self::$backend ) {
+				global $wgScoreDirectory, $wgUploadDirectory;
+				if ( $wgScoreDirectory === false ) {
+					$dir = "{$wgUploadDirectory}/lilypond";
+				} else {
+					$dir = $wgScoreDirectory;
+				}
+				self::$backend = new FSFileBackend( array(
+					'name'           => 'score-backend',
+					'lockManager'    => 'nullLockManager',
+					'containerPaths' => array( 'score-render' => $dir ),
+					'fileMode'       => 0777
+				) );
+			}
+			return self::$backend;
+		}
+	}
+
+	/**
 	 * Renders the score code (LilyPond, ABC, etc.) in a <score>…</score> tag.
 	 *
-	 * @param $code score code.
+	 * @param $code string score code.
 	 * @param $args array of score tag attributes.
 	 * @param $parser Parser of Mediawiki.
 	 * @param $frame PPFrame expansion frame, not used by this extension.
 	 *
-	 * @return Image link HTML, and possibly anchor to MIDI file.
+	 * @throws ScoreException
+	 * @return string Image link HTML, and possibly anchor to MIDI file.
 	 */
 	public static function render( $code, array $args, Parser $parser, PPFrame $frame ) {
 		global $wgTmpDirectory, $wgUploadDirectory, $wgUploadPath;
 
 		$prof = new ScopedProfiling( __METHOD__ );
 
+		$prof = new Score_ScopedProfiling( __METHOD__ );
+
 		try {
+			$baseUrl = self::getBaseUrl();
+			$baseStoragePath = self::getBackend()->getRootStoragePath() . '/score-render';
+
 			$options = array(); // options to self::generateHTML()
 
 			/* temporary working directory to use */
@@ -209,33 +260,48 @@ class Score {
 				$options['lang'] = 'lilypond';
 			}
 			if ( !in_array( $options['lang'], self::$supportedLangs ) ) {
-				throw new ScoreException( wfMessage( 'score-invalidlang', htmlspecialchars( $options['lang'] ) ) );
+				throw new ScoreException( wfMessage( 'score-invalidlang',
+					htmlspecialchars( $options['lang'] ) ) );
 			}
 
 			/* Override MIDI file? */
 			if ( array_key_exists( 'override_midi', $args ) ) {
 				$file = wfFindFile( $args['override_midi'] );
 				if ( $file === false ) {
-					throw new ScoreException( wfMessage( 'score-midioverridenotfound', htmlspecialchars( $args['override_midi'] ) ) );
+					throw new ScoreException( wfMessage( 'score-midioverridenotfound',
+						htmlspecialchars( $args['override_midi'] ) ) );
 				}
+				$parser->getOutput()->addImage( $file->getName() );
 				$options['override_midi'] = true;
 				$options['midi_file'] = $file;
-				$options['midi_path'] = $file->getLocalRefPath();
 				/* Set OGG stuff in case Vorbis rendering is requested */
 				$sha1 = $file->getSha1();
-				$oggRel = self::LILYPOND_DIR_NAME . "/{$sha1[0]}/{$sha1[0]}{$sha1[1]}/$sha1.ogg";
-				$options['ogg_path'] = "$wgUploadDirectory/$oggRel";
-				$options['ogg_url'] = "$wgUploadPath/$oggRel";
+				$oggRelDir = "override-midi/{$sha1[0]}/{$sha1[1]}";
+				$oggRel = "$oggRelDir/$sha1.ogg";
+				$options['ogg_storage_dir'] = "$baseStoragePath/$oggRelDir";
+				$options['ogg_storage_path'] = "$baseStoragePath/$oggRel";
+				$options['ogg_url'] = "$baseUrl/$oggRel";
 			} else {
 				$options['override_midi'] = false;
 			}
-	
+
+			// Raw rendering?
+			$options['raw'] = array_key_exists( 'raw', $args );
+
+			// Input for cache key
+			$cacheOptions = array(
+				'code' => $code,
+				'lang' => $options['lang'],
+				'raw'  => $options['raw'],
+			);
+
 			/* image file path and URL prefixes */
-			$imageCacheName = wfBaseConvert( sha1( $code ), 16, 36, 31 );
-			$imagePrefixEnd = self::LILYPOND_DIR_NAME . '/'
-				. "{$imageCacheName[0]}/{$imageCacheName[0]}{$imageCacheName[1]}/$imageCacheName";
-			$options['image_path_prefix'] = "$wgUploadDirectory/$imagePrefixEnd";
-			$options['image_url_prefix'] = "$wgUploadPath/$imagePrefixEnd";
+			$imageCacheName = wfBaseConvert( sha1( serialize( $cacheOptions ) ), 16, 36, 31 );
+			$imagePrefixEnd = "{$imageCacheName[0]}/" .
+				"{$imageCacheName[1]}/$imageCacheName";
+			$options['dest_storage_path'] = "$baseStoragePath/$imagePrefixEnd";
+			$options['dest_url'] = "$baseUrl/$imagePrefixEnd";
+			$options['file_name_prefix'] = substr( $imageCacheName, 0, 8 );
 
 			/* Midi linking? */
 			if ( array_key_exists( 'midi', $args ) ) {
@@ -243,22 +309,17 @@ class Score {
 			} else {
 				$options['link_midi'] = false;
 			}
-			if ( $options['link_midi'] ) {
-				if ( $options['override_midi'] ) {
-					$options['midi_url'] = $options['midi_file']->getUrl();
-				} else {
-					$options['midi_url'] = "{$options['image_url_prefix']}.midi";
-				}
-			}
 
 			/* Override OGG file? */
 			if ( array_key_exists( 'override_ogg', $args ) ) {
 				$t = Title::newFromText( $args['override_ogg'], NS_FILE );
 				if ( is_null( $t ) ) {
-					throw new ScoreException( wfMessage( 'score-invalidoggoverride', htmlspecialchars( $args['override_ogg'] ) ) );
+					throw new ScoreException( wfMessage( 'score-invalidoggoverride',
+						htmlspecialchars( $args['override_ogg'] ) ) );
 				}
 				if ( !$t->isKnown() ) {
-					throw new ScoreException( wfMessage( 'score-oggoverridenotfound', htmlspecialchars( $args['override_ogg'] ) ) );
+					throw new ScoreException( wfMessage( 'score-oggoverridenotfound',
+						htmlspecialchars( $args['override_ogg'] ) ) );
 				}
 				$options['override_ogg'] = true;
 				$options['ogg_name'] = $args['override_ogg'];
@@ -268,38 +329,27 @@ class Score {
 
 			/* Vorbis rendering? */
 			if ( array_key_exists( 'vorbis', $args ) ) {
-				$options['generate_vorbis'] = $args['vorbis'];
+				$options['generate_ogg'] = $args['vorbis'];
 			} else {
-				$options['generate_vorbis'] = false;
+				$options['generate_ogg'] = false;
 			}
-			if ( $options['generate_vorbis'] && !( class_exists( 'OggHandler' ) && class_exists( 'OggAudioDisplay' ) ) ) {
+			if ( $options['generate_ogg']
+				&& !( class_exists( 'OggHandler' ) && class_exists( 'OggAudioDisplay' ) ) )
+			{
 				throw new ScoreException( wfMessage( 'score-noogghandler' ) );
 			}
-			if ( $options['generate_vorbis'] && ( $options['override_ogg'] !== false ) ) {
+			if ( $options['generate_ogg'] && ( $options['override_ogg'] !== false ) ) {
 				throw new ScoreException( wfMessage( 'score-vorbisoverrideogg' ) );
-			}
-			if ( $options['generate_vorbis'] && !$options['override_midi'] ) {
-				$options['ogg_path'] = "{$options['image_path_prefix']}.ogg";
-				$options['ogg_url'] = "{$options['image_url_prefix']}.ogg";
-			}
-
-			/* Generate MIDI? */
-			$options['generate_midi'] = ( $options['override_midi'] === false ) && ( $options['link_midi'] || $options['generate_vorbis'] );
-			if ( $options['generate_midi'] && !array_key_exists( 'midi_path', $options ) ) {
-				$options['midi_path'] = "{$options['image_path_prefix']}.midi";
-			}
-
-			/* Raw rendering? */
-			if ( array_key_exists( 'raw', $args ) ) {
-				$options['raw'] = $args['raw'];
-			} else {
-				$options['raw'] = false;
 			}
 
 			$html = self::generateHTML( $parser, $code, $options );
 		} catch ( ScoreException $e ) {
 			$html = "$e";
 		}
+
+		// Mark the page as using the score extension, it makes easier
+		// to track all those pages.
+		$parser->getOutput()->setProperty( 'score' , true );
 
 		return $html;
 	}
@@ -311,79 +361,118 @@ class Score {
 	 * @param $code string Score code.
 	 * @param $options array of rendering options.
 	 * 	The options keys are:
-	 * 	* factory_directory: string Path to directory in which files
+	 * 	- factory_directory: string Path to directory in which files
 	 * 		may be generated without stepping on someone else's
 	 * 		toes. The directory may not exist yet. Required.
-	 * 	* generate_midi: bool Whether to create a MIDI file, either
-	 * 		to subsequently generate a vorbis file, or to provide
-	 * 		a link to the MIDI file. Required.
-	 * 	* generate_vorbis: bool Whether to create an Ogg/Vorbis file in
+	 * 	- generate_ogg: bool Whether to create an Ogg/Vorbis file in
 	 * 		an OggHandler. If set to true, the override_ogg option
 	 * 		must be set to false. Required.
-	 * 	* image_path_prefix: string Prefix to the local image path.
+	 *  - dest_storage_path: The path of the destination directory relative to
+	 *  	the current backend. Required.
+	 *  - dest_url: The default destination URL. Required.
+	 *  - file_name_prefix: The filename prefix used for all files
+	 *  	in the default destination directory. Required.
+	 * 	- lang: string Score language. Required.
+	 * 	- link_midi: bool Whether to link to a MIDI file. Required.
+	 * 	- override_midi: bool Whether to use a user-provided MIDI file.
 	 * 		Required.
-	 * 	* image_url_prefix: string Prefix to the image URL. Required.
-	 * 	* lang: string Score language. Required.
-	 * 	* link_midi: bool Whether to link to a MIDI file. Required.
-	 * 	* midi_file: MIDI file object.
-	 * 	* midi_path: string Local MIDI path. Required if the link_midi,
-	 * 		override_midi, or the generate_vorbis option is set to
-	 * 		true, ignored otherwise.
-	 * 	* midi_url: string MIDI URL. Required if the link_midi option
-	 * 		is set to true, ignored otherwise.
-	 * 	* ogg_name: string Name of the OGG file. Required if the
-	 * 		override_ogg option is set to true, ignored otherwise.
-	 * 	* ogg_path: string Local Ogg/Vorbis path. Required if the
-	 * 		generate_vorbis option is set to true, ignored
-	 * 		otherwise.
-	 * 	* ogg_url: string Ogg/Vorbis URL. Required if the
-	 * 		generate_vorbis option is set to true, ignored
-	 * 		otherwise.
-	 * 	* override_midi: bool Whether to use a user-provided MIDI file.
-	 * 		Required.
-	 * 	* override_ogg: bool Whether to generate a wikilink to a
+	 * 	- midi_file: If override_midi is true, MIDI file object.
+	 * 	- ogg_storage_dir: If override_midi and generate_ogg are true, the
+	 * 		backend directory in which the Ogg file is to be stored.
+	 * 	- ogg_storage_path: string If override_midi and generate_ogg are true,
+	 * 		the backend path at which the generated Ogg file is to be
+	 * 		stored.
+	 * 	- ogg_url: string If override_midi and generate_ogg is true,
+	 * 		the URL corresponding to ogg_storage_path
+	 * 	- override_ogg: bool Whether to generate a wikilink to a
 	 * 		user-provided OGG file. If set to true, the vorbis
 	 * 		option must be set to false. Required.
-	 * 	* raw: bool Whether to assume raw LilyPond code. Ignored if the
+	 * 	- ogg_name: string If override_ogg is true, the Ogg file name
+	 * 	- raw: bool Whether to assume raw LilyPond code. Ignored if the
 	 * 		language is not lilypond, required otherwise.
 	 *
 	 * @return string HTML.
 	 *
+	 * @throws Exception
 	 * @throws ScoreException if an error occurs.
 	 */
 	private static function generateHTML( &$parser, $code, $options ) {
-		global $wgOut;
-
-		$prof = new ScopedProfiling( __METHOD__ );
-
+		$prof = new Score_ScopedProfiling( __METHOD__ );
 		try {
+			$backend = self::getBackend();
+			$fileIter = $backend->getFileList( 
+				array( 'dir' => $options['dest_storage_path'], 'topOnly' => true ) );
+			$existingFiles = array();
+			foreach ( $fileIter as $file ) {
+				$existingFiles[$file] = true;
+			}
+
 			/* Generate PNG and MIDI files if necessary */
-			$imagePath = "{$options['image_path_prefix']}.png";
-			$multi1Path = "{$options['image_path_prefix']}-1.png";
-			if ( ( !file_exists( $imagePath ) && !file_exists( $multi1Path ) )
-					|| ( array_key_exists( 'midi_path', $options ) && !file_exists( $options['midi_path'] ) ) ) {
-				self::generatePngAndMidi( $code, $options );
+			$imageFileName = "{$options['file_name_prefix']}.png";
+			$multi1FileName = "{$options['file_name_prefix']}-1.png";
+			$midiFileName = "{$options['file_name_prefix']}.midi";
+			if (
+				( 
+					!isset( $existingFiles[$imageFileName] ) 
+					&& !isset( $existingFiles[$multi1FileName] ) 
+				) 
+				|| !isset( $existingFiles[$midiFileName] ) )
+			{
+				$existingFiles += self::generatePngAndMidi( $code, $options );
 			}
 
 			/* Generate Ogg/Vorbis file if necessary */
-			if ( $options['generate_vorbis'] && !file_exists( $options['ogg_path'] ) ) {
-				self::generateOgg( $options );
+			if ( $options['generate_ogg']  ) {
+				if ( $options['override_midi'] ) {
+					$oggUrl = $options['ogg_url'];
+					$exists = $backend->fileExists( array( 'src' => $options['ogg_storage_path'] ) );
+					if ( !$exists ) {
+						$backend->prepare( array( 'dir' => $options['ogg_storage_dir'] ) );
+						$sourcePath = $options['midi_file']->getLocalRefPath();
+						self::generateOgg(
+							$sourcePath,
+							$options['factory_directory'],
+							$options['ogg_storage_path'] );
+					}
+				} else {
+					$oggFileName = "{$options['file_name_prefix']}.ogg";
+					$oggUrl = "{$options['dest_url']}/$oggFileName";
+					if ( !isset( $existingFiles[$oggFileName] ) ) {
+						// Maybe we just generated it
+						$sourcePath = "{$options['factory_directory']}/file.midi";
+						if ( !file_exists( $sourcePath ) ) {
+							// No, need to fetch it from the backend
+							$sourceFileRef = $backend->getLocalReference( 
+								array( 'src' => "{$options['dest_storage_path']}/$midiFileName" ) );
+							$sourcePath = $sourceFileRef->getPath();
+						}
+						self::generateOgg(
+							$sourcePath,
+							$options['factory_directory'],
+							"{$options['dest_storage_path']}/$oggFileName" );
+					}
+				}
 			}
 
 			/* return output link(s) */
-			if ( file_exists( $imagePath ) ) {
+			if ( isset( $existingFiles[$imageFileName] ) ) {
 				$link = Html::rawElement( 'img', array(
-					'src' => "{$options['image_url_prefix']}.png",
+					'src' => "{$options['dest_url']}/$imageFileName",
 					'alt' => $code,
 				) );
-			} elseif ( file_exists( $multi1Path ) ) {
-				$multiPathFormat = "{$options['image_path_prefix']}-%d.png";
-				$multiUrlFormat = "{$options['image_url_prefix']}-%d.png";
+			} elseif ( isset( $existingFiles[$multi1Path] ) ) { // @fixme: $multi1Path is undefined
 				$link = '';
-				for ( $i = 1; file_exists( sprintf( $multiPathFormat, $i ) ); ++$i ) {
+				for ( $i = 1; ; ++$i ) {
+					$fileName = "{$options['file_name_prefix']}-$i.png";
+					if ( !isset( $existingFiles[$fileName] ) ) {
+						break;
+					}
 					$link .= Html::rawElement( 'img', array(
-						'src' => sprintf( $multiUrlFormat, $i ),
-						'alt' => wfMessage( 'score-page' )->inContentLanguage()->numParams( $i )->plain()
+						'src' => "{$options['dest_url']}/$fileName",
+						'alt' => wfMessage( 'score-page' )
+							->inContentLanguage()
+							->numParams( $i )
+							->plain()
 					) );
 				}
 			} else {
@@ -391,30 +480,30 @@ class Score {
 				throw new ScoreException( wfMessage( 'score-noimages' ) );
 			}
 			if ( $options['link_midi'] ) {
-				$link = Html::rawElement( 'a', array( 'href' => $options['midi_url'] ), $link );
-			}
-			if ( $options['generate_vorbis'] ) {
-				try {
-					$oh = new OggHandler();
-					$oh->setHeaders( $wgOut );
-					$oad = new OggAudioDisplay(
-						new UnregisteredLocalFile( false, false, $options['ogg_path'] ),
-						$options['ogg_url'],
-						self::DEFAULT_PLAYER_WIDTH, 0, 0,
-						$options['ogg_url'],
-						false
-					);
-					$link .= $oad->toHtml( array( 'alt' => $code ) );
-				} catch ( Exception $e ) {
-					throw new ScoreException( wfMessage( 'score-novorbislink', htmlspecialchars( $e->getMessage() ) ), 0, $e );
+				if ( $options['override_midi'] ) {
+					$url = $options['midi_file']->getUrl();
+				} else {
+					$url = "{$options['dest_url']}/{$options['file_name_prefix']}.midi";
 				}
+				$link = Html::rawElement( 'a', array( 'href' => $url ), $link );
+			}
+			if ( $options['generate_ogg'] ) {
+				$oh = new OggHandler();
+				$oh->parserTransformHook( $parser, false );
+				$player = new OggHandlerPlayer( array(
+					'type' => 'audio',
+					'defaultAlt' => '',
+					'videoUrl' => $oggUrl,
+					'thumbUrl' => false,
+					'width' => self::DEFAULT_PLAYER_WIDTH,
+					'height' => 0,
+					'length' => 0,
+					'showIcon' => false,
+				) );
+				$link .= $player->toHtml();
 			}
 			if ( $options['override_ogg'] !== false ) {
-				try {
-					$link .= $parser->recursiveTagParse( "[[File:{$options['ogg_name']}]]" );
-				} catch ( Exception $e ) {
-					throw new ScoreException( wfMessage( 'score-novorbislink', htmlspecialchars( $e->getMessage() ) ), 0, $e );
-				}
+				$link .= $parser->recursiveTagParse( "[[File:{$options['ogg_name']}]]" );
 			}
 		} catch ( Exception $e ) {
 			self::eraseFactory( $options['factory_directory'] );
@@ -427,32 +516,24 @@ class Score {
 	}
 
 	/**
-	 * Generates score PNG file(s) and possibly a MIDI file.
+	 * Generates score PNG file(s) and a MIDI file.
 	 *
 	 * @param $code string Score code.
 	 * @param $options array Rendering options. They are the same as for
-	 * 	Score::generateHTML(). The MIDI file specified by the midi_path
-	 * 	option is generated if and only	if the generate_midi option
-	 * 	evaluates to true.
+	 * 	Score::generateHTML().
+	 *
+	 * @return Array of file names placed in the remote dest dir, with the 
+	 * 	file names in each key.
 	 *
 	 * @throws ScoreException on error.
 	 */
 	private static function generatePngAndMidi( $code, $options ) {
 		global $wgScoreLilyPond, $wgScoreTrim;
 
-		$prof = new ScopedProfiling( __METHOD__ );
+		$prof = new Score_ScopedProfiling( __METHOD__ );
 
-		/* Various filenames */
-		$image = "{$options['image_path_prefix']}.png";
-		$multiFormat = "{$options['image_path_prefix']}-%d.png";
-
-		/* delete old files if necessary */
-		if ( $options['generate_midi'] ) {
-			self::cleanupFile( $options['midi_path'] );
-		}
-		self::cleanupFile( $image );
-		for ( $i = 1; file_exists( $f = sprintf( $multiFormat, $i ) ); ++$i ) {
-			self::cleanupFile( $f );
+		if ( !is_executable( $wgScoreLilyPond ) ) {
+			throw new ScoreException( wfMessage( 'score-notexecutable', $wgScoreLilyPond ) );
 		}
 
 		/* Create the working environment */
@@ -462,15 +543,13 @@ class Score {
 		$factoryMidi = "$factoryDirectory/file.midi";
 		$factoryImage = "$factoryDirectory/file.png";
 		$factoryImageTrimmed = "$factoryDirectory/file-trimmed.png";
-		$factoryMultiFormat = "$factoryDirectory/file-%d.png";
-		$factoryMultiTrimmedFormat = "$factoryDirectory/file-%d-trimmed.png";
 
 		/* Generate LilyPond input file */
 		if ( $options['lang'] == 'lilypond' ) {
 			if ( $options['raw'] ) {
 				$lilypondCode = $code;
 			} else {
-				$lilypondCode = self::embedLilypondCode( $code, $options );
+				$lilypondCode = self::embedLilypondCode( $code );
 			}
 			$rc = file_put_contents( $factoryLy, $lilypondCode );
 			if ( $rc === false ) {
@@ -490,12 +569,8 @@ class Score {
 		if ( !$rc ) {
 			throw new ScoreException( wfMessage( 'score-chdirerr', $factoryDirectory ) );
 		}
-		if ( !is_executable( $wgScoreLilyPond ) ) {
-			throw new ScoreException( wfMessage( 'score-notexecutable', $wgScoreLilyPond ) );
-		}
 		$cmd = wfEscapeShellArg( $wgScoreLilyPond )
-			. ' -dsafe='
-			. wfEscapeShellArg( '#t' )
+			. ' ' . wfEscapeShellArg( '-dsafe=#t' )
 			. ' -dbackend=eps --png --header=texidoc '
 			. wfEscapeShellArg( $factoryLy )
 			. ' 2>&1';
@@ -505,9 +580,9 @@ class Score {
 			throw new ScoreException( wfMessage( 'score-chdirerr', $oldcwd ) );
 		}
 		if ( $rc2 != 0 ) {
-			self::throwCallException( wfMessage( 'score-compilererr' ), $output );
+			self::throwCallException( wfMessage( 'score-compilererr' ), $output, $options );
 		}
-		if ( $options['generate_midi'] && !file_exists( $factoryMidi ) ) {
+		if ( !file_exists( $factoryMidi ) ) {
 			throw new ScoreException( wfMessage( 'score-nomidi' ) );
 		}
 
@@ -515,102 +590,165 @@ class Score {
 		if ( $wgScoreTrim ) {
 			if ( file_exists( $factoryImage ) ) {
 				self::trimImage( $factoryImage, $factoryImageTrimmed );
+			} else {
+				for ( $i = 1; ; ++$i ) {
+					$src = "$factoryDirectory/file-$i.png";
+					if ( !file_exists( $src ) ) {
+						break;
+					}
+					$dest = "$factoryDirectory/file-$i-trimmed.png";
+					self::trimImage( $src, $dest );
+				}
 			}
-			for ( $i = 1; file_exists( $f = sprintf( $factoryMultiFormat, $i ) ); ++$i ) {
-				self::trimImage( $f, sprintf( $factoryMultiTrimmedFormat, $i ) );
-			}
-		} else {
-			$factoryImageTrimmed = $factoryImage;
-			$factoryMultiTrimmedFormat = $factoryMultiFormat;
 		}
 
-		/* move files to proper places */
-		$rc = true;
-		if ( $options['generate_midi'] ) {
-			self::renameFile( $factoryMidi, $options['midi_path'] );
+		// Create the destination directory if it doesn't exist
+		$backend = self::getBackend();
+		$status = $backend->prepare( array( 'dir' => $options['dest_storage_path'] ) );
+		if ( !$status->isOK() ) {
+			throw new ScoreException( wfMessage( 'score-backend-error', $status->getWikiText() ) );
 		}
+
+		// File names of generated files
+		$newFiles = array();
+		// Backend operation batch
+		$ops = array();
+
+		// Add the MIDI file to the batch
+		$ops[] = array(
+			'op' => 'store',
+			'src' => $factoryMidi,
+			'dst' => "{$options['dest_storage_path']}/{$options['file_name_prefix']}.midi" );
+		$newFiles["{$options['file_name_prefix']}.midi"] = true;
+		if ( !$status->isOK() ) {
+			throw new ScoreException( wfMessage( 'score-backend-error', $status->getWikiText() ) );
+		}
+
+		// Add the PNGs
 		if ( file_exists( $factoryImageTrimmed ) ) {
-			self::renameFile( $factoryImageTrimmed, $image );
+			if ( $wgScoreTrim ) {
+				$src = $factoryImageTrimmed;
+			} else {
+				$src = $factoryImage;
+			}
+			$dstFileName = "{$options['file_name_prefix']}.png";
+			$ops[] = array(
+				'op' => 'store',
+				'src' => $src,
+				'dst' => "{$options['dest_storage_path']}/$dstFileName" );
+
+			$newFiles[$dstFileName] = true;
+		} else {
+			for ( $i = 1; ; ++$i ) {
+				if ( $wgScoreTrim ) {
+					$src = "$factoryDirectory/file-$i-trimmed.png";
+				} else {
+					$src = "$factoryDirectory/file-$i.png";
+				}
+				if ( !file_exists( $src ) ) {
+					break;
+				}
+				$dstFileName = "{$options['file_name_prefix']}-$i.png";
+				$dest = "{$options['dest_storage_path']}/$dstFileName";
+				$ops[] = array(
+					'op' => 'store',
+					'src' => $src,
+					'dst' => $dest );
+				$newFiles[$dstFileName] = true;
+			}
 		}
-		for ( $i = 1; file_exists( $f = sprintf( $factoryMultiTrimmedFormat, $i ) ); ++$i ) {
-			self::renameFile( $f, sprintf( $multiFormat, $i ) );
+		// Execute the batch
+		$status = $backend->doQuickOperations( $ops );
+		if ( !$status->isOK() ) {
+			throw new ScoreException( wfMessage( 'score-backend-error', $status->getWikiText() ) );
 		}
+		return $newFiles;
 	}
 
 	/**
 	 * Embeds simple LilyPond code in a score block.
 	 *
 	 * @param $lilypondCode string Simple LilyPond code.
-	 * @param $options array Rendering options. The are the same as for
-	 * 	Score::generateHTML(). A MIDI block is embedded if and only if
-	 * 	the generate_midi option evaluates to true.
 	 *
 	 * @return string Raw lilypond code.
 	 *
 	 * @throws ScoreException if determining the LilyPond version fails.
 	 */
-	private static function embedLilypondCode( $lilypondCode, $options ) {
+	private static function embedLilypondCode( $lilypondCode ) {
 		/* Get LilyPond version if we don't know it yet */
 		if ( self::$lilypondVersion === null ) {
 			self::getLilypondVersion();
 		}
+		$version = self::$lilypondVersion;
 
-		/* Raw code. Note: the "strange" ##f, ##t, etc., are actually part of the lilypond code!
-		 * The raw code is based on the raw code from the original LilyPond extension */
-		$raw = "\\header {\n"
-			. "\ttagline = ##f\n"
-			. "}\n"
-			. "\\paper {\n"
-			. "\traggedright = ##t\n"
-			. "\traggedbottom = ##t\n"
-			. "\tindent = 0\mm\n"
-			. "}\n"
-			. '\version "' . self::$lilypondVersion . "\"\n"
-			. "\\score {\n"
-			. $lilypondCode
-			. "\t\\layout { }\n"
-			. ( $options['generate_midi'] ? "\t\\midi { }\n" : '' )
-			. "}\n";
+		/* Raw code. In Scheme, ##f is false and ##t is true. */
+		/* Set the default MIDI tempo to 100, 60 is a bit too slow */
+		$raw = <<<LILYPOND
+			\\header {
+				tagline = ##f
+			}
+			\\paper {
+				raggedright = ##t
+				raggedbottom = ##t
+				indent = 0\mm
+			}
+			\\version "$version"
+			\\score {
+				$lilypondCode
+				\\layout { }
+				\\midi {
+					\\context {
+						\\Score
+						tempoWholesPerMinute = #(ly:make-moment 100 4)
+					}
+				}
+			}
+LILYPOND;
+
 		return $raw;
 	}
 
 	/**
 	 * Generates an Ogg/Vorbis file from a MIDI file using timidity.
 	 *
-	 * @param $options array Rendering options. They are the same as for
-	 * 	Score::generateHTML(), except that the midi_path option must
-	 * 	be present.
+	 * @param $sourceFile string The local filename of the MIDI file
+	 * @param $factoryDir string The local temporary directory
+	 * @param $remoteDest string The backend storage path to upload the Ogg file to
 	 *
 	 * @throws ScoreException if an error occurs.
 	 */
-	private static function generateOgg( $options ) {
+	private static function generateOgg( $sourceFile, $factoryDir, $remoteDest ) {
 		global $wgScoreTimidity;
 
-		$prof = new ScopedProfiling(  __METHOD__ );
+		$prof = new Score_ScopedProfiling(  __METHOD__ );
 
-		/* Working environment */
-		self::createDirectory( $options['factory_directory'], 0700 );
-		$factoryOgg = "{$options['factory_directory']}/file.ogg";
-
-		/* Delete old file if necessary */
-		self::cleanupFile( $options['ogg_path'] );
-
-		/* Run timidity */
 		if ( !is_executable( $wgScoreTimidity ) ) {
 			throw new ScoreException( wfMessage( 'score-timiditynotexecutable', $wgScoreTimidity ) );
 		}
+
+		/* Working environment */
+		self::createDirectory( $factoryDir, 0700 );
+		$factoryOgg = "$factoryDir/file.ogg";
+
+		/* Run timidity */
 		$cmd = wfEscapeShellArg( $wgScoreTimidity )
 			. ' -Ov' // Vorbis output
-			. ' --output-file=' . wfEscapeShellArg( $factoryOgg )
-			. ' ' . wfEscapeShellArg( $options['midi_path'] )
+			. ' ' . wfEscapeShellArg( '--output-file=' . $factoryOgg )
+			. ' ' . wfEscapeShellArg( $sourceFile )
 			. ' 2>&1';
 		$output = wfShellExec( $cmd, $rc );
+
 		if ( ( $rc != 0 ) || !file_exists( $factoryOgg ) ) {
-			self::throwCallException( wfMessage( 'score-oggconversionerr' ), $output );
+			self::throwCallException( wfMessage( 'score-oggconversionerr' ), $output, $factoryDir );
 		}
 
 		/* Move resultant file to proper place */
-		self::renameFile( $factoryOgg, $options['ogg_path'] );
+		$status = self::getBackend()->quickStore( array(
+			'src' => $factoryOgg,
+			'dst' => $remoteDest ) );
+		if ( !$status->isOK() ) {
+			throw new ScoreException( wfMessage( 'score-backend-error', $status->getWikiText() ) );
+		}
 	}
 
 	/**
@@ -619,13 +757,13 @@ class Score {
 	 * @param $code string Score code.
 	 * @param $options array Rendering options. They are the same as for
 	 * 	Score::generateHTML(), with the following addition:
-	 * 	* lilypond_path: path to the LilyPond file that is to be
+	 * 	* lilypond_path: local path to the LilyPond file that is to be
 	 * 		generated.
 	 *
-	 * @throws ScoreException if an error occurs.
+	 * @throws MWException if an error occurs.
 	 */
 	private static function generateLilypond( $code, $options ) {
-		$prof = new ScopedProfiling( __METHOD__ );
+		$prof = new Score_ScopedProfiling( __METHOD__ );
 
 		/* Delete old file if necessary */
 		self::cleanupFile( $options['lilypond_path'] );
@@ -633,12 +771,15 @@ class Score {
 		/* Generate LilyPond code by score language */
 		switch ( $options['lang'] ) {
 		case 'ABC':
-			self::generateLilypondFromAbc( $code, $options );
+			self::generateLilypondFromAbc( 
+				$code, $options['factory_directory'], $options['lilypond_path'] );
 			break;
 		case 'lilypond':
-			throw new MWException( 'lang="lilypond" in ' . __METHOD__ . ". This should not happen.\n" );
+			throw new MWException( 'lang="lilypond" in ' . __METHOD__ . ". " .
+				"This should not happen.\n" );
 		default:
-			throw new MWException( 'Unknown score language in ' . __METHOD__ . ". This should not happen.\n" );
+			throw new MWException( 'Unknown score language in ' . __METHOD__ . ". " .
+				"This should not happen.\n" );
 		}
 
 	}
@@ -647,20 +788,22 @@ class Score {
 	 * Runs abc2ly, creating the LilyPond input file.
 	 *
 	 * @param $code string ABC code.
-	 * @param $options array Rendering options. They are the same as for
-	 * 	Score::generateLilypond().
+	 * @param $factoryDirectory string Local temporary directory
+	 * @param $destFile string Local destination path
 	 *
 	 * @throws ScoreException if the conversion fails.
 	 */
-	private static function generateLilypondFromAbc( $code, $options ) {
+	private static function generateLilypondFromAbc( $code, $factoryDirectory, $destFile ) {
 		global $wgScoreAbc2Ly;
 
-		$prof = new ScopedProfiling( __METHOD__ );
+		$prof = new Score_ScopedProfiling( __METHOD__ );
+
+		if ( !is_executable( $wgScoreAbc2Ly ) ) {
+			throw new ScoreException( wfMessage( 'score-abc2lynotexecutable', $wgScoreAbc2Ly ) );
+		}
 
 		/* File names */
-		$factoryDirectory = $options['factory_directory'];
 		$factoryAbc = "$factoryDirectory/file.abc";
-		$factoryLy = "$factoryDirectory/file.ly";
 
 		/* Create ABC input file */
 		$rc = file_put_contents( $factoryAbc, $code );
@@ -669,50 +812,43 @@ class Score {
 		}
 
 		/* Convert to LilyPond file */
-		if ( !is_executable( $wgScoreAbc2Ly ) ) {
-			throw new ScoreException( wfMessage( 'score-abc2lynotexecutable', $wgScoreAbc2Ly ) );
-		}
-
 		$cmd = wfEscapeShellArg( $wgScoreAbc2Ly )
 			. ' -s'
-			. ' --output=' . wfEscapeShellArg( $factoryLy )
+			. ' ' . wfEscapeShellArg( '--output=' . $destFile )
 			. ' ' . wfEscapeShellArg( $factoryAbc )
 			. ' 2>&1';
 		$output = wfShellExec( $cmd, $rc );
-		if ( ( $rc != 0 ) || !file_exists( $factoryLy ) ) {
-			self::throwCallException( wfMessage( 'score-abcconversionerr' ), $output );
+		if ( ( $rc != 0 ) || !file_exists( $destFile ) ) {
+			self::throwCallException( wfMessage( 'score-abcconversionerr' ), $output, $factoryDirectory );
 		}
 
 		/* The output file has a tagline which should be removed in a wiki context */
-		$lyData = file_get_contents( $factoryLy );
+		$lyData = file_get_contents( $destFile );
 		if ( $lyData === false ) {
-			throw new ScoreException( wfMessage( 'score-readerr', $factoryLy ) );
+			throw new ScoreException( wfMessage( 'score-readerr', $destFile ) );
 		}
 		$lyData = preg_replace( '/^(\s*tagline\s*=).*/m', '$1 ##f', $lyData );
 		if ( $lyData === null ) {
 			throw new ScoreException( wfMessage( 'score-pregreplaceerr' ) );
 		}
-		$rc = file_put_contents( $factoryLy, $lyData );
+		$rc = file_put_contents( $destFile, $lyData );
 		if ( $rc === false ) {
-			throw new ScoreException( wfMessage( 'score-noinput', $factoryLy ) );
+			throw new ScoreException( wfMessage( 'score-noinput', $destFile ) );
 		}
-
-		/* Move resultant file to proper place */
-		self::renameFile( $factoryLy, $options['lilypond_path'] );
 	}
 
 	/**
 	 * Trims an image with ImageMagick.
 	 *
-	 * @param $source string path to the source image.
-	 * @param $dest string path to the target (trimmed) image.
+	 * @param $source string Local path to the source image.
+	 * @param $dest string Local path to the target (trimmed) image.
 	 *
 	 * @throws ScoreException on error.
 	 */
 	private static function trimImage( $source, $dest ) {
 		global $wgImageMagickConvertCommand;
 
-		$prof = new ScopedProfiling( __METHOD__ );
+		$prof = new Score_ScopedProfiling( __METHOD__ );
 
 		$cmd = wfEscapeShellArg( $wgImageMagickConvertCommand )
 			. ' -trim '
@@ -726,11 +862,11 @@ class Score {
 	}
 
 	/**
-	 * Deletes a directory with no subdirectories with all files in it.
+	 * Deletes a local directory with no subdirectories with all files in it.
 	 *
-	 * @param $dir string path to the directory that is to be deleted.
+	 * @param $dir string Local path to the directory that is to be deleted.
 	 *
-	 * @return true on success, false on error
+	 * @return Bool true on success, false on error
 	 */
 	private static function eraseFactory( $dir ) {
 		if( file_exists( $dir ) ) {
@@ -748,26 +884,9 @@ class Score {
 	}
 
 	/**
-	 * Renames a file, making sure that the target directory exists.
-	 * Do not use with uncanonicalised paths.
+	 * Deletes a local file if it exists.
 	 *
-	 * @param $oldname string Old file name.
-	 * @param $newname string New file name.
-	 *
-	 * @throws ScoreException if an error occurs.
-	 */
-	private static function renameFile( $oldname, $newname ) {
-		self::createDirectory( dirname( $newname ) );
-		$rc = rename( $oldname, $newname );
-		if ( !$rc ) {
-			throw new ScoreException( wfMessage( 'score-renameerr' ) );
-		}
-	}
-
-	/**
-	 * Deletes a file if it exists.
-	 *
-	 * @param $path string path to the file to be deleted.
+	 * @param $path string Local path to the file to be deleted.
 	 *
 	 * @throws ScoreException if the file specified by $path exists but
 	 * 	could not be deleted.
