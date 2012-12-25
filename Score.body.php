@@ -86,6 +86,9 @@ class ScoreException extends Exception {
 			'div',
 			array( 'class' => 'errorbox' ),
 			$this->getMessage()
+		) . Html::rawElement(
+			'br',
+			array( 'clear' => 'all' )
 		);
 	}
 }
