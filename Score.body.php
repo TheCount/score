@@ -237,9 +237,7 @@ class Score {
 	 * @return string Image link HTML, and possibly anchor to MIDI file.
 	 */
 	public static function render( $code, array $args, Parser $parser, PPFrame $frame ) {
-		global $wgTmpDirectory, $wgUploadDirectory, $wgUploadPath;
-
-		$prof = new ScopedProfiling( __METHOD__ );
+		global $wgTmpDirectory;
 
 		$prof = new Score_ScopedProfiling( __METHOD__ );
 
