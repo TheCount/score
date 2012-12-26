@@ -468,7 +468,7 @@ class Score {
 					'src' => "{$options['dest_url']}/$imageFileName",
 					'alt' => $code,
 				) );
-			} elseif ( isset( $existingFiles[$multi1Path] ) ) { // @fixme: $multi1Path is undefined
+			} elseif ( isset( $existingFiles[$multi1FileName] ) ) {
 				$link = '';
 				for ( $i = 1; ; ++$i ) {
 					$fileName = "{$options['file_name_prefix']}-$i.png";
